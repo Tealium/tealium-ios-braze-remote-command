@@ -22,9 +22,6 @@ PODS:
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
   - SDWebImage/Core (5.0.6)
-  - tealium-ios-braze-remote-command (1.0.0):
-    - Appboy-iOS-SDK
-    - tealium-swift
   - tealium-swift (1.7.0):
     - tealium-swift/TealiumFull (= 1.7.0)
   - tealium-swift/TealiumFull (1.7.0):
@@ -33,7 +30,7 @@ PODS:
 
 DEPENDENCIES:
   - Appboy-iOS-SDK
-  - tealium-ios-braze-remote-command (from `/Users/christina/Desktop/work-repos/github/tealium-ios-braze-remote-command`)
+  - tealium-swift
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -42,17 +39,12 @@ SPEC REPOS:
     - tealium-swift
     - TealiumCrashReporter
 
-EXTERNAL SOURCES:
-  tealium-ios-braze-remote-command:
-    :path: "/Users/christina/Desktop/work-repos/github/tealium-ios-braze-remote-command"
-
 SPEC CHECKSUMS:
   Appboy-iOS-SDK: 6d2ec19e51446eecfc03078926afd0fb889451e7
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
-  tealium-ios-braze-remote-command: 48aac44e674702dac668ff0a32424c614f7cf4dd
   tealium-swift: 271869d650b6e30a225db56810b49ba3205fd825
   TealiumCrashReporter: 9b031b5a8a914e9edf62abf87d7e0dd1a7579bd8
 
-PODFILE CHECKSUM: 2acb8576d0abfcc188677295ad7de0c7c43c39df
+PODFILE CHECKSUM: 39b2fe31e976c0185bc1bc20fbc4fbe163996b6b
 
 COCOAPODS: 1.7.1
