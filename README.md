@@ -1,10 +1,10 @@
 # Braze Remote Commands
 
-A wrapper for Braze to be included in your project alongside the Tealium and Braze SDKs. Make tracking calls through Tealium's [track](https://docs.tealium.com/platforms/swift/track/) API which then triggers the appropriate Braze API call.
+An integration with Braze that enables tracking calls through Tealium's [track](https://docs.tealium.com/platforms/swift/track/) API to trigger the appropriate Braze API call.
 
 ## Getting Started
 
-Clone this repo and execute the `pod install` command in the project directory. You can then run the sample app to get an idea of the functionality and reference later. 
+Clone this repo and execute the `pod install` command in the project directory. You can then run the sample app to get an idea of the functionality.
 
 ### Prerequisites
 
@@ -13,7 +13,7 @@ Clone this repo and execute the `pod install` command in the project directory. 
 
 ### Installing
 
-To include the remote command wrapper files in your own project, simply clone this repo and drag the files within the Sources folder into your project. 
+To include the remote command files in your own project, simply clone this repo and drag the files within the Sources folder into your project. 
 
 Include the [Tealium Swift](https://docs.tealium.com/platforms/swift/install/) and [Braze](https://www.braze.com/docs/developer_guide/platform_integration_guides/ios/initial_sdk_setup/initial_sdk_setup/) frameworks in your project through your desired dependency manager.
 
