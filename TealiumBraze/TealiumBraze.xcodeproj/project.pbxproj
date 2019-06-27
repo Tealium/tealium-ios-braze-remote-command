@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4BAAED6422C54B4100613F58 /* TealiumBraze.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF5BE25922C3F09A00D522E2 /* TealiumBraze.framework */; };
+		4BAAED6A22C54BDE00613F58 /* BrazeCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BAAED5822C5495B00613F58 /* BrazeCommandRunnerTests.swift */; };
+		4BAAED6B22C54BE300613F58 /* MockBrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BAAED5722C5495B00613F58 /* MockBrazeCommandRunner.swift */; };
 		CF5BE25E22C3F09A00D522E2 /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = CF5BE25C22C3F09A00D522E2 /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CFC1DF5422C4459F0062334B /* TealiumVolatileData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFC1DF3E22C4459E0062334B /* TealiumVolatileData.framework */; };
 		CFC1DF5522C4459F0062334B /* TealiumDeviceData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFC1DF3F22C4459E0062334B /* TealiumDeviceData.framework */; };
@@ -44,6 +47,16 @@
 		CFEEA00D22C4277A006EC7E6 /* BrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEEA00B22C4277A006EC7E6 /* BrazeCommandRunner.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		4BAAED6522C54B4100613F58 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CF5BE25022C3F09A00D522E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CF5BE25822C3F09A00D522E2;
+			remoteInfo = TealiumBraze;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		CFEEA03722C43427006EC7E6 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -57,6 +70,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4BAAED5722C5495B00613F58 /* MockBrazeCommandRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBrazeCommandRunner.swift; sourceTree = "<group>"; };
+		4BAAED5822C5495B00613F58 /* BrazeCommandRunnerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommandRunnerTests.swift; sourceTree = "<group>"; };
+		4BAAED5F22C54B4100613F58 /* TealiumBrazeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TealiumBrazeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF5BE25922C3F09A00D522E2 /* TealiumBraze.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TealiumBraze.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF5BE25C22C3F09A00D522E2 /* TealiumBraze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TealiumBraze.h; sourceTree = "<group>"; };
 		CF5BE25D22C3F09A00D522E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -99,6 +115,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4BAAED5C22C54B4100613F58 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BAAED6422C54B4100613F58 /* TealiumBraze.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CF5BE25622C3F09A00D522E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,10 +162,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4BAAED5622C5491B00613F58 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				4BAAED5822C5495B00613F58 /* BrazeCommandRunnerTests.swift */,
+				4BAAED5722C5495B00613F58 /* MockBrazeCommandRunner.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		CF5BE24F22C3F09A00D522E2 = {
 			isa = PBXGroup;
 			children = (
 				CFEEA00922C42730006EC7E6 /* Sources */,
+				4BAAED5622C5491B00613F58 /* Tests */,
 				CF5BE25B22C3F09A00D522E2 /* TealiumBraze */,
 				CFC1DF7222C447410062334B /* TealiumBrazeExample */,
 				CF5BE25A22C3F09A00D522E2 /* Products */,
@@ -154,6 +188,7 @@
 			children = (
 				CF5BE25922C3F09A00D522E2 /* TealiumBraze.framework */,
 				CFC1DF7122C447400062334B /* TealiumBrazeExample.app */,
+				4BAAED5F22C54B4100613F58 /* TealiumBrazeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -237,6 +272,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		4BAAED5E22C54B4100613F58 /* TealiumBrazeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4BAAED6722C54B4100613F58 /* Build configuration list for PBXNativeTarget "TealiumBrazeTests" */;
+			buildPhases = (
+				4BAAED5B22C54B4100613F58 /* Sources */,
+				4BAAED5C22C54B4100613F58 /* Frameworks */,
+				4BAAED5D22C54B4100613F58 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4BAAED6622C54B4100613F58 /* PBXTargetDependency */,
+			);
+			name = TealiumBrazeTests;
+			productName = TealiumBrazeTests;
+			productReference = 4BAAED5F22C54B4100613F58 /* TealiumBrazeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CF5BE25822C3F09A00D522E2 /* TealiumBraze */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CF5BE26122C3F09A00D522E2 /* Build configuration list for PBXNativeTarget "TealiumBraze" */;
@@ -280,10 +333,13 @@
 		CF5BE25022C3F09A00D522E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = Tealium;
 				TargetAttributes = {
+					4BAAED5E22C54B4100613F58 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					CF5BE25822C3F09A00D522E2 = {
 						CreatedOnToolsVersion = 10.2.1;
 						LastSwiftMigration = 1020;
@@ -308,11 +364,19 @@
 			targets = (
 				CF5BE25822C3F09A00D522E2 /* TealiumBraze */,
 				CFC1DF7022C447400062334B /* TealiumBrazeExample */,
+				4BAAED5E22C54B4100613F58 /* TealiumBrazeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4BAAED5D22C54B4100613F58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CF5BE25722C3F09A00D522E2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -353,6 +417,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4BAAED5B22C54B4100613F58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BAAED6B22C54BE300613F58 /* MockBrazeCommandRunner.swift in Sources */,
+				4BAAED6A22C54BDE00613F58 /* BrazeCommandRunnerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CF5BE25522C3F09A00D522E2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -378,7 +451,53 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		4BAAED6622C54B4100613F58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CF5BE25822C3F09A00D522E2 /* TealiumBraze */;
+			targetProxy = 4BAAED6522C54B4100613F58 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		4BAAED6822C54B4100613F58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XC939GDC9P;
+				INFOPLIST_FILE = TealiumBrazeTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4BAAED6922C54B4100613F58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XC939GDC9P;
+				INFOPLIST_FILE = TealiumBrazeTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		CF5BE25F22C3F09A00D522E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -527,7 +646,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -557,7 +676,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBraze;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -601,6 +720,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4BAAED6722C54B4100613F58 /* Build configuration list for PBXNativeTarget "TealiumBrazeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4BAAED6822C54B4100613F58 /* Debug */,
+				4BAAED6922C54B4100613F58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CF5BE25322C3F09A00D522E2 /* Build configuration list for PBXProject "TealiumBraze" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
