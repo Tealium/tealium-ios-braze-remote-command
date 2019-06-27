@@ -7,8 +7,9 @@
 //
 
 import UIKit
-import TealiumSwift
 import Appboy_iOS_SDK
+import TealiumCore
+import TealiumRemoteCommands
 
 enum AppboyUserAttribute: String, CaseIterable {
     case firstName = "first_name"
