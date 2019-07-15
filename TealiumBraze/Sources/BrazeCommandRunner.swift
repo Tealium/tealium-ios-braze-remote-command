@@ -8,8 +8,7 @@
 
 import Foundation
 import Appboy_iOS_SDK
-import TealiumCore
-import TealiumRemoteCommands
+import TealiumSwift
 
 protocol TealiumApplication { }
 extension UIApplication: TealiumApplication { }
