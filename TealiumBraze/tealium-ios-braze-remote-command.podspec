@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
     s.description  = <<-DESC
     Tealium's integration with Braze for iOS.
     DESC
-    s.homepage     = "https://github.com/Tealium/"
+    s.homepage     = "https://github.com/Tealium/tealium-ios-braze-remote-command"
 
     # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.license      = { :type => "Commercial", :file => "LICENSE.txt" }

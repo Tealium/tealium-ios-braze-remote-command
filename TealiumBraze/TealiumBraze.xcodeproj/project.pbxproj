@@ -34,15 +34,6 @@
 		CFC1DF6822C4459F0062334B /* TealiumAttribution.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFC1DF5222C4459F0062334B /* TealiumAttribution.framework */; };
 		CFC1DF6922C4459F0062334B /* TealiumDispatchQueue.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFC1DF5322C4459F0062334B /* TealiumDispatchQueue.framework */; };
 		CFC1DF6C22C446270062334B /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF6B22C446270062334B /* DateConverter.swift */; };
-		CFC1DF7622C447410062334B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF7522C447410062334B /* ViewController.swift */; };
-		CFC1DF7B22C447420062334B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFC1DF7A22C447420062334B /* Assets.xcassets */; };
-		CFC1DF8E22C447830062334B /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF8522C447790062334B /* UserViewController.swift */; };
-		CFC1DF9022C447830062334B /* TealiumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF8722C4477C0062334B /* TealiumHelper.swift */; };
-		CFC1DF9222C447830062334B /* EngagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF8922C4477F0062334B /* EngagementViewController.swift */; };
-		CFC1DF9322C447830062334B /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF8A22C447810062334B /* EventViewController.swift */; };
-		CFC1DF9622C447CB0062334B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC1DF9522C447CB0062334B /* AppDelegate.swift */; };
-		CFC1DF9922C447F50062334B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFC1DF9722C447F30062334B /* LaunchScreen.storyboard */; };
-		CFC1DF9A22C447F50062334B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFC1DF9822C447F50062334B /* Main.storyboard */; };
 		CFEEA00C22C4277A006EC7E6 /* BrazeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEEA00A22C4277A006EC7E6 /* BrazeCommand.swift */; };
 		CFEEA00D22C4277A006EC7E6 /* BrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEEA00B22C4277A006EC7E6 /* BrazeCommandRunner.swift */; };
 /* End PBXBuildFile section */
@@ -100,16 +91,6 @@
 		CFC1DF5322C4459F0062334B /* TealiumDispatchQueue.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumDispatchQueue.framework; path = Carthage/Build/iOS/TealiumDispatchQueue.framework; sourceTree = "<group>"; };
 		CFC1DF6B22C446270062334B /* DateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 		CFC1DF7122C447400062334B /* TealiumBrazeExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TealiumBrazeExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CFC1DF7522C447410062334B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		CFC1DF7A22C447420062334B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CFC1DF7F22C447420062334B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CFC1DF8522C447790062334B /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
-		CFC1DF8722C4477C0062334B /* TealiumHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TealiumHelper.swift; sourceTree = "<group>"; };
-		CFC1DF8922C4477F0062334B /* EngagementViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EngagementViewController.swift; sourceTree = "<group>"; };
-		CFC1DF8A22C447810062334B /* EventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
-		CFC1DF9522C447CB0062334B /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CFC1DF9722C447F30062334B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		CFC1DF9822C447F50062334B /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		CFEEA00A22C4277A006EC7E6 /* BrazeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommand.swift; sourceTree = "<group>"; };
 		CFEEA00B22C4277A006EC7E6 /* BrazeCommandRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommandRunner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,7 +158,6 @@
 				CFEEA00922C42730006EC7E6 /* Sources */,
 				4BAAED5622C5491B00613F58 /* Tests */,
 				CF5BE25B22C3F09A00D522E2 /* TealiumBraze */,
-				CFC1DF7222C447410062334B /* TealiumBrazeExample */,
 				CF5BE25A22C3F09A00D522E2 /* Products */,
 				CFEEA01022C433FF006EC7E6 /* Frameworks */,
 			);
@@ -200,23 +180,6 @@
 				CF5BE25D22C3F09A00D522E2 /* Info.plist */,
 			);
 			path = TealiumBraze;
-			sourceTree = "<group>";
-		};
-		CFC1DF7222C447410062334B /* TealiumBrazeExample */ = {
-			isa = PBXGroup;
-			children = (
-				CFC1DF9522C447CB0062334B /* AppDelegate.swift */,
-				CFC1DF8922C4477F0062334B /* EngagementViewController.swift */,
-				CFC1DF8A22C447810062334B /* EventViewController.swift */,
-				CFC1DF8722C4477C0062334B /* TealiumHelper.swift */,
-				CFC1DF8522C447790062334B /* UserViewController.swift */,
-				CFC1DF7522C447410062334B /* ViewController.swift */,
-				CFC1DF7A22C447420062334B /* Assets.xcassets */,
-				CFC1DF9722C447F30062334B /* LaunchScreen.storyboard */,
-				CFC1DF9822C447F50062334B /* Main.storyboard */,
-				CFC1DF7F22C447420062334B /* Info.plist */,
-			);
-			path = TealiumBrazeExample;
 			sourceTree = "<group>";
 		};
 		CFEEA00922C42730006EC7E6 /* Sources */ = {
@@ -388,9 +351,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFC1DF9A22C447F50062334B /* Main.storyboard in Resources */,
-				CFC1DF7B22C447420062334B /* Assets.xcassets in Resources */,
-				CFC1DF9922C447F50062334B /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,12 +400,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFC1DF9222C447830062334B /* EngagementViewController.swift in Sources */,
-				CFC1DF8E22C447830062334B /* UserViewController.swift in Sources */,
-				CFC1DF9022C447830062334B /* TealiumHelper.swift in Sources */,
-				CFC1DF9322C447830062334B /* EventViewController.swift in Sources */,
-				CFC1DF9622C447CB0062334B /* AppDelegate.swift in Sources */,
-				CFC1DF7622C447410062334B /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

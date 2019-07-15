@@ -1,0 +1,439 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		457FC62370756023429A087B /* Pods_TealiumBrazeExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1214A3A9D4F66752F13111 /* Pods_TealiumBrazeExample.framework */; };
+		4B4F10D022DD031000A1508B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4B4F10CF22DD031000A1508B /* Assets.xcassets */; };
+		4B4F10D322DD031000A1508B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B4F10D122DD031000A1508B /* LaunchScreen.storyboard */; };
+		4B4F10EB22DD044000A1508B /* EngagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10E522DD043F00A1508B /* EngagementViewController.swift */; };
+		4B4F10EC22DD044000A1508B /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10E622DD043F00A1508B /* EventViewController.swift */; };
+		4B4F10ED22DD044000A1508B /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10E722DD043F00A1508B /* UserViewController.swift */; };
+		4B4F10EE22DD044000A1508B /* TealiumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10E822DD044000A1508B /* TealiumHelper.swift */; };
+		4B4F10EF22DD044000A1508B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B4F10E922DD044000A1508B /* Main.storyboard */; };
+		4B4F10F122DD08AC00A1508B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10F022DD08AC00A1508B /* AppDelegate.swift */; };
+		4B4F10F722DD091C00A1508B /* BrazeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10F422DD091C00A1508B /* BrazeCommand.swift */; };
+		4B4F10F822DD091C00A1508B /* BrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10F522DD091C00A1508B /* BrazeCommandRunner.swift */; };
+		4B4F10F922DD091C00A1508B /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F10F622DD091C00A1508B /* DateConverter.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		248441B3B399D95B9FF29F56 /* Pods-TealiumBrazeExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumBrazeExample.release.xcconfig"; path = "Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample.release.xcconfig"; sourceTree = "<group>"; };
+		4B4F10C522DD030D00A1508B /* TealiumBrazeExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TealiumBrazeExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B4F10CF22DD031000A1508B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4B4F10D222DD031000A1508B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4B4F10D422DD031000A1508B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4B4F10E522DD043F00A1508B /* EngagementViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EngagementViewController.swift; sourceTree = "<group>"; };
+		4B4F10E622DD043F00A1508B /* EventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
+		4B4F10E722DD043F00A1508B /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
+		4B4F10E822DD044000A1508B /* TealiumHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TealiumHelper.swift; sourceTree = "<group>"; };
+		4B4F10E922DD044000A1508B /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		4B4F10F022DD08AC00A1508B /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4B4F10F422DD091C00A1508B /* BrazeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrazeCommand.swift; path = ../../Sources/BrazeCommand.swift; sourceTree = "<group>"; };
+		4B4F10F522DD091C00A1508B /* BrazeCommandRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrazeCommandRunner.swift; path = ../../Sources/BrazeCommandRunner.swift; sourceTree = "<group>"; };
+		4B4F10F622DD091C00A1508B /* DateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateConverter.swift; path = ../../Sources/DateConverter.swift; sourceTree = "<group>"; };
+		4C1214A3A9D4F66752F13111 /* Pods_TealiumBrazeExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TealiumBrazeExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E32FA300AE7FAB743F81991B /* Pods-TealiumBrazeExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumBrazeExample.debug.xcconfig"; path = "Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4B4F10C222DD030D00A1508B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				457FC62370756023429A087B /* Pods_TealiumBrazeExample.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4B4F10BC22DD030D00A1508B = {
+			isa = PBXGroup;
+			children = (
+				4B4F10F322DD090E00A1508B /* TealiumBraze */,
+				4B4F10C722DD030D00A1508B /* TealiumBrazeExample */,
+				4B4F10C622DD030D00A1508B /* Products */,
+				BC69A55FBC54FDB1B5AF5503 /* Pods */,
+				94EF21DD6B6FBCBD824DBF33 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		4B4F10C622DD030D00A1508B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4B4F10C522DD030D00A1508B /* TealiumBrazeExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4B4F10C722DD030D00A1508B /* TealiumBrazeExample */ = {
+			isa = PBXGroup;
+			children = (
+				4B4F10F022DD08AC00A1508B /* AppDelegate.swift */,
+				4B4F10E522DD043F00A1508B /* EngagementViewController.swift */,
+				4B4F10E622DD043F00A1508B /* EventViewController.swift */,
+				4B4F10E922DD044000A1508B /* Main.storyboard */,
+				4B4F10E822DD044000A1508B /* TealiumHelper.swift */,
+				4B4F10E722DD043F00A1508B /* UserViewController.swift */,
+				4B4F10CF22DD031000A1508B /* Assets.xcassets */,
+				4B4F10D122DD031000A1508B /* LaunchScreen.storyboard */,
+				4B4F10D422DD031000A1508B /* Info.plist */,
+			);
+			path = TealiumBrazeExample;
+			sourceTree = "<group>";
+		};
+		4B4F10F322DD090E00A1508B /* TealiumBraze */ = {
+			isa = PBXGroup;
+			children = (
+				4B4F10F422DD091C00A1508B /* BrazeCommand.swift */,
+				4B4F10F522DD091C00A1508B /* BrazeCommandRunner.swift */,
+				4B4F10F622DD091C00A1508B /* DateConverter.swift */,
+			);
+			path = TealiumBraze;
+			sourceTree = "<group>";
+		};
+		94EF21DD6B6FBCBD824DBF33 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4C1214A3A9D4F66752F13111 /* Pods_TealiumBrazeExample.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BC69A55FBC54FDB1B5AF5503 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E32FA300AE7FAB743F81991B /* Pods-TealiumBrazeExample.debug.xcconfig */,
+				248441B3B399D95B9FF29F56 /* Pods-TealiumBrazeExample.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4B4F10C422DD030D00A1508B /* TealiumBrazeExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B4F10D722DD031000A1508B /* Build configuration list for PBXNativeTarget "TealiumBrazeExample" */;
+			buildPhases = (
+				3940CD42854F036B861F90B0 /* [CP] Check Pods Manifest.lock */,
+				4B4F10C122DD030D00A1508B /* Sources */,
+				4B4F10C222DD030D00A1508B /* Frameworks */,
+				4B4F10C322DD030D00A1508B /* Resources */,
+				82A01838B1E59A91E9392D37 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TealiumBrazeExample;
+			productName = TealiumBrazeExample;
+			productReference = 4B4F10C522DD030D00A1508B /* TealiumBrazeExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4B4F10BD22DD030D00A1508B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Jonathan Wong";
+				TargetAttributes = {
+					4B4F10C422DD030D00A1508B = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
+					};
+				};
+			};
+			buildConfigurationList = 4B4F10C022DD030D00A1508B /* Build configuration list for PBXProject "TealiumBrazeExample" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4B4F10BC22DD030D00A1508B;
+			productRefGroup = 4B4F10C622DD030D00A1508B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4B4F10C422DD030D00A1508B /* TealiumBrazeExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4B4F10C322DD030D00A1508B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B4F10EF22DD044000A1508B /* Main.storyboard in Resources */,
+				4B4F10D322DD031000A1508B /* LaunchScreen.storyboard in Resources */,
+				4B4F10D022DD031000A1508B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3940CD42854F036B861F90B0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TealiumBrazeExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		82A01838B1E59A91E9392D37 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4B4F10C122DD030D00A1508B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B4F10F122DD08AC00A1508B /* AppDelegate.swift in Sources */,
+				4B4F10ED22DD044000A1508B /* UserViewController.swift in Sources */,
+				4B4F10F822DD091C00A1508B /* BrazeCommandRunner.swift in Sources */,
+				4B4F10F722DD091C00A1508B /* BrazeCommand.swift in Sources */,
+				4B4F10F922DD091C00A1508B /* DateConverter.swift in Sources */,
+				4B4F10EB22DD044000A1508B /* EngagementViewController.swift in Sources */,
+				4B4F10EE22DD044000A1508B /* TealiumHelper.swift in Sources */,
+				4B4F10EC22DD044000A1508B /* EventViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		4B4F10D122DD031000A1508B /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B4F10D222DD031000A1508B /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4B4F10D522DD031000A1508B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4B4F10D622DD031000A1508B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4B4F10D822DD031000A1508B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E32FA300AE7FAB743F81991B /* Pods-TealiumBrazeExample.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XC939GDC9P;
+				INFOPLIST_FILE = TealiumBrazeExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4B4F10D922DD031000A1508B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 248441B3B399D95B9FF29F56 /* Pods-TealiumBrazeExample.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XC939GDC9P;
+				INFOPLIST_FILE = TealiumBrazeExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4B4F10C022DD030D00A1508B /* Build configuration list for PBXProject "TealiumBrazeExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B4F10D522DD031000A1508B /* Debug */,
+				4B4F10D622DD031000A1508B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4B4F10D722DD031000A1508B /* Build configuration list for PBXNativeTarget "TealiumBrazeExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B4F10D822DD031000A1508B /* Debug */,
+				4B4F10D922DD031000A1508B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4B4F10BD22DD030D00A1508B /* Project object */;
+}
