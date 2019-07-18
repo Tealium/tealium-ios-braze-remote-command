@@ -101,12 +101,16 @@ class BrazeCommand {
         static let eventProperties = "event_properties"
         static let eventName = "event_name"
         static let productIdentifier = "product_id"
-        static let currency = "order_currency"
+        static let currency = "currency"
         static let price = "price"
         static let quantity = "quantity"
         static let purchaseProperties = "purchase_properties"
         static let facebookUser = "facebook_id"
         static let twitterUser = "twitter_user"
+        static let enableSDK = "enable_sdk"
+        static let sessionTimeout = "session_timeout"
+        static let disableLocation = "disable_location"
+        static let triggerIntervalSeconds = "trigger_interval_seconds"
     }
     
     enum AppboyCommand {
@@ -126,51 +130,14 @@ class BrazeCommand {
         static let incrementCustomAttribute = "incrementcustomattribute"
         static let logCustomEvent = "logcustomevent"
         static let logPurchase = "logpurchase"
+        static let enableSDK = "enable_sdk"
+        static let wipeData = "wipe_data"
     }
     
     enum AppboyOption {
-        static let ABKRequestProcessingPolicyOptionKey = "ABKRequestProcessingPolicyOptionKey"
-        static let ABKFlushIntervalOptionKey = "ABKFlushIntervalOptionKey"
         static let ABKDisableAutomaticLocationCollectionKey = "ABKDisableAutomaticLocationCollectionKey"
-        static let ABKIDFADelegateKey = "ABKIDFADelegateKey"
-        static let ABKAppboyEndpointDelegateKey = "ABKAppboyEndpointDelegateKey"
-        static let ABKURLDelegateKey = "ABKURLDelegateKey"
-        static let ABKInAppMessageControllerDelegateKey = "ABKInAppMessageControllerDelegateKey"
         static let ABKSessionTimeoutKey = "ABKSessionTimeoutKey"
         static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
-        static let ABKSDKFlavorKey = "ABKSDKFlavorKey"
-        static let ABKDeviceWhitelistKey = "ABKDeviceWhitelistKey"
-        static let ABKPushStoryAppGroupKey = "ABKPushStoryAppGroupKey"
-    }
-    
-    enum AppboyRequestProcessingPolicy: Int {
-        case ABKAutomaticRequestProcessing
-        case ABKAutomaticRequestProcessingExceptForDataFlush
-        case ABKManualRequestProcessing
-    }
-    
-    enum AppboyFeedbackSentResult: Int {
-        case ABKInvalidFeedback
-        case ABKNetworkIssue
-        case ABKFeedbackSentSuccessfully
-    }
-    
-    struct ABKDeviceOptions: OptionSet {
-        let rawValue: Int
-        
-        static let ABKDeviceOptionNone = ABKDeviceOptions(rawValue: 0)
-        static let ABKDeviceOptionResolution = ABKDeviceOptions(rawValue: 1 << 0)
-        static let ABKDeviceOptionCarrier = ABKDeviceOptions(rawValue: 1 << 1)
-        static let ABKDeviceOptionLocale = ABKDeviceOptions(rawValue: 1 << 2)
-        static let ABKDeviceOptionModel = ABKDeviceOptions(rawValue: 1 << 3)
-        static let ABKDeviceOptionOSVersion = ABKDeviceOptions(rawValue: 1 << 4)
-        static let ABKDeviceOptionIDFV = ABKDeviceOptions(rawValue: 1 << 5)
-        static let ABKDeviceOptionIDFA = ABKDeviceOptions(rawValue: 1 << 6)
-        static let ABKDeviceOptionPushEnabled = ABKDeviceOptions(rawValue: 1 << 7)
-        static let ABKDeviceOptionTimezone = ABKDeviceOptions(rawValue: 1 << 8)
-        static let ABKDeviceOptionPushAuthStatus = ABKDeviceOptions(rawValue: 1 << 9)
-        static let ABKDeviceOptionAdTrackingEnabled = ABKDeviceOptions(rawValue: 1 << 10)
-        static let ABKDeviceOptionAll = ABKDeviceOptions(rawValue: ~0)
     }
     
     let brazeCommandRunner: BrazeCommandRunnable
@@ -196,13 +163,23 @@ class BrazeCommand {
                 let lowercasedCommand = command.lowercased()
                 switch lowercasedCommand {
                 case AppboyCommand.initialize:
+                    var appboyOptions = [String: Any]()
                     guard let apiKey = payload[TealiumRemoteCommand.apiKey] as? String else {
                         return
                     }
-                    guard let launchOptions = payload[AppboyKey.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
-                        return self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil)
+                    if let sessionTimeout = payload[AppboyKey.sessionTimeout] as? Int {
+                        appboyOptions += [AppboyOption.ABKSessionTimeoutKey: sessionTimeout]
                     }
-                    self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions)
+                    if let disableLocation = payload[AppboyKey.disableLocation] as? Bool {
+                        appboyOptions += [AppboyOption.ABKDisableAutomaticLocationCollectionKey: disableLocation]
+                    }
+                    if let triggerInterval = payload[AppboyKey.triggerIntervalSeconds] as? Int {
+                        appboyOptions += [AppboyOption.ABKMinimumTriggerTimeIntervalKey: triggerInterval]
+                    }
+                    guard let launchOptions = payload[AppboyKey.launchOptions] as? [UIApplicationLaunchOptionsKey: Any] else {
+                        return self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
+                    }
+                    self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
                 case AppboyCommand.userIdentifier:
                     guard let userIdentifier = payload[AppboyKey.userIdentifier] as? String else {
                         return
@@ -308,21 +285,44 @@ class BrazeCommand {
                     }
                     self.brazeCommandRunner.setPushNotificationSubscriptionType(value: subscriptionType)
                 case AppboyCommand.logPurchase:
-                    guard let productIdentifier = payload[AppboyKey.productIdentifier] as? String,
-                        let currency = payload[AppboyKey.currency] as? String, let priceDouble = payload[AppboyKey.price] as? Double else {
+                    guard let productIdentifier = payload[AppboyKey.productIdentifier] as? [String],
+                        let currency = payload[AppboyKey.currency] as? String,
+                        let priceDouble = payload[AppboyKey.price] as? [Double] else {
+                            return
+                    }
+                    let prices = priceDouble.map { price in
+                        NSDecimalNumber(floatLiteral: price)
+                        
+                    }
+                    var products = (productId: productIdentifier, price: prices)
+                    
+                    if let quantity = payload[AppboyKey.quantity] as? [Int] {
+                        let unsignedQty = quantity.map { UInt($0) }
+                        var products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
+                        if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
+                            for (index, element) in products.productId.enumerated() {
+                                return self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
+                            }
+                        }
+                        for (index, element) in products.productId.enumerated() {
+                            return self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
+                        }
+                    } else if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
+                        for (index, element) in products.productId.enumerated() {
+                            self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
+                        }
+                    } else {
+                        for (index, element) in products.productId.enumerated() {
+                            self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index])
+                        }
+                    }
+                case AppboyCommand.enableSDK:
+                    guard let enabled = payload[AppboyKey.enableSDK] as? Bool else {
                         return
                     }
-                    let price = NSDecimalNumber(floatLiteral: priceDouble)
-                    if let quantity = payload[AppboyKey.quantity] as? UInt {
-                        if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
-                            return self.brazeCommandRunner.logPurchase(productIdentifier, currency: currency, price: price, quantity: quantity, properties: properties)
-                        }
-                        self.brazeCommandRunner.logPurchase(productIdentifier, currency: currency, price: price, quantity: quantity)
-                    } else if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
-                        self.brazeCommandRunner.logPurchase(productIdentifier, currency: currency, price: price, properties: properties)
-                    } else {
-                        self.brazeCommandRunner.logPurchase(productIdentifier, currency: currency, price: price)
-                    }
+                    self.brazeCommandRunner.enableSDK(enabled)
+                case AppboyCommand.wipeData:
+                    self.brazeCommandRunner.wipeData()
                 default:
                     break
                 }
@@ -354,7 +354,7 @@ class BrazeCommand {
 }
 
 extension TealiumRemoteCommand {
-    static let commandName = "command"
+    static let commandName = "command_name"
     static let apiKey = "api_key"
 }
 
