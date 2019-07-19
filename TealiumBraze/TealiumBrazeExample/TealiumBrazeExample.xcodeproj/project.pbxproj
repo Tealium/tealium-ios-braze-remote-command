@@ -55,7 +55,7 @@
 		4B4F10BC22DD030D00A1508B = {
 			isa = PBXGroup;
 			children = (
-				4B4F10F322DD090E00A1508B /* TealiumBraze */,
+				4B4F10F322DD090E00A1508B /* Sources */,
 				4B4F10C722DD030D00A1508B /* TealiumBrazeExample */,
 				4B4F10C622DD030D00A1508B /* Products */,
 				BC69A55FBC54FDB1B5AF5503 /* Pods */,
@@ -87,14 +87,15 @@
 			path = TealiumBrazeExample;
 			sourceTree = "<group>";
 		};
-		4B4F10F322DD090E00A1508B /* TealiumBraze */ = {
+		4B4F10F322DD090E00A1508B /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				4B4F10F422DD091C00A1508B /* BrazeCommand.swift */,
 				4B4F10F522DD091C00A1508B /* BrazeCommandRunner.swift */,
 				4B4F10F622DD091C00A1508B /* DateConverter.swift */,
 			);
-			path = TealiumBraze;
+			name = Sources;
+			path = ../Sources;
 			sourceTree = "<group>";
 		};
 		94EF21DD6B6FBCBD824DBF33 /* Frameworks */ = {
