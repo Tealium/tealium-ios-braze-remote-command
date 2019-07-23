@@ -7,5 +7,6 @@ target 'TealiumBrazeExample' do
 
   # Pods for TealiumBrazeExample
 	pod "tealium-swift"
-	pod "Appboy-iOS-SDK"
+  pod "Appboy-iOS-SDK"
+  pod "TealiumBraze"
 end

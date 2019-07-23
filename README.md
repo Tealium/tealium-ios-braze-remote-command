@@ -1,6 +1,6 @@
 # Braze Remote Commands
 
-An integration with Braze that enables tracking calls through Tealium's [track](https://docs.tealium.com/platforms/swift/track/) API to trigger the appropriate Braze API call.
+A [Braze](https://www.braze.com/docs/developer_guide/platform_integration_guides/ios/initial_sdk_setup/initial_sdk_setup/) integration with the [Tealium SDK](https://github.com/tealium/tealium-swift) that enables Braze API calls to be made through  Tealium's [track](https://docs.tealium.com/platforms/swift/track/) API.
 
 ## Getting Started
 
