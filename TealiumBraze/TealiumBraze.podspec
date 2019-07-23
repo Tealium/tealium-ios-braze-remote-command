@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
     # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.name         = "tealium-ios-braze-remote-command"
+    s.name         = "TealiumBraze"
     s.module_name  = "TealiumBraze"
     s.version      = "0.0.1"
     s.summary      = "Tealium Swift and Braze integration"
