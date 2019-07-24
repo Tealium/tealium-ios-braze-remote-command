@@ -15,13 +15,13 @@ Pod::Spec.new do |s|
     
     # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.authors            = { "Tealium Inc." => "tealium@tealium.com",
-        "jonwong-tealium"   => "jonathan.wong@tealium.com" }
-    s.social_media_url   = "http://twitter.com/tealium"
+        "jonathanswong"   => "jonathan.wong@tealium.com" }
+    s.social_media_url   = "https://twitter.com/tealium"
 
     # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.swift_version = "4.0"
     s.platform     = :ios, "9.0"
-    s.ios.deployment_target = "9.0"    
+    s.ios.deployment_target = "10.0"    
 
     # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.source       = { :git => "https://github.com/Tealium/tealium-ios-braze-remote-command.git", :tag => "#{s.version}" }
