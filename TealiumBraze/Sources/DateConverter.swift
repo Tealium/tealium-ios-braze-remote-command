@@ -12,18 +12,13 @@ class DateConverter {
     
     static let shared = DateConverter()
     
-    let iso8601DateFormatter: ISO8601DateFormatter = {
-        let dateFormatter = ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
-        
-        return dateFormatter
-    }()
-    
-    let dobDateFormatter: DateFormatter = {
-       let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-        
-        return dateFormatter
-    }()
+  let iso8601DateFormatter: ISO8601DateFormatter = {
+    if #available(iOS 11.0, *) {
+      return ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
+    } else {
+      return ISO8601DateFormatter([.withInternetDateTime])
+    }
+  }()
 }
 
 extension ISO8601DateFormatter {

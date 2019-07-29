@@ -6,7 +6,7 @@ target 'TealiumBrazeExample' do
   use_frameworks!
 
   # Pods for TealiumBrazeExample
-	pod "tealium-swift"
+  pod "tealium-swift"
   pod "Appboy-iOS-SDK"
   pod "TealiumBraze"
 end

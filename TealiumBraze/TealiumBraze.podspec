@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
     s.social_media_url   = "https://twitter.com/tealium"
 
     # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.swift_version = "4.0"
-    s.platform     = :ios, "9.0"
+    s.swift_version = "4.2"
+    s.platform     = :ios, "10.0"
     s.ios.deployment_target = "10.0"    
 
     # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -32,8 +32,5 @@ Pod::Spec.new do |s|
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.ios.dependency 'tealium-swift'
     s.ios.dependency 'Appboy-iOS-SDK'
-
-    # ――― Swift Version ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.swift_version = "4.2"
 
 end
