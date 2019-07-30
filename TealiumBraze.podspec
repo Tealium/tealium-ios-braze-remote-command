@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/Tealium/tealium-ios-braze-remote-command.git", :tag => "#{s.version}" }
 
     # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.ios.source_files      = "TealiumBraze/Sources/*.{swift}"
+    s.ios.source_files      = "Sources/*.{swift}"
 
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.ios.dependency 'tealium-swift'

@@ -8,5 +8,5 @@ target 'TealiumBrazeExample' do
   # Pods for TealiumBrazeExample
   pod "tealium-swift"
   pod "Appboy-iOS-SDK"
-  pod "TealiumBraze"
+  pod "TealiumBraze", :path => "/Users/christina/Desktop/work-repos/github/tealium-ios-braze-remote-command/TealiumBraze"
 end

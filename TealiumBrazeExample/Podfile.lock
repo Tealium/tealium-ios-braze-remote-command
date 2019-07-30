@@ -1,0 +1,59 @@
+PODS:
+  - Appboy-iOS-SDK (3.16.0):
+    - Appboy-iOS-SDK/UI (= 3.16.0)
+  - Appboy-iOS-SDK/ContentCards (3.16.0):
+    - Appboy-iOS-SDK/Core
+    - SDWebImage (~> 5.0)
+  - Appboy-iOS-SDK/Core (3.16.0)
+  - Appboy-iOS-SDK/Feedback (3.16.0):
+    - Appboy-iOS-SDK/Core
+  - Appboy-iOS-SDK/InAppMessage (3.16.0):
+    - Appboy-iOS-SDK/Core
+    - SDWebImage (~> 5.0)
+  - Appboy-iOS-SDK/NewsFeed (3.16.0):
+    - Appboy-iOS-SDK/Core
+    - SDWebImage (~> 5.0)
+  - Appboy-iOS-SDK/UI (3.16.0):
+    - Appboy-iOS-SDK/ContentCards
+    - Appboy-iOS-SDK/Core
+    - Appboy-iOS-SDK/Feedback
+    - Appboy-iOS-SDK/InAppMessage
+    - Appboy-iOS-SDK/NewsFeed
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
+  - tealium-swift (1.7.0):
+    - tealium-swift/TealiumFull (= 1.7.0)
+  - tealium-swift/TealiumFull (1.7.0):
+    - TealiumCrashReporter
+  - TealiumBraze (0.0.1):
+    - Appboy-iOS-SDK
+    - tealium-swift
+  - TealiumCrashReporter (1.3.5)
+
+DEPENDENCIES:
+  - Appboy-iOS-SDK
+  - tealium-swift
+  - TealiumBraze (from `/Users/christina/Desktop/work-repos/github/tealium-ios-braze-remote-command/TealiumBraze`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Appboy-iOS-SDK
+    - SDWebImage
+    - tealium-swift
+    - TealiumCrashReporter
+
+EXTERNAL SOURCES:
+  TealiumBraze:
+    :path: "/Users/christina/Desktop/work-repos/github/tealium-ios-braze-remote-command/TealiumBraze"
+
+SPEC CHECKSUMS:
+  Appboy-iOS-SDK: d03a590755734cd49045b3e1000c6c7c7ca0e2b0
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+  tealium-swift: 271869d650b6e30a225db56810b49ba3205fd825
+  TealiumBraze: 2547148fff05f287cd9bb7d5450907b92b0b2644
+  TealiumCrashReporter: 74fbdd3703a65740c04e983cd0b360c673199b53
+
+PODFILE CHECKSUM: 44dd7a3c06deab97ca00a35339aa7f885e878e69
+
+COCOAPODS: 1.7.4
