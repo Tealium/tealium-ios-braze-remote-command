@@ -150,9 +150,7 @@ public class BrazeCommand {
   }
   
   public func remoteCommand() -> TealiumRemoteCommand {
-    return TealiumRemoteCommand(commandId: "braze", description: "Braze Remote Command") { [weak self] response in
-      guard let self = self else { return }
-      
+    return TealiumRemoteCommand(commandId: "braze", description: "Braze Remote Command") { response in
       let payload = response.payload()
       guard let command = payload[AppboyKey.command] as? String else {
         return
