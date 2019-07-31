@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -52,7 +52,6 @@
 				9F1FBFA85AFF928AD3446874 /* Pods-TealiumBrazeExample.debug.xcconfig */,
 				8338513DF00ECC93DFB99940 /* Pods-TealiumBrazeExample.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -365,7 +364,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -384,7 +383,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tealium.TealiumBrazeExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
