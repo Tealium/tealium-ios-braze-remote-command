@@ -88,7 +88,7 @@ public protocol BrazeCommandNotifier {
   func pushAuthorization(fromUserNotificationCenter: Bool)
 }
 
-public struct BrazeCommandRunner: BrazeCommandRunnable, BrazeCommandNotifier {
+public class BrazeCommandRunner: BrazeCommandRunnable, BrazeCommandNotifier {
   
   public init() {
     

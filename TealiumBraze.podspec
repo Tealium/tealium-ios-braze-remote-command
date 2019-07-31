@@ -31,6 +31,6 @@ Pod::Spec.new do |s|
 
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.ios.dependency 'tealium-swift', '~> 1.7.1'
-    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.15.0'
+    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.16.0'
 
 end

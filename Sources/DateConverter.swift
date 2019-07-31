@@ -8,22 +8,22 @@
 
 import Foundation
 
-class DateConverter {
+public class DateConverter {
     
-    static let shared = DateConverter()
+    public static let shared = DateConverter()
     
-  let iso8601DateFormatter: ISO8601DateFormatter = {
-    if #available(iOS 11.0, *) {
-      return ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
-    } else {
-      return ISO8601DateFormatter([.withInternetDateTime])
-    }
-  }()
+    public let iso8601DateFormatter: ISO8601DateFormatter = {
+        if #available(iOS 11.0, *) {
+            return ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
+        } else {
+            return ISO8601DateFormatter([.withInternetDateTime])
+        }
+    }()
 }
 
 extension ISO8601DateFormatter {
     
-    convenience init(_ formatOptions: Options, timeZone: TimeZone? = nil) {
+    public convenience init(_ formatOptions: Options, timeZone: TimeZone? = nil) {
         self.init()
         self.formatOptions = formatOptions
         self.timeZone = timeZone ?? TimeZone(secondsFromGMT: 0)
