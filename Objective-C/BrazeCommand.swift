@@ -8,21 +8,37 @@
 
 import UIKit
 import Appboy_iOS_SDK
-import TealiumSwift
+import TealiumIOS
 
-
-public enum AppboyUserAttribute: String, CaseIterable {
-    case firstName = "first_name"
-    case lastName = "last_name"
+@objc
+public enum AppboyUserAttribute: Int, CaseIterable {
+    case firstName
+    case lastName
     case email
-    case dateOfBirth = "date_of_birth"
+    case dateOfBirth
     case country
     case language
-    case homeCity = "home_city"
+    case homeCity
     case phone
-    case avatarImageURL = "avatar_image_url"
+    case avatarImageURL
     case gender
+    
+    func description() -> String {
+        switch self {
+        case .firstName: return "first_name"
+        case .lastName: return "last_name"
+        case .email: return "email"
+        case .dateOfBirth: return "date_of_birth"
+        case .country: return "country"
+        case .language: return "language"
+        case .homeCity: return "home_city"
+        case .phone: return "phone"
+        case .avatarImageURL: return "avatar_image_url"
+        case .gender: return "gender"
+        }
+    }
 }
+
 
 public enum AppboyUserGenderType: Int {
     case male
@@ -63,7 +79,8 @@ public enum SocialMediaKey: String {
     case twitterId = "twitter_id"
 }
 
-public enum AppboyNotificationSubscription: String {
+@objc
+public enum AppboyNotificationSubscription: Int {
     case optedIn
     case subscribed
     case unsubscribed
@@ -82,7 +99,20 @@ public enum AppboyNotificationSubscription: String {
     }
 }
 
-public class BrazeCommand {
+public class BrazeCommand: NSObject {
+    
+    public static let appboyUserAttributes: [AppboyUserAttribute] = [
+    .firstName,
+    .lastName,
+    .email,
+    .dateOfBirth,
+    .country,
+    .language,
+    .homeCity,
+    .phone,
+    .avatarImageURL,
+    .gender
+    ]
     
     public enum AppboyKey {
         static let command = "command_name"
@@ -145,13 +175,17 @@ public class BrazeCommand {
     
     let brazeCommandRunner: BrazeCommandRunnable
     
+    @objc
     public init(brazeCommandRunner: BrazeCommandRunnable) {
         self.brazeCommandRunner = brazeCommandRunner
     }
     
-    public func remoteCommand() -> TealiumRemoteCommand {
-        return TealiumRemoteCommand(commandId: "braze", description: "Braze Remote Command") { response in
-            let payload = response.payload()
+    @objc
+    public func remoteCommand() -> TEALRemoteCommandResponseBlock {
+        return { response in
+            guard let payload = response?.requestPayload as? [String: Any] else {
+                return
+            }
             guard let command = payload[AppboyKey.command] as? String else {
                 return
             }
@@ -264,21 +298,21 @@ public class BrazeCommand {
                 guard let customAttributes = payload[AppboyKey.customArrayAttribute] as? [String: [Any]] else {
                     return
                 }
-                _ = customAttributes.compactMap { key, value in
+                customAttributes.forEach { key, value in
                     self.brazeCommandRunner.setCustomAttributeArrayWithKey(key, array: value)
                 }
             case AppboyCommand.appendCustomArrayAttribute:
                 guard let customAttributes = payload[AppboyKey.appendCustomArrayAttribute] as? [String: String] else {
                     return
                 }
-                _ = customAttributes.map { key, value in
+                customAttributes.forEach { key, value in
                     self.brazeCommandRunner.addToCustomAttributeArrayWithKey(key, value: value)
                 }
             case AppboyCommand.removeCustomArrayAttribute:
                 guard let customAttributes = payload[AppboyKey.removeCustomArrayAttribute] as? [String: String] else {
                     return
                 }
-                _ = customAttributes.map { key, value in
+                customAttributes.forEach { key, value in
                     self.brazeCommandRunner.removeFromCustomAttributeArrayWithKey(key, value: value)
                 }
             case AppboyCommand.emailNotification:

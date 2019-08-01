@@ -7,9 +7,16 @@
 //
 
 import UIKit
+import TealiumBraze
 
 class UserViewController: UIViewController {
 
+    let dobDateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        
+        return dateFormatter
+    }()
     
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
@@ -39,7 +46,7 @@ class UserViewController: UIViewController {
         data["gender"] = gender()
         data["home_city"] = homeCityTextField.text
         
-        if let birthday = DateConverter.shared.dobDateFormatter.date(from: birthdayTextField.text!) {
+        if let birthday = dobDateFormatter.date(from: birthdayTextField.text!) {
             let isoBirthday = DateConverter.shared.iso8601DateFormatter.string(from: birthday)
             data["birthday"] = isoBirthday
         }

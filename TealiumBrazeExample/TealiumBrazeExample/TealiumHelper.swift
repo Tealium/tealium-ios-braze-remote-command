@@ -8,6 +8,7 @@
 
 import Foundation
 import TealiumSwift
+import TealiumBraze
 
 class TealiumHelper {
     
