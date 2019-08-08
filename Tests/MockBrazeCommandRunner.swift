@@ -7,8 +7,8 @@
 //
 
 import Foundation
-@testable import RemoteCommandModules
-@testable import TealiumSwift
+@testable import TealiumBraze
+import TealiumRemoteCommands
 
 class MockBrazeCommandRunner: BrazeCommandRunnable {
 
@@ -33,6 +33,9 @@ class MockBrazeCommandRunner: BrazeCommandRunnable {
     var logPurchaseWithQuantityWithPropertiesCallCount = 0
     var registerPushTokenCallCount = 0
     var pushAuthorizationCallCount = 0
+    var disableCallCount = 0
+    var reEnableCallCount = 0
+    var wipeDataCallCount = 0
     
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
         initializeBrazeCallCount += 1
@@ -150,4 +153,19 @@ class MockBrazeCommandRunner: BrazeCommandRunnable {
         pushAuthorizationCallCount += 1
     }
     
+    func enableSDK(_ enabled: Bool) {
+        if enabled {
+            reEnableCallCount += 1
+        } else {
+            disableSDK()
+        }
+    }
+    
+    func disableSDK() {
+        disableCallCount += 1
+    }
+    
+    func wipeData() {
+        wipeDataCallCount += 1
+    }
 }

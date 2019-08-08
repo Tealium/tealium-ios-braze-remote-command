@@ -1,2 +1,2 @@
-github "tealium/tealium-swift"
+github "tealium/tealium-swift" "remote-commands"
 github "Appboy/appboy-ios-sdk"

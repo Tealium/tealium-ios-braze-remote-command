@@ -7,8 +7,8 @@
 //
 
 import XCTest
-@testable import RemoteCommandModules
-@testable import TealiumSwift
+@testable import TealiumBraze
+import TealiumRemoteCommands
 
 class BrazeCommandRunnerTests: XCTestCase {
     
@@ -27,7 +27,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testInitializeIsNotCalledWithoutApiKey() {
         let expect = expectation(description: "test initialize")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize",
                                                         ])?.description {
@@ -44,7 +44,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testInitializeCalledWithApiKey() {
         let expect = expectation(description: "test initialize")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize",
                                                         "api_key": "test123"
@@ -63,7 +63,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     func testChangeUserIdentifierCalledSuccess() {
         let expect = expectation(description: "test initialize")
         let userIdentifier = "tealium-ios-test-user"
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,useridentifier",
                                                         "user_id": userIdentifier
@@ -81,7 +81,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testChangeUserIdentifierNotCalled_userIdentifierKeyMissing() {
         let expect = expectation(description: "test user identifier")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,useridentifier"
             ])?.description {
@@ -102,7 +102,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,useralias",
                                       "user_alias": "test_alias"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -124,7 +124,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "user_alias": "test_alias",
                                       "alias_label": "alias_label"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -141,7 +141,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testLogCustomEventSuccess() {
         let expect = expectation(description: "test log event")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,lOGcustomEvent",
                                                         "event_name": "test_event"
@@ -159,7 +159,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testLogCustomEventNotCalled_logCustomEventNameMissing() {
         let expect = expectation(description: "test log event")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,lOGcustomEvent"
             ])?.description {
@@ -183,7 +183,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "key1": "value1",
                                         "key2": "value2",
                                         "key3": "value3"]]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -208,7 +208,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "key1": "value1",
                                         "key2": "value2",
                                         "key3": "value3"]]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -227,7 +227,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     func testUserAttributesSet() {
         let expect = expectation(description: "test user attribute set")
         let dateString = Date().iso8601String
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,useridentifier,userAttribute",
                                                         "first_name": "first_name_test",
@@ -254,7 +254,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     
     func testUserAttributesSetOnlyCallsAppboyUserAttributeKeys() {
         let expect = expectation(description: "test user attribute set")
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        payload: [
                                                         "command_name": "initialize,useridentifier,userAttribute",
                                                         "first_name": "first_name_test",
@@ -289,7 +289,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "likes": ["apple", "orange"]
                                         ]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -314,7 +314,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "likes": []
             ]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -339,7 +339,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "doublekey": 2.0,
                                         "stringkey": "test_string"]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -363,7 +363,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "doublekey": 2.0,
                                       "stringkey": "test_string"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -383,7 +383,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let config: [String: Any] = ["response_id": "1234"]
         let payload: [String: Any] = ["command_name": "initialize,unsetcustomattribute"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -404,7 +404,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,unsetcustomattribute",
                                       "unset_custom_attribute": "attribute_key"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -426,7 +426,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "increment_custom_attribute": ["key1": 1,
                                                               "key2": 2]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -451,7 +451,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "array_key3": ["value1", "value2", "value3"],
             ]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -476,7 +476,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "array_key3": "value3"
             ]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -501,7 +501,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                         "array_key3": "value3"
             ]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -522,7 +522,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,emailnotification",
                                       "email_notification": "optedIn"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -543,7 +543,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,emailnotification",
                                       "email_notification": "UN subscribed"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -564,7 +564,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,pushnotification",
                                       "push_notification": "subscribed"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -585,7 +585,7 @@ class BrazeCommandRunnerTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,pushnotification",
                                       "email_notification": "SUBscribed"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -607,7 +607,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "currency": "USD",
                                       "price": 12.34
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -629,7 +629,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "product_id": "123",
                                       "price": 12.34
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -651,7 +651,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "product_id": "123",
                                       "currency": "USD"
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -674,7 +674,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "currency": "USD",
                                       "price": [12.34]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -701,7 +701,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "price": [12.34],
                                       "quantity": [5]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -728,7 +728,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "price": [12.34],
                                       "purchase_properties": ["item1": 123]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -756,7 +756,7 @@ class BrazeCommandRunnerTests: XCTestCase {
                                       "quantity": [1, 2],
                                       "purchase_properties": ["item1": 123]
         ]
-        if let brazeResponse = HttpHelpers.httpRequest(commandId: "braze",
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
                                                        payload: payload
             )?.description {
@@ -773,4 +773,61 @@ class BrazeCommandRunnerTests: XCTestCase {
         }
         wait(for: [expect], timeout: 5.0)
     }
+    
+    func testDisableSDK() {
+        let expect = expectation(description: "sdk is disabled")
+        let config: [String: Any] = ["response_id": "1234"]
+        let payload: [String: Any] = ["command_name": "enable_sdk",
+                                      "enable_sdk": false]
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
+                                                           config: config,
+                                                           payload: payload
+            )?.description {
+            let remoteCommandResponse = TealiumRemoteCommandResponse(urlString: brazeResponse)
+            if let response = remoteCommandResponse {
+                remoteCommand.remoteCommandCompletion(response)
+                XCTAssertEqual(1, brazeCommandRunner.disableCallCount)
+            }
+            expect.fulfill()
+        }
+        wait(for: [expect], timeout: 3.0)
+    }
+    
+    func testReenableSDK() {
+        let expect = expectation(description: "sdk is reenabled")
+        let config: [String: Any] = ["response_id": "1234"]
+        let payload: [String: Any] = ["command_name": "enable_sdk",
+                                      "enable_sdk": true]
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
+                                                           config: config,
+                                                           payload: payload
+            )?.description {
+            let remoteCommandResponse = TealiumRemoteCommandResponse(urlString: brazeResponse)
+            if let response = remoteCommandResponse {
+                remoteCommand.remoteCommandCompletion(response)
+                XCTAssertEqual(1, brazeCommandRunner.reEnableCallCount)
+            }
+            expect.fulfill()
+        }
+        wait(for: [expect], timeout: 3.0)
+    }
+    
+    func testWipeData() {
+        let expect = expectation(description: "wipe data is called")
+        let config: [String: Any] = ["response_id": "1234"]
+        let payload: [String: Any] = ["command_name": "wipe_data"]
+        if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
+                                                           config: config,
+                                                           payload: payload
+            )?.description {
+            let remoteCommandResponse = TealiumRemoteCommandResponse(urlString: brazeResponse)
+            if let response = remoteCommandResponse {
+                remoteCommand.remoteCommandCompletion(response)
+                XCTAssertEqual(1, brazeCommandRunner.wipeDataCallCount)
+            }
+            expect.fulfill()
+        }
+        wait(for: [expect], timeout: 3.0)
+    }
+    
 }

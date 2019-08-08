@@ -8,7 +8,13 @@
 
 import Foundation
 import Appboy_iOS_SDK
+#if COCOAPODS
 import TealiumSwift
+#else
+import TealiumCore
+import TealiumTagManagement
+import TealiumRemoteCommands
+#endif
 
 
 public protocol TealiumApplication { }
