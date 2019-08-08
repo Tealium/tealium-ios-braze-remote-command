@@ -671,8 +671,8 @@ class BrazeCommandRunnerTests: XCTestCase {
         let config: [String: Any] = ["response_id": "1234"]
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
                                       "product_id": ["123"],
-                                      "currency": "USD",
-                                      "price": [12.34]
+                                      "order_currency": "USD",
+                                      "product_unit_price": [12.34]
         ]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                        config: config,
@@ -697,8 +697,8 @@ class BrazeCommandRunnerTests: XCTestCase {
         let config: [String: Any] = ["response_id": "1234"]
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
                                       "product_id": ["123"],
-                                      "currency": "USD",
-                                      "price": [12.34],
+                                      "order_currency": "USD",
+                                      "product_unit_price": [12.34],
                                       "quantity": [5]
         ]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
@@ -724,8 +724,8 @@ class BrazeCommandRunnerTests: XCTestCase {
         let config: [String: Any] = ["response_id": "1234"]
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
                                       "product_id": ["123"],
-                                      "currency": "USD",
-                                      "price": [12.34],
+                                      "order_currency": "USD",
+                                      "product_unit_price": [12.34],
                                       "purchase_properties": ["item1": 123]
         ]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
@@ -751,8 +751,8 @@ class BrazeCommandRunnerTests: XCTestCase {
         let config: [String: Any] = ["response_id": "1234"]
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
                                       "product_id": ["123", "456"],
-                                      "currency": "USD",
-                                      "price": [12.34, 1.99],
+                                      "order_currency": "USD",
+                                      "product_unit_price": [12.34, 1.99],
                                       "quantity": [1, 2],
                                       "purchase_properties": ["item1": 123]
         ]
@@ -777,7 +777,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     func testDisableSDK() {
         let expect = expectation(description: "sdk is disabled")
         let config: [String: Any] = ["response_id": "1234"]
-        let payload: [String: Any] = ["command_name": "enable_sdk",
+        let payload: [String: Any] = ["command_name": "enablesdk",
                                       "enable_sdk": false]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                            config: config,
@@ -796,7 +796,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     func testReenableSDK() {
         let expect = expectation(description: "sdk is reenabled")
         let config: [String: Any] = ["response_id": "1234"]
-        let payload: [String: Any] = ["command_name": "enable_sdk",
+        let payload: [String: Any] = ["command_name": "enablesdk",
                                       "enable_sdk": true]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                            config: config,
@@ -815,7 +815,7 @@ class BrazeCommandRunnerTests: XCTestCase {
     func testWipeData() {
         let expect = expectation(description: "wipe data is called")
         let config: [String: Any] = ["response_id": "1234"]
-        let payload: [String: Any] = ["command_name": "wipe_data"]
+        let payload: [String: Any] = ["command_name": "wipedata"]
         if let brazeResponse = HttpTestHelpers.httpRequest(commandId: "braze",
                                                            config: config,
                                                            payload: payload
