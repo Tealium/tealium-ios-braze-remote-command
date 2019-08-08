@@ -154,7 +154,7 @@
 				4B2C3E2722FCBF1F00DF91C4 /* Sources */,
 				4B2C3E2822FCBF1F00DF91C4 /* Frameworks */,
 				4B2C3E2922FCBF1F00DF91C4 /* Resources */,
-				4B82EA7122FCC5E9004BDA7A /* ShellScript */,
+				4B82EA7122FCC5E9004BDA7A /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -263,7 +263,7 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
-		4B82EA7122FCC5E9004BDA7A /* ShellScript */ = {
+		4B82EA7122FCC5E9004BDA7A /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -274,6 +274,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/TealiumRemoteCommands.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TealiumCore.framework",
 			);
+			name = Carthage;
 			outputFileListPaths = (
 			);
 			outputPaths = (
