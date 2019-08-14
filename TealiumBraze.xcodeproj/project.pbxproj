@@ -19,9 +19,9 @@
 		4B82EA7022FCC5B6004BDA7A /* Appboy_iOS_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B82EA6F22FCC5B6004BDA7A /* Appboy_iOS_SDK.framework */; };
 		4B82EA7222FCC7DE004BDA7A /* TealiumCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B82EA6722FCC499004BDA7A /* TealiumCore.framework */; };
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E022E626AF000A501B /* BrazeCommand.swift */; };
-		4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E122E626AF000A501B /* BrazeCommandRunner.swift */; };
-		4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E222E626AF000A501B /* DateConverter.swift */; };
+		4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Headers */ = {isa = PBXBuildFile; fileRef = 4BCDE3E022E626AF000A501B /* BrazeCommand.swift */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Headers */ = {isa = PBXBuildFile; fileRef = 4BCDE3E122E626AF000A501B /* BrazeCommandRunner.swift */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BCDE3E522E626AF000A501B /* DateConverter.swift in Headers */ = {isa = PBXBuildFile; fileRef = 4BCDE3E222E626AF000A501B /* DateConverter.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +141,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */,
+				4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Headers */,
+				4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Headers */,
+				4BCDE3E522E626AF000A501B /* DateConverter.swift in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,9 +303,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Sources */,
-				4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Sources */,
-				4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
