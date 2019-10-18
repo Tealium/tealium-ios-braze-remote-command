@@ -1,5 +1,5 @@
 //
-//  BrazeCommandRunnerTests.swift
+//  BrazeTrackerTests.swift
 //  RemoteCommandModulesTests
 //
 //  Created by Jonathan Wong on 11/16/18.
@@ -7,17 +7,17 @@
 //
 
 import XCTest
-@testable import RemoteCommandModules
+@testable import TealiumBraze
 @testable import TealiumSwift
 
-class BrazeCommandRunnerTests: XCTestCase {
+class BrazeTrackerTests: XCTestCase {
     
-    let brazeCommandRunner = MockBrazeCommandRunner()
+    let brazeTracker = MockBrazeTracker()
     var brazeCommand: BrazeCommand!
     var remoteCommand: TealiumRemoteCommand!
     
     override func setUp() {
-        brazeCommand = BrazeCommand(brazeCommandRunner: brazeCommandRunner)
+        brazeCommand = BrazeCommand(brazeTracker: brazeTracker)
         remoteCommand = brazeCommand.remoteCommand()
     }
     
@@ -35,7 +35,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.initializeBrazeCallCount)
+                XCTAssertEqual(0, brazeTracker.initializeBrazeCallCount)
             }
             expect.fulfill()
         }
@@ -53,7 +53,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.initializeBrazeCallCount)
+                XCTAssertEqual(1, brazeTracker.initializeBrazeCallCount)
             }
             expect.fulfill()
         }
@@ -72,7 +72,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.changeUserCallCount)
+                XCTAssertEqual(1, brazeTracker.changeUserCallCount)
             }
             expect.fulfill()
         }
@@ -89,7 +89,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.changeUserCallCount)
+                XCTAssertEqual(0, brazeTracker.changeUserCallCount)
             }
             expect.fulfill()
         }
@@ -110,7 +110,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.addAliasCallCount)
+                XCTAssertEqual(0, brazeTracker.addAliasCallCount)
             }
             expect.fulfill()
         }
@@ -132,7 +132,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.addAliasCallCount)
+                XCTAssertEqual(1, brazeTracker.addAliasCallCount)
             }
             expect.fulfill()
         }
@@ -150,7 +150,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.logCustomEventCallCount)
+                XCTAssertEqual(1, brazeTracker.logCustomEventCallCount)
             }
             expect.fulfill()
         }
@@ -167,7 +167,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logCustomEventCallCount)
+                XCTAssertEqual(0, brazeTracker.logCustomEventCallCount)
             }
             expect.fulfill()
         }
@@ -191,8 +191,8 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.logCustomEventCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logCustomEventWithPropertiesCallCount)
+                XCTAssertEqual(1, brazeTracker.logCustomEventCallCount)
+                XCTAssertEqual(0, brazeTracker.logCustomEventWithPropertiesCallCount)
             }
             expect.fulfill()
         }
@@ -216,8 +216,8 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logCustomEventCallCount)
-                XCTAssertEqual(1, brazeCommandRunner.logCustomEventWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logCustomEventCallCount)
+                XCTAssertEqual(1, brazeTracker.logCustomEventWithPropertiesCallCount)
             }
             expect.fulfill()
         }
@@ -245,7 +245,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(10, brazeCommandRunner.setUserAttributeCallCount)
+                XCTAssertEqual(10, brazeTracker.setUserAttributeCallCount)
             }
             expect.fulfill()
         }
@@ -272,7 +272,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(8, brazeCommandRunner.setUserAttributeCallCount)
+                XCTAssertEqual(8, brazeTracker.setUserAttributeCallCount)
             }
             expect.fulfill()
         }
@@ -297,7 +297,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.facebookUserCallCount)
+                XCTAssertEqual(1, brazeTracker.facebookUserCallCount)
             }
             expect.fulfill()
         }
@@ -322,7 +322,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.twitterUserCallCount)
+                XCTAssertEqual(1, brazeTracker.twitterUserCallCount)
             }
             expect.fulfill()
         }
@@ -347,7 +347,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(4, brazeCommandRunner.setCustomAttributeWithKeyCallCount)
+                XCTAssertEqual(4, brazeTracker.setCustomAttributeWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -371,7 +371,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.setCustomAttributeWithKeyCallCount)
+                XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -391,7 +391,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.setCustomAttributeWithKeyCallCount)
+                XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -412,7 +412,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.setCustomAttributeWithKeyCallCount)
+                XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -434,7 +434,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(2, brazeCommandRunner.incrementCustomUserAttributeCallCount)
+                XCTAssertEqual(2, brazeTracker.incrementCustomUserAttributeCallCount)
             }
             expect.fulfill()
         }
@@ -459,7 +459,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(3, brazeCommandRunner.setCustomAttributeWithKeyCallCount)
+                XCTAssertEqual(3, brazeTracker.setCustomAttributeWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -484,7 +484,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(3, brazeCommandRunner.addToCustomAttributeArrayWithKeyCallCount)
+                XCTAssertEqual(3, brazeTracker.addToCustomAttributeArrayWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -509,7 +509,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
 
-                XCTAssertEqual(3, brazeCommandRunner.removeFromCustomAttributeArrayWithKeyCallCount)
+                XCTAssertEqual(3, brazeTracker.removeFromCustomAttributeArrayWithKeyCallCount)
             }
             expect.fulfill()
         }
@@ -530,7 +530,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.setEmailNotificationSubscriptionTypeCallCount)
+                XCTAssertEqual(1, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
             }
             expect.fulfill()
         }
@@ -551,7 +551,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.setEmailNotificationSubscriptionTypeCallCount)
+                XCTAssertEqual(0, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
             }
             expect.fulfill()
         }
@@ -572,7 +572,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.setPushNotificationSubscriptionTypeCallCount)
+                XCTAssertEqual(1, brazeTracker.setPushNotificationSubscriptionTypeCallCount)
             }
             expect.fulfill()
         }
@@ -593,7 +593,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.setEmailNotificationSubscriptionTypeCallCount)
+                XCTAssertEqual(0, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
             }
             expect.fulfill()
         }
@@ -615,7 +615,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
             }
             expect.fulfill()
         }
@@ -637,7 +637,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
             }
             expect.fulfill()
         }
@@ -659,7 +659,7 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
             }
             expect.fulfill()
         }
@@ -682,10 +682,10 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(1, brazeCommandRunner.logPurchaseCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithPropertiesCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityWithPropertiesCallCount)
+                XCTAssertEqual(1, brazeTracker.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
             }
             expect.fulfill()
         }
@@ -709,10 +709,10 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
-                XCTAssertEqual(1, brazeCommandRunner.logPurchaseWithQuantityCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithPropertiesCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+                XCTAssertEqual(1, brazeTracker.logPurchaseWithQuantityCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
             }
             expect.fulfill()
         }
@@ -736,10 +736,10 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityCallCount)
-                XCTAssertEqual(1, brazeCommandRunner.logPurchaseWithPropertiesCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
+                XCTAssertEqual(1, brazeTracker.logPurchaseWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
             }
             expect.fulfill()
         }
@@ -764,10 +764,10 @@ class BrazeCommandRunnerTests: XCTestCase {
             if let response = remoteCommandResponse {
                 remoteCommand.remoteCommandCompletion(response)
                 
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithQuantityCallCount)
-                XCTAssertEqual(0, brazeCommandRunner.logPurchaseWithPropertiesCallCount)
-                XCTAssertEqual(1, brazeCommandRunner.logPurchaseWithQuantityWithPropertiesCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
+                XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
+                XCTAssertEqual(1, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
             }
             expect.fulfill()
         }

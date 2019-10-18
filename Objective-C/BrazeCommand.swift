@@ -173,11 +173,11 @@ public class BrazeCommand: NSObject {
         static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
     }
     
-    let brazeCommandRunner: BrazeCommandRunnable
+    let brazeTracker: BrazeTrackable
     
     @objc
-    public init(brazeCommandRunner: BrazeCommandRunnable) {
-        self.brazeCommandRunner = brazeCommandRunner
+    public init(brazeTracker: BrazeTrackable) {
+        self.brazeTracker = brazeTracker
     }
     
     @objc
@@ -218,21 +218,21 @@ public class BrazeCommand: NSObject {
                     appboyOptions[AppboyOption.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
                 }
                 guard let launchOptions = payload[AppboyKey.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
-                    return self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
+                    return self.brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
                 }
-                self.brazeCommandRunner.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
+                self.brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
             case AppboyCommand.userIdentifier:
                 guard let userIdentifier = payload[AppboyKey.userIdentifier] as? String else {
                     return
                 }
-                self.brazeCommandRunner.changeUser(userIdentifier)
+                self.brazeTracker.changeUser(userIdentifier)
             case AppboyCommand.userAlias:
                 guard let userAlias = payload[AppboyKey.userAlias] as? String, let label = payload[AppboyKey.aliasLabel] as? String else {
                     return
                 }
-                self.brazeCommandRunner.addAlias(userAlias, label: label)
+                self.brazeTracker.addAlias(userAlias, label: label)
             case AppboyCommand.userAttribute:
-                self.brazeCommandRunner.setUserAttributes(payload)
+                self.brazeTracker.setUserAttributes(payload)
             case AppboyCommand.facebookUser:
                 guard var facebookInfo = payload[AppboyKey.facebookUser] as? [String: Any] else {
                     return
@@ -243,7 +243,7 @@ public class BrazeCommand: NSObject {
                 if let facebookLikes = payload[SocialMediaKey.likes.rawValue] as? NSArray {
                     facebookInfo[SocialMediaKey.likes.rawValue] = facebookLikes
                 }
-                self.brazeCommandRunner.setFacebookUser(facebookInfo)
+                self.brazeTracker.setFacebookUser(facebookInfo)
             case AppboyCommand.twitterUser:
                 var twitterInfo = [String: Any]()
                 if let userDescription = payload[SocialMediaKey.userDescription.rawValue] as? String {
@@ -270,61 +270,61 @@ public class BrazeCommand: NSObject {
                 if let twitterId = payload[SocialMediaKey.twitterId.rawValue] as? Int {
                     twitterInfo[SocialMediaKey.twitterId.rawValue] = twitterId
                 }
-                self.brazeCommandRunner.setTwitterUser(twitterInfo)
+                self.brazeTracker.setTwitterUser(twitterInfo)
             case AppboyCommand.logCustomEvent:
                 guard let eventName = payload[AppboyKey.eventName] as? String else {
                     return
                 }
                 guard let properties = payload[AppboyKey.eventProperties] as? [String: Any] else {
-                    return self.brazeCommandRunner.logCustomEvent(eventName: eventName)
+                    return self.brazeTracker.logCustomEvent(eventName: eventName)
                 }
-                self.brazeCommandRunner.logCustomEvent(eventName, properties: properties)
+                self.brazeTracker.logCustomEvent(eventName, properties: properties)
             case AppboyCommand.setCustomAttribute:
                 guard let attributes = payload[AppboyKey.customAttribute] as? [String: Any] else {
                     return
                 }
-                self.brazeCommandRunner.setCustomAttributes(attributes)
+                self.brazeTracker.setCustomAttributes(attributes)
             case AppboyCommand.unsetCustomAttribute:
                 guard let attributeKey = payload[AppboyKey.unsetCustomAttribute] as? String else {
                     return
                 }
-                self.brazeCommandRunner.unsetCustomAttributeWithKey(attributeKey)
+                self.brazeTracker.unsetCustomAttributeWithKey(attributeKey)
             case AppboyCommand.incrementCustomAttribute:
                 guard let attributes = payload[AppboyKey.incrementCustomAttribute] as? [String: Int] else {
                     return
                 }
-                self.brazeCommandRunner.incrementCustomUserAttributes(attributes)
+                self.brazeTracker.incrementCustomUserAttributes(attributes)
             case AppboyCommand.setCustomArrayAttribute:
                 guard let customAttributes = payload[AppboyKey.customArrayAttribute] as? [String: [Any]] else {
                     return
                 }
                 customAttributes.forEach { key, value in
-                    self.brazeCommandRunner.setCustomAttributeArrayWithKey(key, array: value)
+                    self.brazeTracker.setCustomAttributeArrayWithKey(key, array: value)
                 }
             case AppboyCommand.appendCustomArrayAttribute:
                 guard let customAttributes = payload[AppboyKey.appendCustomArrayAttribute] as? [String: String] else {
                     return
                 }
                 customAttributes.forEach { key, value in
-                    self.brazeCommandRunner.addToCustomAttributeArrayWithKey(key, value: value)
+                    self.brazeTracker.addToCustomAttributeArrayWithKey(key, value: value)
                 }
             case AppboyCommand.removeCustomArrayAttribute:
                 guard let customAttributes = payload[AppboyKey.removeCustomArrayAttribute] as? [String: String] else {
                     return
                 }
                 customAttributes.forEach { key, value in
-                    self.brazeCommandRunner.removeFromCustomAttributeArrayWithKey(key, value: value)
+                    self.brazeTracker.removeFromCustomAttributeArrayWithKey(key, value: value)
                 }
             case AppboyCommand.emailNotification:
                 guard let emailNotification = payload[AppboyKey.emailNotification] as? String, let subscriptionType = AppboyNotificationSubscription.from(emailNotification) else {
                     return
                 }
-                self.brazeCommandRunner.setEmailNotificationSubscriptionType(value: subscriptionType)
+                self.brazeTracker.setEmailNotificationSubscriptionType(value: subscriptionType)
             case AppboyCommand.pushNotification:
                 guard let pushNotification = payload[AppboyKey.pushNotification] as? String, let subscriptionType = AppboyNotificationSubscription.from(pushNotification) else {
                     return
                 }
-                self.brazeCommandRunner.setPushNotificationSubscriptionType(value: subscriptionType)
+                self.brazeTracker.setPushNotificationSubscriptionType(value: subscriptionType)
             case AppboyCommand.logPurchase:
                 guard let productIdentifier = payload[AppboyKey.productIdentifier] as? [String],
                     let currency = payload[AppboyKey.currency] as? String,
@@ -342,28 +342,28 @@ public class BrazeCommand: NSObject {
                     var products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
                     if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
                         for (index, element) in products.productId.enumerated() {
-                            return self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
+                            return self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
                         }
                     }
                     for (index, element) in products.productId.enumerated() {
-                        return self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
+                        return self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
                     }
                 } else if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
                     for (index, element) in products.productId.enumerated() {
-                        self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
+                        self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
                     }
                 } else {
                     for (index, element) in products.productId.enumerated() {
-                        self.brazeCommandRunner.logPurchase(element, currency: currency, price: products.price[index])
+                        self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index])
                     }
                 }
             case AppboyCommand.enableSDK:
                 guard let enabled = payload[AppboyKey.enableSDK] as? Bool else {
                     return
                 }
-                self.brazeCommandRunner.enableSDK(enabled)
+                self.brazeTracker.enableSDK(enabled)
             case AppboyCommand.wipeData:
-                self.brazeCommandRunner.wipeData()
+                self.brazeTracker.wipeData()
             default:
                 break
             }
