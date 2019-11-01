@@ -8,7 +8,13 @@
 
 import UIKit
 import Appboy_iOS_SDK
+#if COCOAPODS
 import TealiumSwift
+#else
+import TealiumCore
+import TealiumTagManagement
+import TealiumRemoteCommands
+#endif
 
 
 public enum AppboyUserAttribute: String, CaseIterable {
@@ -298,14 +304,13 @@ public class BrazeCommand {
                         return
                 }
                 let prices = priceDouble.map { price in
-                    NSDecimalNumber(floatLiteral: price)
-                    
+                    NSDecimalNumber(floatLiteral: price) 
                 }
-                var products = (productId: productIdentifier, price: prices)
+                let products = (productId: productIdentifier, price: prices)
                 
                 if let quantity = payload[AppboyKey.quantity] as? [Int] {
                     let unsignedQty = quantity.map { UInt($0) }
-                    var products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
+                    let products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
                     if let properties = payload[AppboyKey.purchaseProperties] as? [AnyHashable: Any] {
                         for (index, element) in products.productId.enumerated() {
                             return self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)

@@ -1,2 +1,2 @@
 github "tealium/tealium-swift"
-github "Appboy/appboy-ios-sdk" == 3.16.0
+github "Appboy/appboy-ios-sdk" ~> 3.20
