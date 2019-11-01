@@ -7,10 +7,10 @@
 //
 
 import Foundation
-@testable import RemoteCommandModules
+@testable import TealiumBraze
 @testable import TealiumSwift
 
-class MockBrazeCommandRunner: BrazeCommandRunnable {
+class MockBrazeTracker: BrazeTrackable {
 
     var initializeBrazeCallCount = 0
     var changeUserCallCount = 0

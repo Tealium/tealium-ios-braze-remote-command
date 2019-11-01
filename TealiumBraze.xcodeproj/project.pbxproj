@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E022E626AF000A501B /* BrazeCommand.swift */; };
-		4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E122E626AF000A501B /* BrazeCommandRunner.swift */; };
+		4BCDE3E422E626AF000A501B /* BrazeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E122E626AF000A501B /* BrazeTracker.swift */; };
 		4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E222E626AF000A501B /* DateConverter.swift */; };
 		4BCDE3E922E6272D000A501B /* MockBrazeCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E722E6272D000A501B /* MockBrazeCommandRunner.swift */; };
-		4BCDE3EA22E6272D000A501B /* BrazeCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E822E6272D000A501B /* BrazeCommandRunnerTests.swift */; };
+		4BCDE3EA22E6272D000A501B /* BrazeTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E822E6272D000A501B /* BrazeTrackerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,10 +20,10 @@
 		4B8DB65F22E622E00074687A /* TealiumBraze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TealiumBraze.h; sourceTree = "<group>"; };
 		4B8DB66022E622E00074687A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BCDE3E022E626AF000A501B /* BrazeCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommand.swift; sourceTree = "<group>"; };
-		4BCDE3E122E626AF000A501B /* BrazeCommandRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommandRunner.swift; sourceTree = "<group>"; };
+		4BCDE3E122E626AF000A501B /* BrazeTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeTracker.swift; sourceTree = "<group>"; };
 		4BCDE3E222E626AF000A501B /* DateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 		4BCDE3E722E6272D000A501B /* MockBrazeCommandRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBrazeCommandRunner.swift; sourceTree = "<group>"; };
-		4BCDE3E822E6272D000A501B /* BrazeCommandRunnerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeCommandRunnerTests.swift; sourceTree = "<group>"; };
+		4BCDE3E822E6272D000A501B /* BrazeTrackerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeTrackerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				4BCDE3E022E626AF000A501B /* BrazeCommand.swift */,
-				4BCDE3E122E626AF000A501B /* BrazeCommandRunner.swift */,
+				4BCDE3E122E626AF000A501B /* BrazeTracker.swift */,
 				4BCDE3E222E626AF000A501B /* DateConverter.swift */,
 				4B8DB65F22E622E00074687A /* TealiumBraze.h */,
 				4B8DB66022E622E00074687A /* Info.plist */,
@@ -69,7 +69,7 @@
 		4BCDE3E622E626E4000A501B /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				4BCDE3E822E6272D000A501B /* BrazeCommandRunnerTests.swift */,
+				4BCDE3E822E6272D000A501B /* BrazeTrackerTests.swift */,
 				4BCDE3E722E6272D000A501B /* MockBrazeCommandRunner.swift */,
 			);
 			path = Tests;
@@ -154,8 +154,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BCDE3E422E626AF000A501B /* BrazeCommandRunner.swift in Sources */,
-				4BCDE3EA22E6272D000A501B /* BrazeCommandRunnerTests.swift in Sources */,
+				4BCDE3E422E626AF000A501B /* BrazeTracker.swift in Sources */,
+				4BCDE3EA22E6272D000A501B /* BrazeTrackerTests.swift in Sources */,
 				4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Sources */,
 				4BCDE3E922E6272D000A501B /* MockBrazeCommandRunner.swift in Sources */,
 				4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */,
