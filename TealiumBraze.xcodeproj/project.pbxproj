@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4B38232D236CDDBF00C3AE37 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B38232C236CDDBF00C3AE37 /* SDWebImage.framework */; };
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BCDE3E322E626AF000A501B /* BrazeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E022E626AF000A501B /* BrazeCommand.swift */; };
 		4BCDE3E422E626AF000A501B /* BrazeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E122E626AF000A501B /* BrazeTracker.swift */; };
@@ -62,7 +61,6 @@
 				4BF49182236CC19400CA46EC /* TealiumCore.framework in Frameworks */,
 				4BF49186236CC19C00CA46EC /* TealiumRemoteCommands.framework in Frameworks */,
 				4BF49184236CC19800CA46EC /* TealiumDelegate.framework in Frameworks */,
-				4B38232D236CDDBF00C3AE37 /* SDWebImage.framework in Frameworks */,
 				4BF49188236CC1AE00CA46EC /* TealiumTagManagement.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -252,7 +250,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/TealiumRemoteCommands.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TealiumDelegate.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TealiumTagManagement.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SDWebImage.framework",
 			);
 			name = Carthage;
 			outputFileListPaths = (
