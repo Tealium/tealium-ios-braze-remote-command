@@ -9,11 +9,11 @@
 import UIKit
 import Appboy_iOS_SDK
 #if COCOAPODS
-import TealiumSwift
+    import TealiumSwift
 #else
-import TealiumCore
-import TealiumTagManagement
-import TealiumRemoteCommands
+    import TealiumCore
+    import TealiumTagManagement
+    import TealiumRemoteCommands
 #endif
 
 
@@ -37,7 +37,7 @@ public enum AppboyUserGenderType: Int {
     case unknown
     case notApplicable
     case preferNotToSay
-    
+
     static func from(_ value: String) -> AppboyUserGenderType {
         let lowercasedGender = value.lowercased()
         if lowercasedGender == "male" {
@@ -73,7 +73,7 @@ public enum AppboyNotificationSubscription: String {
     case optedIn
     case subscribed
     case unsubscribed
-    
+
     static func from(_ value: String) -> AppboyNotificationSubscription? {
         let lowercasedSubscription = value.lowercased()
         if lowercasedSubscription == "optedin" {
@@ -89,7 +89,7 @@ public enum AppboyNotificationSubscription: String {
 }
 
 public class BrazeCommand {
-    
+
     public enum AppboyKey {
         static let command = "command_name"
         static let apiKey = "api_key"
@@ -119,9 +119,15 @@ public class BrazeCommand {
         static let enableSDK = "enable_sdk"
         static let sessionTimeout = "session_timeout"
         static let disableLocation = "disable_location"
+        static let enableGeofences = "enable_geofences"
         static let triggerIntervalSeconds = "trigger_interval_seconds"
+        static let latitude = "location_latitude"
+        static let longitude = "location_longitude"
+        static let horizontalAccuracy = "location_horizontal_accuracy"
+        static let altitude = "location_altitude"
+        static let verticalAccuracy = "location_vertical_accuracy"
     }
-    
+
     public enum AppboyCommand {
         static let initialize = "initialize"
         static let userIdentifier = "useridentifier"
@@ -139,38 +145,40 @@ public class BrazeCommand {
         static let incrementCustomAttribute = "incrementcustomattribute"
         static let logCustomEvent = "logcustomevent"
         static let logPurchase = "logpurchase"
+        static let setLastKnownLocation = "setlastknownlocation"
         static let enableSDK = "enablesdk"
         static let wipeData = "wipedata"
     }
-    
+
     public enum AppboyOption {
-        static let ABKDisableAutomaticLocationCollectionKey = "ABKDisableAutomaticLocationCollectionKey"
+        static let ABKEnableAutomaticLocationCollectionKey = "ABKEnableAutomaticLocationCollectionKey"
         static let ABKSessionTimeoutKey = "ABKSessionTimeoutKey"
         static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
+        static let ABKEnableGeofencesKey = "ABKEnableGeofencesKey"
     }
-    
+
     let brazeTracker: BrazeTrackable
-    
+
     public init(brazeTracker: BrazeTrackable) {
         self.brazeTracker = brazeTracker
     }
-    
+
     public func remoteCommand() -> TealiumRemoteCommand {
         return TealiumRemoteCommand(commandId: "braze", description: "Braze Remote Command") { response in
             let payload = response.payload()
             guard let command = payload[AppboyKey.command] as? String else {
                 return
             }
-            
+
             let commands = command.split(separator: ",")
             let brazeCommands = commands.map { command in
                 return command.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             }
-            
+
             self.parseCommands(brazeCommands, payload: payload)
         }
     }
-    
+
     public func parseCommands(_ commands: [String], payload: [String: Any]) {
         commands.forEach { command in
             let lowercasedCommand = command.lowercased()
@@ -184,7 +192,13 @@ public class BrazeCommand {
                     appboyOptions[AppboyOption.ABKSessionTimeoutKey] = sessionTimeout
                 }
                 if let disableLocation = payload[AppboyKey.disableLocation] as? Bool {
-                    appboyOptions[AppboyOption.ABKDisableAutomaticLocationCollectionKey] = disableLocation
+                    appboyOptions += [AppboyOption.ABKEnableAutomaticLocationCollectionKey: !disableLocation]
+                }
+                if let enableGeofences = payload[AppboyKey.enableGeofences] as? Bool {
+                    appboyOptions += [AppboyOption.ABKEnableGeofencesKey: enableGeofences]
+                    if enableGeofences {
+                        self.brazeTracker.logSingleLocation()
+                    }
                 }
                 if let triggerInterval = payload[AppboyKey.triggerIntervalSeconds] as? Int {
                     appboyOptions[AppboyOption.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
@@ -304,10 +318,10 @@ public class BrazeCommand {
                         return
                 }
                 let prices = priceDouble.map { price in
-                    NSDecimalNumber(floatLiteral: price) 
+                    NSDecimalNumber(floatLiteral: price)
                 }
                 let products = (productId: productIdentifier, price: prices)
-                
+
                 if let quantity = payload[AppboyKey.quantity] as? [Int] {
                     let unsignedQty = quantity.map { UInt($0) }
                     let products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
@@ -328,6 +342,18 @@ public class BrazeCommand {
                         self.brazeTracker.logPurchase(element, currency: currency, price: products.price[index])
                     }
                 }
+            case AppboyCommand.setLastKnownLocation:
+                guard let latitude = payload[AppboyKey.latitude] as? Double,
+                    let longitude = payload[AppboyKey.longitude] as? Double,
+                    let horizontalAccuracy = payload[AppboyKey.horizontalAccuracy] as? Double else {
+                        print("*** Tealium Remote Command Error - Braze: In order to set the user's last known location, you must provide latitude, longitude, and horizontal accuracy.")
+                        return
+                }
+                guard let altitude = payload[AppboyKey.altitude] as? Double,
+                    let verticalAccuracy = payload[AppboyKey.verticalAccuracy] as? Double else {
+                        return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy)
+                }
+                return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy, altitude: altitude, verticalAccuracy: verticalAccuracy)
             case AppboyCommand.enableSDK:
                 guard let enabled = payload[AppboyKey.enableSDK] as? Bool else {
                     return
@@ -340,7 +366,7 @@ public class BrazeCommand {
             }
         }
     }
-    
+
     public func setUserAttribute(value: AppboyUserGenderType) {
         // currently only one int type
         var gender: ABKUserGenderType
@@ -358,8 +384,8 @@ public class BrazeCommand {
         case .preferNotToSay:
             gender = ABKUserGenderType.preferNotToSay
         }
-        
+
         Appboy.sharedInstance()?.user.setGender(gender)
     }
-    
+
 }
