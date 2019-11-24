@@ -401,17 +401,3 @@ public class BrazeCommand {
 
 }
 
-//if let enableGeofences = payload[AppboyKey.enableGeofences] as? String,
-//                   let geofencesOption = Bool(enableGeofences) {
-//                   appboyOptions += [AppboyOption.ABKEnableGeofencesKey: geofencesOption]
-//                   if geofencesOption {
-//                       self.brazeTracker.logSingleLocation()
-//                   }
-//               } else if let enableGeofences = payload[AppboyKey.enableGeofences] as? Int {
-//                   let geofencesOption = enableGeofences == 1 ? true : false
-//                   appboyOptions += [AppboyOption.ABKEnableGeofencesKey: geofencesOption]
-//                   if geofencesOption {
-//                       self.brazeTracker.logSingleLocation()
-//                   }
-//               }
-
