@@ -6,7 +6,9 @@
 //  Copyright © 2019 Jonathan Wong. All rights reserved.
 //
 
+import XCTest
 import Foundation
+import TealiumRemoteCommands
 
 struct RemoteCommandResponsePayload: Codable {
     var config: [String: String]
@@ -53,4 +55,15 @@ class HttpTestHelpers {
         return nil
     }
     
+    class func createRemoteCommandResponse(commandId: String, payload: [String: Any]) -> TealiumRemoteCommandResponse? {
+        let responseDescription = httpRequestDescription(commandId: commandId, config: [:], payload: payload)
+        if let description = responseDescription {
+            return TealiumRemoteCommandResponse(urlString: description)
+        }
+        XCTFail("Could not create Remote Command Response description from stubs provided")
+        return nil
+    }
+    
 }
+
+

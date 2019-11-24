@@ -8,11 +8,11 @@
 
 import Foundation
 @testable import TealiumBraze
-//@testable import TealiumSwift
 
 class MockBrazeTracker: BrazeTrackable {
 
     var initializeBrazeCallCount = 0
+    var logSingleLocationCallCount = 0
     var changeUserCallCount = 0
     var setUserAttributeCallCount = 0
     var facebookUserCallCount = 0
@@ -31,6 +31,8 @@ class MockBrazeTracker: BrazeTrackable {
     var logPurchaseWithQuantityCallCount = 0
     var logPurchaseWithPropertiesCallCount = 0
     var logPurchaseWithQuantityWithPropertiesCallCount = 0
+    var setLastKnownLocationNoAltitudeVerticalAccuracyCallCount = 0
+    var setLastKnownLocationWithAltitudeVerticalAccuracyCallCount = 0
     var registerPushTokenCallCount = 0
     var pushAuthorizationCallCount = 0
     var disableCallCount = 0
@@ -43,6 +45,10 @@ class MockBrazeTracker: BrazeTrackable {
     
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
         initializeBrazeCallCount += 1
+    }
+    
+    func logSingleLocation() {
+        logSingleLocationCallCount += 1
     }
     
     func changeUser(_ userIdentifier: String) {
@@ -143,6 +149,14 @@ class MockBrazeTracker: BrazeTrackable {
     
     func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt, properties: [AnyHashable : Any]?) {
         logPurchaseWithQuantityWithPropertiesCallCount += 1
+    }
+    
+    func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double) {
+        setLastKnownLocationNoAltitudeVerticalAccuracyCallCount += 1
+    }
+
+    func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double, altitude: Double, verticalAccuracy: Double) {
+        setLastKnownLocationWithAltitudeVerticalAccuracyCallCount += 1
     }
     
     func registerPushToken(_ pushToken: String) {

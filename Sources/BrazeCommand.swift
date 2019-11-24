@@ -191,10 +191,10 @@ public class BrazeCommand {
                 if let sessionTimeout = payload[AppboyKey.sessionTimeout] as? Int {
                     appboyOptions[AppboyOption.ABKSessionTimeoutKey] = sessionTimeout
                 }
-                if let disableLocation = payload[AppboyKey.disableLocation] as? Bool {
+                if let disableLocation = convertToBool(payload[AppboyKey.disableLocation]) {
                     appboyOptions += [AppboyOption.ABKEnableAutomaticLocationCollectionKey: !disableLocation]
                 }
-                if let enableGeofences = payload[AppboyKey.enableGeofences] as? Bool {
+                if let enableGeofences = convertToBool(payload[AppboyKey.enableGeofences]) {
                     appboyOptions += [AppboyOption.ABKEnableGeofencesKey: enableGeofences]
                     if enableGeofences {
                         self.brazeTracker.logSingleLocation()
@@ -387,5 +387,31 @@ public class BrazeCommand {
 
         Appboy.sharedInstance()?.user.setGender(gender)
     }
+    
+    public func convertToBool<T>(_ value: T) -> Bool? {
+        if let string = value as? String,
+            let bool = Bool(string) {
+            return bool
+        } else if let int = value as? Int {
+            let bool = int == 1 ? true : false
+            return bool
+        }
+        return nil
+    }
 
 }
+
+//if let enableGeofences = payload[AppboyKey.enableGeofences] as? String,
+//                   let geofencesOption = Bool(enableGeofences) {
+//                   appboyOptions += [AppboyOption.ABKEnableGeofencesKey: geofencesOption]
+//                   if geofencesOption {
+//                       self.brazeTracker.logSingleLocation()
+//                   }
+//               } else if let enableGeofences = payload[AppboyKey.enableGeofences] as? Int {
+//                   let geofencesOption = enableGeofences == 1 ? true : false
+//                   appboyOptions += [AppboyOption.ABKEnableGeofencesKey: geofencesOption]
+//                   if geofencesOption {
+//                       self.brazeTracker.logSingleLocation()
+//                   }
+//               }
+
