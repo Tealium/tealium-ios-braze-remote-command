@@ -102,11 +102,9 @@ public protocol BrazeCommandNotifier {
     func pushAuthorization(fromUserNotificationCenter: Bool)
 }
 
-public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
+public class BrazeTracker: NSObject, BrazeTrackable, BrazeCommandNotifier {
     
-    public init() {
-        
-    }
+    override public init() { }
     
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
         Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions)
@@ -117,7 +115,7 @@ public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
     }
     
     public func logSingleLocation() {
-        Appboy.sharedInstance()?.locationManager.logSingleLocation()
+           Appboy.sharedInstance()?.locationManager.logSingleLocation()
     }
     
     public func changeUser(_ userIdentifier: String) {
@@ -337,5 +335,4 @@ public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
         Appboy.wipeDataAndDisableForAppRun()
     }
 }
-
 

@@ -63,6 +63,37 @@ class BrazeTrackerTests: XCTestCase {
         wait(for: [expect], timeout: 5.0)
     }
 
+    func testInitializeWithAppboyOptions() {
+        let expect = expectation(description: "test initialize with appboy options")
+        let payload: [String: Any] = [
+            "command_name": "initialize",
+            "api_key": "abc123",
+            "disable_location": "false",
+            "enable_geofences": "true",
+            "trigger_interval_seconds": 5.0,
+            "flush_interval": 12.0,
+            "request_processing_policy": 1,
+            "device_options": 10,
+            "push_story_identifier": "test.push.story.id",
+            "enable_advertiser_tracking": true,
+            "enable_deep_link_handling": true
+        ]
+        if let response = HttpTestHelpers.createRemoteCommandResponse(commandId: "braze", payload: payload) {
+            remoteCommand.remoteCommandCompletion(response)
+            expect.fulfill()
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKEnableGeofencesKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKFlushIntervalOptionKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKDeviceWhitelistKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKPushStoryAppGroupKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKIDFADelegateKey"]!)
+            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKURLDelegateKey"]!)
+        }
+        wait(for: [expect], timeout: 5.0)
+    }
+    
     func testChangeUserIdentifierCalledSuccess() {
         let expect = expectation(description: "test initialize")
         let userIdentifier = "tealium-ios-test-user"

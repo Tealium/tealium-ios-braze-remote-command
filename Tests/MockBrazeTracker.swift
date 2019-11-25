@@ -39,12 +39,56 @@ class MockBrazeTracker: BrazeTrackable {
     var reEnableCallCount = 0
     var wipeDataCallCount = 0
     
+    // Appboy Options
+    var appBoyOptionsCount = ["ABKRequestProcessingPolicyOptionKey": 0,
+                              "ABKFlushIntervalOptionKey": 0,
+                              "ABKIDFADelegateKey": 0,
+                              "ABKURLDelegateKey": 0,
+                              "ABKDeviceWhitelistKey": 0,
+                              "ABKEndpointKey": 0,
+                              "ABKSessionTimeoutKey": 0,
+                              "ABKEnableAutomaticLocationCollectionKey": 0,
+                              "ABKEnableGeofencesKey": 0,
+                              "ABKMinimumTriggerTimeIntervalKey": 0,
+                              "ABKPushStoryAppGroupKey": 0]
+    
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
         initializeBrazeCallCount += 1
     }
     
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
         initializeBrazeCallCount += 1
+        
+        guard let options = appboyOptions as? [String: Any] else { return }
+        
+        options.compactMapValues { _ in }.forEach {
+            switch $0.key {
+            case "ABKRequestProcessingPolicyOptionKey":
+                appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]! += 1
+                case "ABKFlushIntervalOptionKey":
+                appBoyOptionsCount["ABKFlushIntervalOptionKey"]! += 1
+                case "ABKIDFADelegateKey":
+                appBoyOptionsCount["ABKIDFADelegateKey"]! += 1
+                case "ABKURLDelegateKey":
+                appBoyOptionsCount["ABKURLDelegateKey"]! += 1
+                case "ABKEndpointKey":
+                appBoyOptionsCount["ABKEndpointKey"]! += 1
+                case "ABKSessionTimeoutKey":
+                appBoyOptionsCount["ABKSessionTimeoutKey"]! += 1
+                case "ABKEnableAutomaticLocationCollectionKey":
+                appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]! += 1
+                case "ABKEnableGeofencesKey":
+                appBoyOptionsCount["ABKEnableGeofencesKey"]! += 1
+                case "ABKMinimumTriggerTimeIntervalKey":
+                appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]! += 1
+                case "ABKPushStoryAppGroupKey":
+                appBoyOptionsCount["ABKPushStoryAppGroupKey"]! += 1
+                case "ABKDeviceWhitelistKey":
+                appBoyOptionsCount["ABKDeviceWhitelistKey"]! += 1
+                default:
+                    break
+            }
+        }
     }
     
     func logSingleLocation() {
