@@ -399,7 +399,8 @@ public class BrazeCommand {
                 return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude,
                                                                           longitude: longitude,
                                                                           horizontalAccuracy: horizontalAccuracy,
-                                                                          altitude: altitude, verticalAccuracy: verticalAccuracy)
+                                                                          altitude: altitude,
+                                                                          verticalAccuracy: verticalAccuracy)
             case AppboyCommand.enableSDK:
                 guard let enabled = payload[AppboyKey.enableSDK] as? Bool else {
                     return
@@ -439,7 +440,7 @@ public class BrazeCommand {
             let bool = Bool(string) {
             return bool
         } else if let int = value as? Int {
-            let bool = int == 1 ? true : false
+            let bool = (int == 1) ? true : false
             return bool
         }
         return nil
