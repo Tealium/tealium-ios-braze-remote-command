@@ -15,7 +15,8 @@ Pod::Spec.new do |s|
     
     # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.authors            = { "Tealium Inc." => "tealium@tealium.com",
-        "jonathanswong"   => "jonathan.wong@tealium.com" }
+        "jonathanswong"   => "jonathan.wong@tealium.com",
+        "christinasund"   => "christina.sund@tealium.com" }
     s.social_media_url   = "https://twitter.com/tealium"
 
     # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -30,7 +31,7 @@ Pod::Spec.new do |s|
     s.ios.source_files      = "Sources/*.{swift}"
 
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.ios.dependency 'tealium-swift', '~> 1.8.0'
+    s.ios.dependency 'tealium-swift'
     s.ios.dependency 'Appboy-iOS-SDK', '~> 3.20.4'
 
 end
