@@ -384,14 +384,22 @@ public class BrazeCommand {
                 guard let latitude = payload[AppboyKey.latitude] as? Double,
                     let longitude = payload[AppboyKey.longitude] as? Double,
                     let horizontalAccuracy = payload[AppboyKey.horizontalAccuracy] as? Double else {
-                        print("*** Tealium Remote Command Error - Braze: In order to set the user's last known location, you must provide latitude, longitude, and horizontal accuracy.")
+                        print("""
+                                *** Tealium Remote Command Error - Braze: In order to set the user's last known location,
+                                you must provide latitude, longitude, and horizontal accuracy.
+                              """)
                         return
                 }
                 guard let altitude = payload[AppboyKey.altitude] as? Double,
                     let verticalAccuracy = payload[AppboyKey.verticalAccuracy] as? Double else {
-                        return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy)
+                        return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude,
+                                                                                  longitude: longitude,
+                                                                                  horizontalAccuracy: horizontalAccuracy)
                 }
-                return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy, altitude: altitude, verticalAccuracy: verticalAccuracy)
+                return self.brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude,
+                                                                          longitude: longitude,
+                                                                          horizontalAccuracy: horizontalAccuracy,
+                                                                          altitude: altitude, verticalAccuracy: verticalAccuracy)
             case AppboyCommand.enableSDK:
                 guard let enabled = payload[AppboyKey.enableSDK] as? Bool else {
                     return
