@@ -202,7 +202,8 @@ public class BrazeCommand {
                 guard let apiKey = payload[AppboyKey.apiKey] as? String else {
                     return
                 }
-                if let requestProcessingPolicy = payload[AppboyKey.requestProcessingPolicy] as? Int, let processingPolicy = ABKRequestProcessingPolicy(rawValue: requestProcessingPolicy) {
+                if let requestProcessingPolicy = payload[AppboyKey.requestProcessingPolicy] as? Int,
+                    let processingPolicy = ABKRequestProcessingPolicy(rawValue: requestProcessingPolicy) {
                     appboyOptions[AppboyOption.ABKRequestProcessingPolicyOptionKey] = processingPolicy
                 }
                 if let flushInterval = payload[AppboyKey.flushInterval] as? Double {
