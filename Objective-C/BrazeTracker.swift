@@ -21,6 +21,9 @@ public protocol BrazeTrackable {
     
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?)
     
+    // MARK: Geofences
+    func logSingleLocation()
+    
     // MARK: User IDs
     func changeUser(_ userIdentifier: String)
     
@@ -68,9 +71,25 @@ public protocol BrazeTrackable {
     
     func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt)
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, properties: [AnyHashable: Any]?)
+    func logPurchase(_ productIdentifier: String,
+                     currency: String,
+                     price: NSDecimalNumber,
+                     properties: [AnyHashable: Any]?)
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt, properties: [AnyHashable: Any]?)
+    func logPurchase(_ productIdentifier: String,
+                     currency: String,
+                     price: NSDecimalNumber,
+                     quantity: UInt,
+                     properties: [AnyHashable: Any]?)
+    
+    // MARK: Location
+    func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double)
+
+    func setLastKnownLocationWithLatitude(latitude: Double,
+                                          longitude: Double,
+                                          horizontalAccuracy: Double,
+                                          altitude: Double,
+                                          verticalAccuracy: Double)
     
     // MARK: Enabling/Wiping
     func enableSDK(_ enable: Bool)
@@ -92,6 +111,10 @@ public class BrazeTracker: NSObject, BrazeTrackable, BrazeCommandNotifier {
     
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
         Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions)
+    }
+    
+    public func logSingleLocation() {
+        Appboy.sharedInstance()?.locationManager.logSingleLocation()
     }
     
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
@@ -272,12 +295,42 @@ public class BrazeTracker: NSObject, BrazeTrackable, BrazeCommandNotifier {
         Appboy.sharedInstance()?.logPurchase(productIdentifier, inCurrency: currency, atPrice: price, withQuantity: quantity)
     }
     
-    public func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, properties: [AnyHashable: Any]?) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier, inCurrency: currency, atPrice: price, withProperties: properties)
+    public func logPurchase(_ productIdentifier: String,
+                            currency: String,
+                            price: NSDecimalNumber,
+                            properties: [AnyHashable: Any]?) {
+        Appboy.sharedInstance()?.logPurchase(productIdentifier,
+                                             inCurrency: currency,
+                                             atPrice: price,
+                                             withProperties: properties)
     }
     
-    public func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt, properties: [AnyHashable: Any]?) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier, inCurrency: currency, atPrice: price, withQuantity: quantity, andProperties: properties)
+    public func logPurchase(_ productIdentifier: String,
+                            currency: String,
+                            price: NSDecimalNumber,
+                            quantity: UInt,
+                            properties: [AnyHashable: Any]?) {
+        Appboy.sharedInstance()?.logPurchase(productIdentifier,
+                                             inCurrency: currency,
+                                             atPrice: price,
+                                             withQuantity: quantity,
+                                             andProperties: properties)
+    }
+    
+    public func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double) {
+        Appboy.sharedInstance()?.user.setLastKnownLocationWithLatitude(latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy)
+    }
+
+    public func setLastKnownLocationWithLatitude(latitude: Double,
+                                                 longitude: Double,
+                                                 horizontalAccuracy: Double,
+                                                 altitude: Double,
+                                                 verticalAccuracy: Double) {
+        Appboy.sharedInstance()?.user.setLastKnownLocationWithLatitude(latitude,
+                                                                       longitude: longitude,
+                                                                       horizontalAccuracy: horizontalAccuracy,
+                                                                       altitude: altitude,
+                                                                       verticalAccuracy: verticalAccuracy)
     }
     
     public func registerPushToken(_ pushToken: String) {
