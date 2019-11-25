@@ -99,6 +99,20 @@ public enum AppboyNotificationSubscription: Int {
     }
 }
 
+public enum AppboyOption {
+    static let ABKRequestProcessingPolicyOptionKey = "ABKRequestProcessingPolicyOptionKey"
+    static let ABKFlushIntervalOptionKey = "ABKFlushIntervalOptionKey"
+    static let ABKEnableAutomaticLocationCollectionKey = "ABKEnableAutomaticLocationCollectionKey"
+    static let ABKEnableGeofencesKey = "ABKEnableGeofencesKey"
+    static let ABKIDFADelegateKey = "ABKIDFADelegateKey"
+    static let ABKEndpointKey = "ABKEndpointKey"
+    static let ABKURLDelegateKey = "ABKURLDelegateKey"
+    static let ABKSessionTimeoutKey = "ABKSessionTimeoutKey"
+    static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
+    static let ABKDeviceWhitelistKey = "ABKDeviceWhitelistKey"
+    static let ABKPushStoryAppGroupKey = "ABKPushStoryAppGroupKey"
+}
+
 public class BrazeCommand: NSObject {
 
     public static let appboyUserAttributes: [AppboyUserAttribute] = [
@@ -150,6 +164,13 @@ public class BrazeCommand: NSObject {
         static let horizontalAccuracy = "location_horizontal_accuracy"
         static let altitude = "location_altitude"
         static let verticalAccuracy = "location_vertical_accuracy"
+        static let requestProcessingPolicy = "request_processing_policy"
+        static let flushInterval = "flush_interval"
+        static let enableAdvertiserTracking = "enable_advertiser_tracking"
+        static let enableDeepLinkHandling = "enable_deep_link_handling"
+        static let customEndpoint = "custom_endpoint"
+        static let deviceOptions = "device_options"
+        static let pushStoryIdentifier = "push_story_identifier"
     }
 
     public enum AppboyCommand {
@@ -172,13 +193,6 @@ public class BrazeCommand: NSObject {
         static let setLastKnownLocation = "setlastknownlocation"
         static let enableSDK = "enablesdk"
         static let wipeData = "wipedata"
-    }
-
-    public enum AppboyOption {
-        static let ABKEnableAutomaticLocationCollectionKey = "ABKEnableAutomaticLocationCollectionKey"
-        static let ABKSessionTimeoutKey = "ABKSessionTimeoutKey"
-        static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
-        static let ABKEnableGeofencesKey = "ABKEnableGeofencesKey"
     }
 
     let brazeTracker: BrazeTrackable
@@ -216,11 +230,30 @@ public class BrazeCommand: NSObject {
                 guard let apiKey = payload[AppboyKey.apiKey] as? String else {
                     return
                 }
+                if let requestProcessingPolicy = payload[AppboyKey.requestProcessingPolicy] as? Int, let processingPolicy = ABKRequestProcessingPolicy(rawValue: requestProcessingPolicy) {
+                    appboyOptions[AppboyOption.ABKRequestProcessingPolicyOptionKey] = processingPolicy
+                }
+                if let flushInterval = payload[AppboyKey.flushInterval] as? Double {
+                    appboyOptions[AppboyOption.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
+                }
+                if let enableAdvertiserTracking = convertToBool(payload[AppboyKey.enableAdvertiserTracking]) {
+                    appboyOptions[AppboyOption.ABKIDFADelegateKey] = enableAdvertiserTracking
+                }
+                if let enableDeepLinkHandling = convertToBool(payload[AppboyKey.enableDeepLinkHandling]) {
+                    appboyOptions[AppboyOption.ABKURLDelegateKey] = enableDeepLinkHandling
+                }
+                if let deviceOptionsKey = payload[AppboyKey.deviceOptions] as? Int {
+                    let deviceOptions = ABKDeviceOptions(rawValue: UInt(deviceOptionsKey))
+                    appboyOptions[AppboyOption.ABKDeviceWhitelistKey] = deviceOptions
+                }
+                if let endpoint = payload[AppboyKey.customEndpoint] as? String {
+                    appboyOptions[AppboyOption.ABKEndpointKey] = endpoint
+                }
                 if let sessionTimeout = payload[AppboyKey.sessionTimeout] as? Int {
                     appboyOptions[AppboyOption.ABKSessionTimeoutKey] = sessionTimeout
                 }
                 if let disableLocation = convertToBool(payload[AppboyKey.disableLocation]) {
-                    appboyOptions[AppboyOption.ABKEnableAutomaticLocationCollectionKey] =  !disableLocation
+                    appboyOptions[AppboyOption.ABKEnableAutomaticLocationCollectionKey] = !disableLocation
                 }
                 if let enableGeofences = convertToBool(payload[AppboyKey.enableGeofences]) {
                     appboyOptions[AppboyOption.ABKEnableGeofencesKey] = enableGeofences
@@ -230,6 +263,9 @@ public class BrazeCommand: NSObject {
                 }
                 if let triggerInterval = payload[AppboyKey.triggerIntervalSeconds] as? Int {
                     appboyOptions[AppboyOption.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
+                }
+                if let pushStoryIdentifier = payload[AppboyKey.pushStoryIdentifier] as? String {
+                    appboyOptions[AppboyOption.ABKPushStoryAppGroupKey] = pushStoryIdentifier
                 }
                 guard let launchOptions = payload[AppboyKey.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
                     return self.brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)

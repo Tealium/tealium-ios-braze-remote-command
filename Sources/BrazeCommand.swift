@@ -239,7 +239,6 @@ public class BrazeCommand {
                 if let pushStoryIdentifier = payload[AppboyKey.pushStoryIdentifier] as? String {
                     appboyOptions[AppboyOption.ABKPushStoryAppGroupKey] = pushStoryIdentifier
                 }
-                
                 guard let launchOptions = payload[AppboyKey.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
                     return self.brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
                 }
