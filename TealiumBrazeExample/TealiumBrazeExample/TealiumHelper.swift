@@ -22,7 +22,7 @@ class TealiumHelper {
     static var universalData = [String: Any]()
     
     private init() {
-        config.setLogLevel(logLevel: .verbose)
+        config.setLogLevel(.verbose)
         
         let modulesList = TealiumModulesList(isWhitelist: false,
                                              moduleNames: ["autotracking",
@@ -33,8 +33,8 @@ class TealiumHelper {
             guard let remoteCommands = self.tealium?.remoteCommands() else {
                 return
             }
-            let brazeCommandRunner = BrazeCommandRunner()
-            let brazeCommand = BrazeCommand(brazeCommandRunner: brazeCommandRunner)
+            let brazeTracker = BrazeTracker()
+            let brazeCommand = BrazeCommand(brazeTracker: brazeTracker)
             let brazeRemoteCommand = brazeCommand.remoteCommand()
             remoteCommands.add(brazeRemoteCommand)
         }

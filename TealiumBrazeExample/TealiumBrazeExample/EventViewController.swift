@@ -64,4 +64,12 @@ class EventViewController: UIViewController {
         purchaseInfo["price"] = 1.99
         TealiumHelper.track(title: "log_purchase", data: purchaseInfo)
     }
+    
+    @IBAction func setLastKnownLocation(sender: UIButton) {
+        var locationInfo = [String: Any]()
+        locationInfo["latitude"] = 32.715736
+        locationInfo["longitude"] = -117.161087
+        locationInfo["horizontal_accuracy"] = 99.00
+        TealiumHelper.track(title: "set_location", data: locationInfo)
+    }
 }
