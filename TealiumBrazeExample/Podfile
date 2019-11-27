@@ -7,4 +7,5 @@ target 'TealiumBrazeExample' do
 
   # Pods for TealiumBrazeExample
   pod "TealiumBraze", "~> 0.0.5"
+  
 end
