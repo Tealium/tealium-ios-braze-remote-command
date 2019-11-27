@@ -6,5 +6,6 @@ target 'TealiumBrazeExample' do
   use_frameworks!
 
   # Pods for TealiumBrazeExample
-  pod "TealiumBraze"
+  pod "TealiumBraze", "~> 0.0.5"
+  
 end
