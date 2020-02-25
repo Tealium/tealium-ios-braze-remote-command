@@ -24,7 +24,7 @@ class TealiumHelper {
     private init() {
         config.logLevel = .verbose
         config.shouldUseRemotePublishSettings = false
-        config.batchingEnabled = false
+        
         tealium = Tealium(config: config) { responses in
             guard let remoteCommands = self.tealium?.remoteCommands() else {
                 return
