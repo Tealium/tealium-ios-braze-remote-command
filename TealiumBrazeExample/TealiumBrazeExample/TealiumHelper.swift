@@ -22,13 +22,9 @@ class TealiumHelper {
     static var universalData = [String: Any]()
     
     private init() {
-        config.setLogLevel(.verbose)
-        
-        let modulesList = TealiumModulesList(isWhitelist: false,
-                                             moduleNames: ["autotracking",
-                                                           "collect",
-                                                           "consentmanager"])
-        config.setModulesList(modulesList)
+        config.logLevel = .verbose
+        config.shouldUseRemotePublishSettings = false
+        config.batchingEnabled = false
         tealium = Tealium(config: config) { responses in
             guard let remoteCommands = self.tealium?.remoteCommands() else {
                 return
