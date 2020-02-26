@@ -35,6 +35,6 @@ Pod::Spec.new do |s|
     s.ios.dependency 'tealium-swift/TealiumRemoteCommands'
     s.ios.dependency 'tealium-swift/TealiumDelegate'
     s.ios.dependency 'tealium-swift/TealiumTagManagement'
-    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.20.4'
+    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.21.3'
 
 end
