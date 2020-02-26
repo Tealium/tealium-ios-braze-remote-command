@@ -118,11 +118,15 @@ public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
     public init() { }
     
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
-        Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions)
+        DispatchQueue.main.async {
+            Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions)
+        }
     }
     
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
-        Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
+        DispatchQueue.main.async {
+            Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
+        }
     }
     
     public func logSingleLocation() {
