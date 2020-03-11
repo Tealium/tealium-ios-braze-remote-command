@@ -98,7 +98,7 @@ public protocol BrazeTrackable {
 }
 
 public protocol BrazeCommandNotifier {
-    func registerPushToken(_ pushToken: String)
+    func registerDeviceToken(_ deviceToken: Data)
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)
     
@@ -333,8 +333,8 @@ public class BrazeTracker: NSObject, BrazeTrackable, BrazeCommandNotifier {
                                                                        verticalAccuracy: verticalAccuracy)
     }
     
-    public func registerPushToken(_ pushToken: String) {
-        Appboy.sharedInstance()?.registerPushToken(pushToken)
+    public func registerDeviceToken(_ deviceToken: Data) {
+        Appboy.sharedInstance()?.registerDeviceToken(deviceToken)
     }
     
     public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
