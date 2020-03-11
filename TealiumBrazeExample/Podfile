@@ -6,7 +6,7 @@ target 'TealiumBrazeExample' do
   use_frameworks!
 
   # Pods for TealiumBrazeExample
-  pod "TealiumBraze", "~> 0.0.6"
+  pod "TealiumBraze", "~> 0.0.7"
   pod 'tealium-swift/TealiumLogger'
   pod 'tealium-swift/TealiumAppData'
   pod 'tealium-swift/TealiumDeviceData'
