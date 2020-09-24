@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3X4-F0-9RA">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3X4-F0-9RA">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xIM-oG-RWP">
+                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xIM-oG-RWP">
                                 <rect key="frame" x="362" y="44" width="36" height="30"/>
                                 <state key="normal" title="Send"/>
                                 <connections>
@@ -95,6 +95,7 @@
                                 </subviews>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="abu-MP-CIH" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="9lb-3W-apW"/>
@@ -106,7 +107,6 @@
                             <constraint firstItem="Dib-Gm-vb9" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="qkM-ZZ-ztj"/>
                             <constraint firstItem="abu-MP-CIH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tax-nx-WqR"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="User" id="szW-CG-84e"/>
                     <connections>
@@ -187,13 +187,13 @@
                                         <rect key="frame" x="0.0" y="192" width="382" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5o9-Zy-fkY">
-                                                <rect key="frame" x="0.0" y="0.0" width="41" height="31"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="40.666666666666664" height="31"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Klg-Cv-aS7">
-                                                <rect key="frame" x="110" y="0.0" width="272" height="32"/>
+                                                <rect key="frame" x="109.66666666666666" y="0.0" width="272.33333333333337" height="32"/>
                                                 <segments>
                                                     <segment title="Unsubscribed"/>
                                                     <segment title="Subscribed"/>
@@ -206,13 +206,13 @@
                                         <rect key="frame" x="0.0" y="285" width="382" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="Push" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="chp-9h-2nu">
-                                                <rect key="frame" x="0.0" y="0.0" width="38.333333333333336" height="20.333333333333332"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="38" height="20.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="gQw-QJ-7es">
-                                                <rect key="frame" x="109.33333333333334" y="0.0" width="272.66666666666663" height="32"/>
+                                                <rect key="frame" x="109" y="0.0" width="273" height="32"/>
                                                 <segments>
                                                     <segment title="Unsubscribed"/>
                                                     <segment title="Subscribed"/>
@@ -223,7 +223,7 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVQ-Ke-WTz">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVQ-Ke-WTz">
                                 <rect key="frame" x="362" y="44" width="36" height="30"/>
                                 <state key="normal" title="Send"/>
                                 <connections>
@@ -231,6 +231,7 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="XGw-5Y-U2t"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Ews-YP-hj8" firstAttribute="centerX" secondItem="Eoq-wf-UN9" secondAttribute="centerX" id="4nT-N6-IRU"/>
@@ -241,7 +242,6 @@
                             <constraint firstItem="Ews-YP-hj8" firstAttribute="leading" secondItem="XGw-5Y-U2t" secondAttribute="leading" constant="16" id="JSW-79-DAI"/>
                             <constraint firstItem="EVQ-Ke-WTz" firstAttribute="top" secondItem="XGw-5Y-U2t" secondAttribute="top" id="MD6-a6-Vyz"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="XGw-5Y-U2t"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Engagement" id="fGo-64-4WP"/>
                     <connections>
@@ -250,6 +250,7 @@
                         <outlet property="facebookUserTextField" destination="4ko-2G-zfK" id="HeX-lF-2Qi"/>
                         <outlet property="pushSegmentedControl" destination="gQw-QJ-7es" id="Mgf-yu-aMs"/>
                         <outlet property="twitterIdTextField" destination="I6r-MF-oXf" id="4is-su-nh0"/>
+                        <outlet property="twitterNameTextField" destination="I6r-MF-oXf" id="4uj-jv-OgO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wpC-1e-gdt" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -267,49 +268,49 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="26" translatesAutoresizingMaskIntoConstraints="NO" id="h7P-pY-Gdm">
                                 <rect key="frame" x="108" y="265" width="198" height="366"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPP-Wg-k6Y">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPP-Wg-k6Y">
                                         <rect key="frame" x="0.0" y="0.0" width="198" height="30"/>
                                         <state key="normal" title="Log Event"/>
                                         <connections>
                                             <action selector="logEvent:" destination="1to-9j-H1z" eventType="touchUpInside" id="bLo-9Z-iPx"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5t4-hb-Et5">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5t4-hb-Et5">
                                         <rect key="frame" x="0.0" y="56" width="198" height="30"/>
                                         <state key="normal" title="Log Event With Properties"/>
                                         <connections>
                                             <action selector="logEventWithProperties:" destination="1to-9j-H1z" eventType="touchUpInside" id="UiC-WW-0U2"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0aH-sk-WXr">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0aH-sk-WXr">
                                         <rect key="frame" x="0.0" y="112" width="198" height="30"/>
                                         <state key="normal" title="Set Custom Attributes"/>
                                         <connections>
                                             <action selector="setCustomAttributes:" destination="1to-9j-H1z" eventType="touchUpInside" id="kIC-2B-6Hu"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uHE-Dm-8RO" userLabel="Unset Custom Attributes">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uHE-Dm-8RO" userLabel="Unset Custom Attributes">
                                         <rect key="frame" x="0.0" y="168" width="198" height="30"/>
                                         <state key="normal" title="Unset Custom Attributes"/>
                                         <connections>
                                             <action selector="unsetCustomAttributes:" destination="1to-9j-H1z" eventType="touchUpInside" id="cfu-u8-uC7"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9a-g9-xg8">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9a-g9-xg8">
                                         <rect key="frame" x="0.0" y="224" width="198" height="30"/>
                                         <state key="normal" title="Increment Custom Attributes"/>
                                         <connections>
                                             <action selector="incrementCustomAttributes:" destination="1to-9j-H1z" eventType="touchUpInside" id="Zcy-WC-Qbe"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sk3-fp-0zh">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sk3-fp-0zh">
                                         <rect key="frame" x="0.0" y="280" width="198" height="30"/>
                                         <state key="normal" title="Log Purchase"/>
                                         <connections>
                                             <action selector="logPurchase:" destination="1to-9j-H1z" eventType="touchUpInside" id="2aI-pd-axQ"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lOg-2M-QMv">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lOg-2M-QMv">
                                         <rect key="frame" x="0.0" y="336" width="198" height="30"/>
                                         <state key="normal" title="Set User Location"/>
                                         <connections>
@@ -319,12 +320,12 @@
                                 </subviews>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="Hho-L2-Aw3"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="h7P-pY-Gdm" firstAttribute="centerX" secondItem="jBs-mE-f9q" secondAttribute="centerX" id="iVF-Bd-h1s"/>
                             <constraint firstItem="h7P-pY-Gdm" firstAttribute="centerY" secondItem="jBs-mE-f9q" secondAttribute="centerY" id="oag-jR-QAF"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Hho-L2-Aw3"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Events" id="fCx-1r-XiM"/>
                 </viewController>

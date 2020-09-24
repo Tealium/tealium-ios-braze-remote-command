@@ -1,6 +1,6 @@
 //
 //  MockBrazeTracker.swift
-//  RemoteCommandModulesTests
+//  TealiumBrazeTests
 //
 //  Created by Jonathan Wong on 11/16/18.
 //  Copyright © 2018 Tealium. All rights reserved.

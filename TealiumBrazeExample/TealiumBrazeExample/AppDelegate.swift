@@ -3,7 +3,7 @@
 //  TealiumBrazeExample
 //
 //  Created by Jonathan Wong on 7/23/19.
-//  Copyright © 2019 Jonathan Wong. All rights reserved.
+//  Copyright © 2019 Tealium. All rights reserved.
 //
 
 import UIKit

@@ -1,14 +1,16 @@
 //
 //  HttpTestHelpers.swift
-//  TealiumBraze
+//  TealiumBrazeTests
 //
 //  Created by Jonathan Wong on 8/8/19.
-//  Copyright © 2019 Jonathan Wong. All rights reserved.
+//  Copyright © 2019 Tealium. All rights reserved.
 //
 
-import XCTest
 import Foundation
-import TealiumRemoteCommands
+#if COCOAPODS
+#else
+    import TealiumRemoteCommands
+#endif
 
 struct RemoteCommandResponsePayload: Codable {
     var config: [String: String]
@@ -55,15 +57,18 @@ class HttpTestHelpers {
         return nil
     }
     
-    class func createRemoteCommandResponse(commandId: String, payload: [String: Any]) -> TealiumRemoteCommandResponse? {
-        let responseDescription = httpRequestDescription(commandId: commandId, config: [:], payload: payload)
-        if let description = responseDescription {
-            return TealiumRemoteCommandResponse(urlString: description)
+    class func createRemoteCommandResponse(type: SimpleCommandType, commandId: String, payload: [String: Any]) -> RemoteCommandResponseProtocol? {
+        switch type {
+        case .webview:
+            let responseDescription = HttpTestHelpers.httpRequestDescription(commandId: commandId, config: [:], payload: payload)
+            if let description = responseDescription {
+                return RemoteCommandResponse(urlString: description)
+            }
+        case .JSON:
+            return JSONRemoteCommandResponse(with: payload)
         }
-        XCTFail("Could not create Remote Command Response description from stubs provided")
+        print("Could not create Remote Command Response description from stubs provided")
         return nil
     }
     
 }
-
-
