@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E222E626AF000A501B /* DateConverter.swift */; };
 		4BF4919B236CC47000CA46EC /* BrazeTrackerWebviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E822E6272D000A501B /* BrazeTrackerWebviewTests.swift */; };
 		4BF4919C236CC47000CA46EC /* MockBrazeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E722E6272D000A501B /* MockBrazeTracker.swift */; };
 		4BF4919D236CC47000CA46EC /* HttpTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF49199236CC28000CA46EC /* HttpTestHelpers.swift */; };
@@ -20,12 +19,12 @@
 		CFA795DE251D1709004D4FA4 /* TealiumTagManagement.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49187236CC1AE00CA46EC /* TealiumTagManagement.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFA795DF251D1709004D4FA4 /* TealiumCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49181236CC19400CA46EC /* TealiumCore.framework */; };
 		CFA795E0251D1709004D4FA4 /* TealiumCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49181236CC19400CA46EC /* TealiumCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CFA795E4251D1764004D4FA4 /* BrazeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA795E1251D1763004D4FA4 /* BrazeTracker.swift */; };
-		CFA795E5251D1764004D4FA4 /* BrazeRemoteCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA795E2251D1764004D4FA4 /* BrazeRemoteCommand.swift */; };
-		CFA795E6251D1764004D4FA4 /* BrazeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA795E3251D1764004D4FA4 /* BrazeConstants.swift */; };
 		CFA795E9251D3041004D4FA4 /* BrazeTrackerJSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA795E7251D2FBD004D4FA4 /* BrazeTrackerJSONTests.swift */; };
+		CFA79628251D40DC004D4FA4 /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA79624251D40DC004D4FA4 /* DateConverter.swift */; };
+		CFA79629251D40DC004D4FA4 /* BrazeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA79625251D40DC004D4FA4 /* BrazeConstants.swift */; };
+		CFA7962A251D40DC004D4FA4 /* BrazeRemoteCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */; };
+		CFA7962B251D40DC004D4FA4 /* BrazeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA79627251D40DC004D4FA4 /* BrazeTracker.swift */; };
 		CFD61FE02389F78A006DFDDB /* TealiumBraze.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B8DB65C22E622E00074687A /* TealiumBraze.framework */; };
-		CFD61FF92389F9F5006DFDDB /* DateConverter.swift in Headers */ = {isa = PBXBuildFile; fileRef = 4BCDE3E222E626AF000A501B /* DateConverter.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		CFD62044238C7F6F006DFDDB /* TealiumRemoteCommands.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF49185236CC19C00CA46EC /* TealiumRemoteCommands.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFD62045238C7F6F006DFDDB /* TealiumCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF49181236CC19400CA46EC /* TealiumCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -73,7 +72,6 @@
 		4B8DB65C22E622E00074687A /* TealiumBraze.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TealiumBraze.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B8DB65F22E622E00074687A /* TealiumBraze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TealiumBraze.h; sourceTree = "<group>"; };
 		4B8DB66022E622E00074687A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4BCDE3E222E626AF000A501B /* DateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 		4BCDE3E722E6272D000A501B /* MockBrazeTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBrazeTracker.swift; sourceTree = "<group>"; };
 		4BCDE3E822E6272D000A501B /* BrazeTrackerWebviewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeTrackerWebviewTests.swift; sourceTree = "<group>"; };
 		4BF4917F236CC18C00CA46EC /* Appboy_iOS_SDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Appboy_iOS_SDK.framework; path = Carthage/Build/iOS/Appboy_iOS_SDK.framework; sourceTree = "<group>"; };
@@ -84,10 +82,11 @@
 		4BF4918E236CC25700CA46EC /* TealiumBrazeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TealiumBrazeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF49192236CC25700CA46EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BF49199236CC28000CA46EC /* HttpTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpTestHelpers.swift; sourceTree = "<group>"; };
-		CFA795E1251D1763004D4FA4 /* BrazeTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeTracker.swift; sourceTree = "<group>"; };
-		CFA795E2251D1764004D4FA4 /* BrazeRemoteCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeRemoteCommand.swift; sourceTree = "<group>"; };
-		CFA795E3251D1764004D4FA4 /* BrazeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeConstants.swift; sourceTree = "<group>"; };
 		CFA795E7251D2FBD004D4FA4 /* BrazeTrackerJSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrazeTrackerJSONTests.swift; sourceTree = "<group>"; };
+		CFA79624251D40DC004D4FA4 /* DateConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
+		CFA79625251D40DC004D4FA4 /* BrazeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeConstants.swift; sourceTree = "<group>"; };
+		CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeRemoteCommand.swift; sourceTree = "<group>"; };
+		CFA79627251D40DC004D4FA4 /* BrazeTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeTracker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,10 +134,10 @@
 		4B8DB65E22E622E00074687A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				CFA795E3251D1764004D4FA4 /* BrazeConstants.swift */,
-				CFA795E2251D1764004D4FA4 /* BrazeRemoteCommand.swift */,
-				CFA795E1251D1763004D4FA4 /* BrazeTracker.swift */,
-				4BCDE3E222E626AF000A501B /* DateConverter.swift */,
+				CFA79625251D40DC004D4FA4 /* BrazeConstants.swift */,
+				CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */,
+				CFA79627251D40DC004D4FA4 /* BrazeTracker.swift */,
+				CFA79624251D40DC004D4FA4 /* DateConverter.swift */,
 				4B8DB65F22E622E00074687A /* TealiumBraze.h */,
 				4B8DB66022E622E00074687A /* Info.plist */,
 			);
@@ -177,7 +176,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFD61FF92389F9F5006DFDDB /* DateConverter.swift in Headers */,
 				4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,7 +234,7 @@
 				TargetAttributes = {
 					4B8DB65B22E622E00074687A = {
 						CreatedOnToolsVersion = 10.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1200;
 					};
 					4BF4918D236CC25700CA46EC = {
 						CreatedOnToolsVersion = 11.1;
@@ -308,10 +306,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFA795E6251D1764004D4FA4 /* BrazeConstants.swift in Sources */,
-				4BCDE3E522E626AF000A501B /* DateConverter.swift in Sources */,
-				CFA795E5251D1764004D4FA4 /* BrazeRemoteCommand.swift in Sources */,
-				CFA795E4251D1764004D4FA4 /* BrazeTracker.swift in Sources */,
+				CFA79629251D40DC004D4FA4 /* BrazeConstants.swift in Sources */,
+				CFA7962A251D40DC004D4FA4 /* BrazeRemoteCommand.swift in Sources */,
+				CFA7962B251D40DC004D4FA4 /* BrazeTracker.swift in Sources */,
+				CFA79628251D40DC004D4FA4 /* DateConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
