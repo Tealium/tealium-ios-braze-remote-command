@@ -1,3 +1,2 @@
-#github "tealium/tealium-swift" ~> 1.9
-git "file:///Users/christina/Projects/work-repos/github/tealium-swift-builder" "json-rc-merge"
+github "tealium/tealium-swift" ~> 2.1
 binary "https://raw.githubusercontent.com/Appboy/appboy-ios-sdk/master/appboy_ios_sdk_core.json" ~> 3.2
