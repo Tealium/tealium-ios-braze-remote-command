@@ -12,7 +12,7 @@ import TealiumBraze
 
 enum TealiumConfiguration {
     static let account = "tealiummobile"
-    static let profile = "firebase-tag"
+    static let profile = "braze-tag"
     static let environment = "dev"
 }
 
