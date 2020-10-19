@@ -1,9 +1,9 @@
 //
-//  BrazeTrackerJSONTests.swift
+//  BrazeInstanceWebviewTests.swift
 //  TealiumBrazeTests
 //
-//  Created by Christina S on 9/24/20.
-//  Copyright © 2020 Tealium. All rights reserved.
+//  Created by Jonathan Wong on 11/16/18.
+//  Copyright © 2018 Tealium. All rights reserved.
 //
 
 import XCTest
@@ -13,13 +13,13 @@ import XCTest
     import TealiumRemoteCommands
 #endif
 
-class BrazeTrackerJSONTests: XCTestCase {
+class BrazeInstanceWebviewTests: XCTestCase {
 
-    let brazeTracker = MockBrazeTracker()
+    let brazeInstance = MockBrazeInstance()
     var brazeCommand: BrazeRemoteCommand!
 
     override func setUp() {
-        brazeCommand = BrazeRemoteCommand(brazeTracker: brazeTracker)
+        brazeCommand = BrazeRemoteCommand(brazeInstance: brazeInstance)
     }
 
     override func tearDown() {
@@ -29,10 +29,10 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testInitializeIsNotCalledWithoutApiKey() {
         let expect = expectation(description: "test initialize called without api key")
         let payload = ["command_name": "initialize"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.initializeBrazeCallCount)
+            XCTAssertEqual(0, brazeInstance.initializeBrazeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -41,10 +41,10 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testInitializeCalledWithApiKey() {
         let expect = expectation(description: "test initialize called with api key")
         let payload = ["command_name": "initialize", "api_key": "test123"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.initializeBrazeCallCount)
+            XCTAssertEqual(1, brazeInstance.initializeBrazeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -64,18 +64,18 @@ class BrazeTrackerJSONTests: XCTestCase {
             "enable_advertiser_tracking": true,
             "enable_deep_link_handling": true
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKEnableGeofencesKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKFlushIntervalOptionKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKDeviceWhitelistKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKPushStoryAppGroupKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKIDFADelegateKey"]!)
-            XCTAssertEqual(1, brazeTracker.appBoyOptionsCount["ABKURLDelegateKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKEnableGeofencesKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKFlushIntervalOptionKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKDeviceWhitelistKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKPushStoryAppGroupKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKIDFADelegateKey"]!)
+            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKURLDelegateKey"]!)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -84,10 +84,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let expect = expectation(description: "test change user identifier called success")
         let userIdentifier = "tealium-ios-test-user"
         let payload = ["command_name": "initialize,useridentifier", "user_id": userIdentifier]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.changeUserCallCount)
+            XCTAssertEqual(1, brazeInstance.changeUserCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -100,10 +100,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "disable_location": "false",
             "enable_geofences": "true"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.logSingleLocationCallCount)
+            XCTAssertEqual(1, brazeInstance.logSingleLocationCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -116,10 +116,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "location_altitude": 12.0,
             "location_vertical_accuracy": 12.0
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.setLastKnownLocationWithAltitudeVerticalAccuracyCallCount)
+            XCTAssertEqual(1, brazeInstance.setLastKnownLocationWithAltitudeVerticalAccuracyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -130,10 +130,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "command_name": "setlastknownlocation",
             "disable_locaiton": "false", "location_longitude": 123.123, "location_latitude": 12.123, "location_horizontal_accuracy": 12.0
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.setLastKnownLocationNoAltitudeVerticalAccuracyCallCount)
+            XCTAssertEqual(1, brazeInstance.setLastKnownLocationNoAltitudeVerticalAccuracyCallCount)
         }
         wait(for: [expect], timeout: 5.0)
     }
@@ -141,10 +141,10 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testChangeUserIdentifierNotCalled_userIdentifierKeyMissing() {
         let expect = expectation(description: "test user identifier")
         let payload = ["command_name": "initialize,useridentifier"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.changeUserCallCount)
+            XCTAssertEqual(0, brazeInstance.changeUserCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -154,10 +154,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,useralias",
             "user_alias": "test_alias"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.addAliasCallCount)
+            XCTAssertEqual(0, brazeInstance.addAliasCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -168,10 +168,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "user_alias": "test_alias",
             "alias_label": "alias_label"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.addAliasCallCount)
+            XCTAssertEqual(1, brazeInstance.addAliasCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -179,10 +179,10 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testLogCustomEventSuccess() {
         let expect = expectation(description: "test log event success")
         let payload = ["command_name": "initialize,lOGcustomEvent","event_name": "test_event"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.logCustomEventCallCount)
+            XCTAssertEqual(1, brazeInstance.logCustomEventCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -190,10 +190,10 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testLogCustomEventNotCalled_logCustomEventNameMissing() {
         let expect = expectation(description: "test log event with event name missing")
         let payload = ["command_name": "initialize,lOGcustomEvent"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logCustomEventCallCount)
+            XCTAssertEqual(0, brazeInstance.logCustomEventCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -206,11 +206,11 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "key1": "value1",
                 "key2": "value2",
                 "key3": "value3"]]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.logCustomEventCallCount)
-            XCTAssertEqual(0, brazeTracker.logCustomEventWithPropertiesCallCount)
+            XCTAssertEqual(1, brazeInstance.logCustomEventCallCount)
+            XCTAssertEqual(0, brazeInstance.logCustomEventWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -223,11 +223,11 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "key1": "value1",
                 "key2": "value2",
                 "key3": "value3"]]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logCustomEventCallCount)
-            XCTAssertEqual(1, brazeTracker.logCustomEventWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logCustomEventCallCount)
+            XCTAssertEqual(1, brazeInstance.logCustomEventWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -247,10 +247,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "phone": "phone_test",
             "avatar_image_url": "avatar_image_url_test",
             "gender": "male"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(10, brazeTracker.setUserAttributeCallCount)
+            XCTAssertEqual(10, brazeInstance.setUserAttributeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -270,10 +270,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "not_a_user_attribute_key": "123",
             "not_a_user_attribute_key2": "456"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(8, brazeTracker.setUserAttributeCallCount)
+            XCTAssertEqual(8, brazeInstance.setUserAttributeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -287,10 +287,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "likes": ["apple", "orange"]
             ]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.facebookUserCallCount)
+            XCTAssertEqual(0, brazeInstance.facebookUserCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -304,10 +304,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "likes": []
             ]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.twitterUserCallCount)
+            XCTAssertEqual(1, brazeInstance.twitterUserCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -321,10 +321,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "doublekey": 2.0,
                 "stringkey": "test_string"]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(4, brazeTracker.setCustomAttributeWithKeyCallCount)
+            XCTAssertEqual(4, brazeInstance.setCustomAttributeWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -337,10 +337,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "doublekey": 2.0,
             "stringkey": "test_string"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
+            XCTAssertEqual(0, brazeInstance.setCustomAttributeWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -349,10 +349,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let expect = expectation(description: "test custom attribute unset")
         let payload: [String: Any] = ["command_name": "initialize,unsetcustomattribute"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
+            XCTAssertEqual(0, brazeInstance.setCustomAttributeWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -362,10 +362,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,unsetcustomattribute",
             "unset_custom_attribute": "attribute_key"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.setCustomAttributeWithKeyCallCount)
+            XCTAssertEqual(0, brazeInstance.setCustomAttributeWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -376,10 +376,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "increment_custom_attribute": ["key1": 1,
                 "key2": 2]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(2, brazeTracker.incrementCustomUserAttributeCallCount)
+            XCTAssertEqual(2, brazeInstance.incrementCustomUserAttributeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -393,10 +393,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "array_key3": ["value1", "value2", "value3"],
             ]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(3, brazeTracker.setCustomAttributeWithKeyCallCount)
+            XCTAssertEqual(3, brazeInstance.setCustomAttributeWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -410,10 +410,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "array_key3": "value3"
             ]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(3, brazeTracker.addToCustomAttributeArrayWithKeyCallCount)
+            XCTAssertEqual(3, brazeInstance.addToCustomAttributeArrayWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -427,10 +427,10 @@ class BrazeTrackerJSONTests: XCTestCase {
                 "array_key3": "value3"
             ]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(3, brazeTracker.removeFromCustomAttributeArrayWithKeyCallCount)
+            XCTAssertEqual(3, brazeInstance.removeFromCustomAttributeArrayWithKeyCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -440,10 +440,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,emailnotification",
             "email_notification": "optedIn"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
+            XCTAssertEqual(1, brazeInstance.setEmailNotificationSubscriptionTypeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -453,10 +453,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,emailnotification",
             "email_notification": "UN subscribed"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
+            XCTAssertEqual(0, brazeInstance.setEmailNotificationSubscriptionTypeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -466,10 +466,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,pushnotification",
             "push_notification": "subscribed"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.setPushNotificationSubscriptionTypeCallCount)
+            XCTAssertEqual(1, brazeInstance.setPushNotificationSubscriptionTypeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -479,10 +479,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "initialize,pushnotification",
             "email_notification": "SUBscribed"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.setEmailNotificationSubscriptionTypeCallCount)
+            XCTAssertEqual(0, brazeInstance.setEmailNotificationSubscriptionTypeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -493,10 +493,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "order_currency": "USD",
             "product_unit_price": 12.34
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -507,10 +507,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "product_id": "123",
             "product_unit_price": 12.34
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -521,10 +521,10 @@ class BrazeTrackerJSONTests: XCTestCase {
             "product_id": "123",
             "order_currency": "USD"
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -536,13 +536,13 @@ class BrazeTrackerJSONTests: XCTestCase {
             "order_currency": "USD",
             "product_unit_price": [12.34]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.logPurchaseCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
+            XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -555,13 +555,13 @@ class BrazeTrackerJSONTests: XCTestCase {
             "product_unit_price": [12.34],
             "quantity": [5]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
-            XCTAssertEqual(1, brazeTracker.logPurchaseWithQuantityCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
+            XCTAssertEqual(1, brazeInstance.logPurchaseWithQuantityCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -574,13 +574,13 @@ class BrazeTrackerJSONTests: XCTestCase {
             "product_unit_price": [12.34],
             "purchase_properties": ["item1": 123]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
-            XCTAssertEqual(1, brazeTracker.logPurchaseWithPropertiesCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityCallCount)
+            XCTAssertEqual(1, brazeInstance.logPurchaseWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -594,13 +594,13 @@ class BrazeTrackerJSONTests: XCTestCase {
             "quantity": [1, 2],
             "purchase_properties": ["item1": 123]
         ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(0, brazeTracker.logPurchaseCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithQuantityCallCount)
-            XCTAssertEqual(0, brazeTracker.logPurchaseWithPropertiesCallCount)
-            XCTAssertEqual(1, brazeTracker.logPurchaseWithQuantityWithPropertiesCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityCallCount)
+            XCTAssertEqual(0, brazeInstance.logPurchaseWithPropertiesCallCount)
+            XCTAssertEqual(1, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -609,10 +609,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let expect = expectation(description: "sdk is disabled")
         let payload: [String: Any] = ["command_name": "enablesdk",
             "enable_sdk": false]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.disableCallCount)
+            XCTAssertEqual(1, brazeInstance.disableCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -621,10 +621,10 @@ class BrazeTrackerJSONTests: XCTestCase {
         let expect = expectation(description: "sdk is reenabled")
         let payload: [String: Any] = ["command_name": "enablesdk",
             "enable_sdk": true]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.reEnableCallCount)
+            XCTAssertEqual(1, brazeInstance.reEnableCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -632,12 +632,11 @@ class BrazeTrackerJSONTests: XCTestCase {
     func testWipeData() {
         let expect = expectation(description: "wipe data is called")
         let payload: [String: Any] = ["command_name": "wipedata"]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
+        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .webview, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeTracker.wipeDataCallCount)
+            XCTAssertEqual(1, brazeInstance.wipeDataCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
 }
-

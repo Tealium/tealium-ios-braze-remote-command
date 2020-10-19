@@ -18,10 +18,10 @@ import Appboy_iOS_SDK
 
 public class BrazeRemoteCommand: RemoteCommand {
 
-    let brazeTracker: BrazeTrackable?
+    let brazeInstance: BrazeCommand?
 
-    public init(brazeTracker: BrazeTrackable = BrazeTracker(), type: RemoteCommandType = .webview) {
-        self.brazeTracker = brazeTracker
+    public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
+        self.brazeInstance = brazeInstance
         weak var selfWorkaround: BrazeRemoteCommand?
         super.init(commandId: BrazeConstants.commandId,
                    description: BrazeConstants.description,
@@ -36,7 +36,7 @@ public class BrazeRemoteCommand: RemoteCommand {
     }
 
     func processRemoteCommand(with payload: [String: Any]) {
-        guard let brazeTracker = brazeTracker,
+        guard let brazeInstance = brazeInstance,
               let command = payload[BrazeConstants.commandName] as? String else {
                 return
         }
@@ -82,7 +82,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
                     appboyOptions[BrazeConstants.Options.ABKEnableGeofencesKey] = enableGeofences
                     if enableGeofences {
-                        brazeTracker.logSingleLocation()
+                        brazeInstance.logSingleLocation()
                     }
                 }
                 if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Int {
@@ -94,22 +94,22 @@ public class BrazeRemoteCommand: RemoteCommand {
                     appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
                 }
                 guard let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
-                    return brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
+                    return brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
                 }
-                brazeTracker.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
+                brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
             case .userIdentifier:
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
                     return
                 }
-                brazeTracker.changeUser(userIdentifier)
+                brazeInstance.changeUser(userIdentifier)
             case .userAlias:
                 guard let userAlias = payload[BrazeConstants.Keys.userAlias] as? String,
                       let label = payload[BrazeConstants.Keys.aliasLabel] as? String else {
                     return
                 }
-                brazeTracker.addAlias(userAlias, label: label)
+                brazeInstance.addAlias(userAlias, label: label)
             case .userAttribute:
-                brazeTracker.setUserAttributes(payload)
+                brazeInstance.setUserAttributes(payload)
             case .facebookUser:
                 guard var facebookInfo = payload[BrazeConstants.Keys.facebookUser] as? [String: Any] else {
                     return
@@ -120,7 +120,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let facebookLikes = payload[BrazeConstants.SocialMedia.likes] as? NSArray {
                     facebookInfo[BrazeConstants.SocialMedia.likes] = facebookLikes
                 }
-                brazeTracker.setFacebookUser(facebookInfo)
+                brazeInstance.setFacebookUser(facebookInfo)
             case .twitterUser:
                 var twitterInfo = [String: Any]()
                 if let userDescription = payload[BrazeConstants.SocialMedia.userDescription] as? String {
@@ -147,7 +147,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let twitterId = payload[BrazeConstants.SocialMedia.twitterId] as? Int {
                     twitterInfo[BrazeConstants.SocialMedia.twitterId] = twitterId
                 }
-                brazeTracker.setTwitterUser(twitterInfo)
+                brazeInstance.setTwitterUser(twitterInfo)
             case .logCustomEvent:
                 var payload = payload
                 guard let eventName = payload[BrazeConstants.Keys.eventName] as? String else {
@@ -157,57 +157,57 @@ public class BrazeRemoteCommand: RemoteCommand {
                     payload[BrazeConstants.Keys.eventProperties] = eventKeyFromJSON
                 }
                 guard let properties = payload[BrazeConstants.Keys.eventProperties] as? [String: Any] else {
-                    return brazeTracker.logCustomEvent(eventName: eventName)
+                    return brazeInstance.logCustomEvent(eventName: eventName)
                 }
-                brazeTracker.logCustomEvent(eventName, properties: properties)
+                brazeInstance.logCustomEvent(eventName, properties: properties)
             case .setCustomAttribute:
                 guard let attributes = payload[BrazeConstants.Keys.customAttribute] as? [String: Any] else {
                     return
                 }
-                brazeTracker.setCustomAttributes(attributes)
+                brazeInstance.setCustomAttributes(attributes)
             case .unsetCustomAttribute:
                 guard let attributeKey = payload[BrazeConstants.Keys.unsetCustomAttribute] as? String else {
                     return
                 }
-                brazeTracker.unsetCustomAttributeWithKey(attributeKey)
+                brazeInstance.unsetCustomAttributeWithKey(attributeKey)
             case .incrementCustomAttribute:
                 guard let attributes = payload[BrazeConstants.Keys.incrementCustomAttribute] as? [String: Int] else {
                     return
                 }
-                brazeTracker.incrementCustomUserAttributes(attributes)
+                brazeInstance.incrementCustomUserAttributes(attributes)
             case .setCustomArrayAttribute:
                 guard let customAttributes = payload[BrazeConstants.Keys.customArrayAttribute] as? [String: [Any]] else {
                     return
                 }
                 _ = customAttributes.compactMap { key, value in
-                    brazeTracker.setCustomAttributeArrayWithKey(key, array: value)
+                    brazeInstance.setCustomAttributeArrayWithKey(key, array: value)
                 }
             case .appendCustomArrayAttribute:
                 guard let customAttributes = payload[BrazeConstants.Keys.appendCustomArrayAttribute] as? [String: String] else {
                     return
                 }
                 _ = customAttributes.map { key, value in
-                    brazeTracker.addToCustomAttributeArrayWithKey(key, value: value)
+                    brazeInstance.addToCustomAttributeArrayWithKey(key, value: value)
                 }
             case .removeCustomArrayAttribute:
                 guard let customAttributes = payload[BrazeConstants.Keys.removeCustomArrayAttribute] as? [String: String] else {
                     return
                 }
                 _ = customAttributes.map { key, value in
-                    brazeTracker.removeFromCustomAttributeArrayWithKey(key, value: value)
+                    brazeInstance.removeFromCustomAttributeArrayWithKey(key, value: value)
                 }
             case .emailNotification:
                 guard let emailNotification = payload[BrazeConstants.Keys.emailNotification] as? String,
                       let subscriptionType = AppboyNotificationSubscription.from(emailNotification) else {
                     return
                 }
-                brazeTracker.setEmailNotificationSubscriptionType(value: subscriptionType)
+                brazeInstance.setEmailNotificationSubscriptionType(value: subscriptionType)
             case .pushNotification:
                 guard let pushNotification = payload[BrazeConstants.Keys.pushNotification] as? String,
                       let subscriptionType = AppboyNotificationSubscription.from(pushNotification) else {
                     return
                 }
-                brazeTracker.setPushNotificationSubscriptionType(value: subscriptionType)
+                brazeInstance.setPushNotificationSubscriptionType(value: subscriptionType)
             case .logPurchase:
                 var payload = payload
                 if let purchaseKeyFromJSON = payload[BrazeConstants.Keys.purchaseKey] as? [String: Any] {
@@ -229,19 +229,19 @@ public class BrazeRemoteCommand: RemoteCommand {
                     let products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
                     if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [AnyHashable: Any] {
                         for (index, element) in products.productId.enumerated() {
-                            return brazeTracker.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
+                            return brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
                         }
                     }
                     for (index, element) in products.productId.enumerated() {
-                        brazeTracker.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
+                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
                     }
                 } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [AnyHashable: Any] {
                     for (index, element) in products.productId.enumerated() {
-                        brazeTracker.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
+                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
                     }
                 } else {
                     for (index, element) in products.productId.enumerated() {
-                        brazeTracker.logPurchase(element, currency: currency, price: products.price[index])
+                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index])
                     }
                 }
             case .setLastKnownLocation:
@@ -256,11 +256,11 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
                 guard let altitude = payload[BrazeConstants.Keys.altitude] as? Double,
                     let verticalAccuracy = payload[BrazeConstants.Keys.verticalAccuracy] as? Double else {
-                        return brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude,
+                        return brazeInstance.setLastKnownLocationWithLatitude(latitude: latitude,
                                                                                   longitude: longitude,
                                                                                   horizontalAccuracy: horizontalAccuracy)
                 }
-                brazeTracker.setLastKnownLocationWithLatitude(latitude: latitude,
+                brazeInstance.setLastKnownLocationWithLatitude(latitude: latitude,
                                                                           longitude: longitude,
                                                                           horizontalAccuracy: horizontalAccuracy,
                                                                           altitude: altitude,
@@ -269,9 +269,9 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let enabled = payload[BrazeConstants.Keys.enableSDK] as? Bool else {
                     return
                 }
-                brazeTracker.enableSDK(enabled)
+                brazeInstance.enableSDK(enabled)
             case .wipeData:
-                brazeTracker.wipeData()
+                brazeInstance.wipeData()
             default:
                 break
             }

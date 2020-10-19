@@ -1,5 +1,5 @@
 //
-//  MockBrazeTracker.swift
+//  MockBrazeInstance.swift
 //  TealiumBrazeTests
 //
 //  Created by Jonathan Wong on 11/16/18.
@@ -9,7 +9,7 @@
 import Foundation
 @testable import TealiumBraze
 
-class MockBrazeTracker: BrazeTrackable {
+class MockBrazeInstance: BrazeCommand {
 
     var initializeBrazeCallCount = 0
     var logSingleLocationCallCount = 0

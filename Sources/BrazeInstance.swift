@@ -1,5 +1,5 @@
 //
-//  BrazeTracker.swift
+//  BrazeInstance.swift
 //  TealiumBraze
 //
 //  Created by Jonathan Wong on 11/16/18.
@@ -20,7 +20,7 @@ import TealiumRemoteCommands
 public protocol TealiumApplication { }
 extension UIApplication: TealiumApplication { }
 
-public protocol BrazeTrackable {
+public protocol BrazeCommand {
     
     // MARK: Initialization
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?)
@@ -113,7 +113,7 @@ public protocol BrazeCommandNotifier {
     func pushAuthorization(fromUserNotificationCenter: Bool)
 }
 
-public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
+public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
     
     public init() { }
     
