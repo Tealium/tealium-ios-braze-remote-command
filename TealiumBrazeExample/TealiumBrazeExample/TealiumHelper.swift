@@ -30,7 +30,7 @@ class TealiumHelper {
     
     // JSON Remote Command
     let brazeRemoteCommand = BrazeRemoteCommand(type: .remote(url: "https://tags.tiqcdn.com/dle/tealiummobile/demo/braze.json"))
-
+    
     private init() {
         config.shouldUseRemotePublishSettings = false
         config.batchingEnabled = false

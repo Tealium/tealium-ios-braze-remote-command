@@ -16,6 +16,7 @@
 		4BC5F6F522E77C9B00763653 /* TealiumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC5F6F122E77C9B00763653 /* TealiumHelper.swift */; };
 		4BC5F6F722E77CCB00763653 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4BC5F6F622E77CCB00763653 /* Main.storyboard */; };
 		A2B202C266F680F7A7507BAA /* Pods_TealiumBrazeExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA7027C871B48A3F44031AD /* Pods_TealiumBrazeExample.framework */; };
+		CFAD5EBA253FA3AA007D4EDB /* braze.json in Resources */ = {isa = PBXBuildFile; fileRef = CFAD5EB9253FA3AA007D4EDB /* braze.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		4BC5F6F022E77C9B00763653 /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
 		4BC5F6F122E77C9B00763653 /* TealiumHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TealiumHelper.swift; sourceTree = "<group>"; };
 		4BC5F6F622E77CCB00763653 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		CFAD5EB9253FA3AA007D4EDB /* braze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = braze.json; sourceTree = "<group>"; };
 		E3E8E4B96D2893D8C883206A /* Pods-TealiumBrazeExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumBrazeExample.debug.xcconfig"; path = "Target Support Files/Pods-TealiumBrazeExample/Pods-TealiumBrazeExample.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,6 +84,7 @@
 				4BC5F6F122E77C9B00763653 /* TealiumHelper.swift */,
 				4BC5F6F022E77C9B00763653 /* UserViewController.swift */,
 				4BC5F6DC22E77B0300763653 /* AppDelegate.swift */,
+				CFAD5EB9253FA3AA007D4EDB /* braze.json */,
 				4BC5F6E322E77B0800763653 /* Assets.xcassets */,
 				4BC5F6E522E77B0800763653 /* LaunchScreen.storyboard */,
 				4BC5F6E822E77B0800763653 /* Info.plist */,
@@ -159,6 +162,7 @@
 			files = (
 				4BC5F6F722E77CCB00763653 /* Main.storyboard in Resources */,
 				4BC5F6E722E77B0800763653 /* LaunchScreen.storyboard in Resources */,
+				CFAD5EBA253FA3AA007D4EDB /* braze.json in Resources */,
 				4BC5F6E422E77B0800763653 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

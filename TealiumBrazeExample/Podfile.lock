@@ -1,36 +1,39 @@
 PODS:
-  - Appboy-iOS-SDK (3.26.1):
-    - Appboy-iOS-SDK/UI (= 3.26.1)
-  - Appboy-iOS-SDK/ContentCards (3.26.1):
+  - Appboy-iOS-SDK (3.29.0):
+    - Appboy-iOS-SDK/UI (= 3.29.0)
+  - Appboy-iOS-SDK/ContentCards (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/Core (3.26.1)
-  - Appboy-iOS-SDK/InAppMessage (3.26.1):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/Core (3.29.0)
+  - Appboy-iOS-SDK/InAppMessage (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/NewsFeed (3.26.1):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/NewsFeed (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/UI (3.26.1):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/UI (3.29.0):
     - Appboy-iOS-SDK/ContentCards
     - Appboy-iOS-SDK/Core
     - Appboy-iOS-SDK/InAppMessage
     - Appboy-iOS-SDK/NewsFeed
-  - SDWebImage (5.9.0):
-    - SDWebImage/Core (= 5.9.0)
-  - SDWebImage/Core (5.9.0)
-  - tealium-swift/Core (2.0.0)
-  - tealium-swift/RemoteCommands (2.0.0):
+  - SDWebImage (5.9.3):
+    - SDWebImage/Core (= 5.9.3)
+  - SDWebImage/Core (5.9.3)
+  - tealium-swift/Core (2.1.0)
+  - tealium-swift/Lifecycle (2.1.0):
     - tealium-swift/Core
-  - tealium-swift/TagManagement (2.0.0):
+  - tealium-swift/RemoteCommands (2.1.0):
+    - tealium-swift/Core
+  - tealium-swift/TagManagement (2.1.0):
     - tealium-swift/Core
   - TealiumBraze (2.0.0):
     - Appboy-iOS-SDK (~> 3.2)
-    - tealium-swift/Core (~> 2.0)
-    - tealium-swift/RemoteCommands (~> 2.0)
-    - tealium-swift/TagManagement (~> 2.0)
+    - tealium-swift/Core (~> 2.1)
+    - tealium-swift/RemoteCommands (~> 2.1)
+    - tealium-swift/TagManagement (~> 2.1)
 
 DEPENDENCIES:
+  - tealium-swift/Lifecycle (~> 2.1)
   - TealiumBraze (from `../`)
 
 SPEC REPOS:
@@ -44,11 +47,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Appboy-iOS-SDK: ac9f96da26e36bfdaefc8a9c2346ce339d8a7ab7
-  SDWebImage: 62ae4a18473520c67b79e9724c31a63599cc9423
-  tealium-swift: c0b58cc749d23805790de1472407723fa41da2dc
-  TealiumBraze: b0db5b5dc7d774e733214232f2e6c498c06a560d
+  Appboy-iOS-SDK: 1852bad2912f0eb59701b1a53aaad7f03b75d716
+  SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
+  tealium-swift: a670c2c6f3e7e5d775d9507387e8858a8541e526
+  TealiumBraze: 97a95b420f7f2a71bd33990c9ccced1c823fef02
 
-PODFILE CHECKSUM: d08afed32c6c50d77b7f5b01356ab16e86b447a0
+PODFILE CHECKSUM: c8a9be1ccc2a80510f31ec918e56aea892cf5033
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0
