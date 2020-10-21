@@ -1,6 +1,6 @@
 //
-//  BrazeTracker.swift
-//  RemoteCommandModulesTests
+//  BrazeInstance.swift
+//  TealiumBraze
 //
 //  Created by Jonathan Wong on 11/16/18.
 //  Copyright © 2018 Tealium. All rights reserved.
@@ -20,7 +20,7 @@ import TealiumRemoteCommands
 public protocol TealiumApplication { }
 extension UIApplication: TealiumApplication { }
 
-public protocol BrazeTrackable {
+public protocol BrazeCommand {
     
     // MARK: Initialization
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?)
@@ -113,7 +113,7 @@ public protocol BrazeCommandNotifier {
     func pushAuthorization(fromUserNotificationCenter: Bool)
 }
 
-public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
+public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
     
     public init() { }
     
@@ -233,38 +233,38 @@ public class BrazeTracker: BrazeTrackable, BrazeCommandNotifier {
     }
     
     public func setFacebookUser(_ user: [String: Any]) {
-        guard let userInfo = user[SocialMediaKey.userInfo.rawValue] as? [String: Any],
-            let friendsCount = user[SocialMediaKey.friendsCount.rawValue] as? Int else {
+        guard let userInfo = user[BrazeConstants.SocialMedia.userInfo] as? [String: Any],
+            let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int else {
                 return
         }
-        let likes: [Any]? = user[SocialMediaKey.likes.rawValue] as? [Any]
+        let likes: [Any]? = user[BrazeConstants.SocialMedia.likes] as? [Any]
         Appboy.sharedInstance()?.user.facebookUser = ABKFacebookUser(facebookUserDictionary: userInfo, numberOfFriends: friendsCount, likes: likes)
     }
     
     public func setTwitterUser(_ user: [String: Any]) {
         let twitterUser = ABKTwitterUser()
-        if let userDescription = user[SocialMediaKey.userDescription.rawValue] as? String {
+        if let userDescription = user[BrazeConstants.SocialMedia.userDescription] as? String {
             twitterUser.userDescription = userDescription
         }
-        if let twitterName = user[SocialMediaKey.twitterName.rawValue] as? String {
+        if let twitterName = user[BrazeConstants.SocialMedia.twitterName] as? String {
             twitterUser.twitterName = twitterName
         }
-        if let profileImageUrl = user[SocialMediaKey.profileImageUrl.rawValue] as? String {
+        if let profileImageUrl = user[BrazeConstants.SocialMedia.profileImageUrl] as? String {
             twitterUser.profileImageUrl = profileImageUrl
         }
-        if let screenName = user[SocialMediaKey.screenName.rawValue] as? String {
+        if let screenName = user[BrazeConstants.SocialMedia.screenName] as? String {
             twitterUser.screenName = screenName
         }
-        if let followersCount = user[SocialMediaKey.followersCount.rawValue] as? Int {
+        if let followersCount = user[BrazeConstants.SocialMedia.followersCount] as? Int {
             twitterUser.followersCount = followersCount
         }
-        if let friendsCount = user[SocialMediaKey.friendsCount.rawValue] as? Int {
+        if let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int {
             twitterUser.friendsCount = friendsCount
         }
-        if let statusesCount = user[SocialMediaKey.statusesCount.rawValue] as? Int {
+        if let statusesCount = user[BrazeConstants.SocialMedia.statusesCount] as? Int {
             twitterUser.statusesCount = statusesCount
         }
-        if let twitterId = user[SocialMediaKey.twitterId.rawValue] as? Int {
+        if let twitterId = user[BrazeConstants.SocialMedia.twitterId] as? Int {
             twitterUser.twitterID = twitterId
         }
         Appboy.sharedInstance()?.user.twitterUser = twitterUser

@@ -1,52 +1,40 @@
 PODS:
-  - Appboy-iOS-SDK (3.20.4):
-    - Appboy-iOS-SDK/UI (= 3.20.4)
-  - Appboy-iOS-SDK/ContentCards (3.20.4):
+  - Appboy-iOS-SDK (3.29.0):
+    - Appboy-iOS-SDK/UI (= 3.29.0)
+  - Appboy-iOS-SDK/ContentCards (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/Core (3.20.4)
-  - Appboy-iOS-SDK/InAppMessage (3.20.4):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/Core (3.29.0)
+  - Appboy-iOS-SDK/InAppMessage (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/NewsFeed (3.20.4):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/NewsFeed (3.29.0):
     - Appboy-iOS-SDK/Core
-    - SDWebImage (~> 5.0)
-  - Appboy-iOS-SDK/UI (3.20.4):
+    - SDWebImage (< 6, >= 5.8.2)
+  - Appboy-iOS-SDK/UI (3.29.0):
     - Appboy-iOS-SDK/ContentCards
     - Appboy-iOS-SDK/Core
     - Appboy-iOS-SDK/InAppMessage
     - Appboy-iOS-SDK/NewsFeed
-  - SDWebImage (5.5.2):
-    - SDWebImage/Core (= 5.5.2)
-  - SDWebImage/Core (5.5.2)
-  - tealium-swift/Core (1.9.1)
-  - tealium-swift/TealiumAppData (1.9.1):
+  - SDWebImage (5.9.3):
+    - SDWebImage/Core (= 5.9.3)
+  - SDWebImage/Core (5.9.3)
+  - tealium-swift/Core (2.1.0)
+  - tealium-swift/Lifecycle (2.1.0):
     - tealium-swift/Core
-  - tealium-swift/TealiumDelegate (1.9.1):
+  - tealium-swift/RemoteCommands (2.1.0):
     - tealium-swift/Core
-  - tealium-swift/TealiumDeviceData (1.9.1):
+  - tealium-swift/TagManagement (2.1.0):
     - tealium-swift/Core
-  - tealium-swift/TealiumLifecycle (1.9.1):
-    - tealium-swift/Core
-  - tealium-swift/TealiumLogger (1.9.1):
-    - tealium-swift/Core
-  - tealium-swift/TealiumRemoteCommands (1.9.1):
-    - tealium-swift/Core
-  - tealium-swift/TealiumTagManagement (1.9.1):
-    - tealium-swift/Core
-  - TealiumBraze (0.0.6):
-    - Appboy-iOS-SDK (~> 3.20.4)
-    - tealium-swift/Core
-    - tealium-swift/TealiumDelegate
-    - tealium-swift/TealiumRemoteCommands
-    - tealium-swift/TealiumTagManagement
+  - TealiumBraze (2.0.0):
+    - Appboy-iOS-SDK (~> 3.2)
+    - tealium-swift/Core (~> 2.1)
+    - tealium-swift/RemoteCommands (~> 2.1)
+    - tealium-swift/TagManagement (~> 2.1)
 
 DEPENDENCIES:
-  - tealium-swift/TealiumAppData
-  - tealium-swift/TealiumDeviceData
-  - tealium-swift/TealiumLifecycle
-  - tealium-swift/TealiumLogger
-  - TealiumBraze (from `/Users/christina/Projects/work-repos/github/tealium-ios-braze-remote-command`)
+  - tealium-swift/Lifecycle (~> 2.1)
+  - TealiumBraze (from `../`)
 
 SPEC REPOS:
   trunk:
@@ -56,14 +44,14 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   TealiumBraze:
-    :path: "/Users/christina/Projects/work-repos/github/tealium-ios-braze-remote-command"
+    :path: "../"
 
 SPEC CHECKSUMS:
-  Appboy-iOS-SDK: 79e95b898fcc2e87a4f7083782b9a0200f134f61
-  SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
-  tealium-swift: bb99ff358f297765346ab98e416196420511a677
-  TealiumBraze: 10f28f92146b3ab685885856ad440a90e0d939d4
+  Appboy-iOS-SDK: 1852bad2912f0eb59701b1a53aaad7f03b75d716
+  SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
+  tealium-swift: a670c2c6f3e7e5d775d9507387e8858a8541e526
+  TealiumBraze: e8a87520713fd99c016555be10849887d18cfca7
 
-PODFILE CHECKSUM: 7acd0f0a0a9feea44bae4e26d412d3b1d33bc4b5
+PODFILE CHECKSUM: c8a9be1ccc2a80510f31ec918e56aea892cf5033
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.0

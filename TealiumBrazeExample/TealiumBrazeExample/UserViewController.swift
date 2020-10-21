@@ -1,9 +1,9 @@
 //
 //  UserViewController.swift
-//  BrazeRemoteCommand
+//  TealiumBrazeExample
 //
 //  Created by Jonathan Wong on 5/29/19.
-//  Copyright © 2019 Jonathan Wong. All rights reserved.
+//  Copyright © 2019 Tealium. All rights reserved.
 //
 
 import UIKit
@@ -35,28 +35,29 @@ class UserViewController: UIViewController {
         
         genderSegmentedControl.selectedSegmentIndex = 3
         
-        TealiumHelper.track(title: "user_alias", data: nil)
+        TealiumHelper.trackEvent(title: "user_alias", data: nil)
     }
     
     @IBAction func onSend( _ sender: UIButton) {
         var data = [String: Any]()
-        data["first_name"] = firstNameTextField.text
-        data["last_name"] = lastNameTextField.text
-        data["email"] = emailTextField.text
-        data["gender"] = gender()
-        data["home_city"] = homeCityTextField.text
+        data["customer_first_name"] = firstNameTextField.text
+        data["customer_last_name"] = lastNameTextField.text
+        data["customer_email"] = emailTextField.text
+        data["customer_gender"] = gender()
+        data["customer_language"] = "en"
+        data["customer_home_city"] = homeCityTextField.text
         
         if let birthday = dobDateFormatter.date(from: birthdayTextField.text!) {
             let isoBirthday = DateConverter.shared.iso8601DateFormatter.string(from: birthday)
-            data["birthday"] = isoBirthday
+            data["customer_dob"] = isoBirthday
         }
-        data["user_id"] = usernameTextField.text
-        data["user_alias"] = userAliasTextField.text
-        data["alias_label"] = userLabelTextField.text
+        data["customer_id"] = usernameTextField.text
+        data["customer_alias"] = userAliasTextField.text
+        data["customer_alias_label"] = userLabelTextField.text
         
-        TealiumHelper.track(title: "user_attribute", data: data)
-        TealiumHelper.track(title: "user_login", data: data)
-        TealiumHelper.track(title: "user_alias", data: data)
+        TealiumHelper.trackEvent(title: "user_attribute", data: data)
+        TealiumHelper.trackEvent(title: "user_login", data: data)
+        TealiumHelper.trackEvent(title: "user_alias", data: data)
     }
     
     private func gender() -> String {

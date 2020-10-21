@@ -1,6 +1,6 @@
 //
 //  DateConverter.swift
-//  RemoteCommandModules
+//  TealiumBraze
 //
 //  Created by Jonathan Wong on 1/10/19.
 //  Copyright © 2019 Tealium. All rights reserved.

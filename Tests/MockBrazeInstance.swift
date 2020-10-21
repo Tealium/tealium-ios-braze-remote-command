@@ -1,6 +1,6 @@
 //
-//  MockBrazeTracker.swift
-//  RemoteCommandModulesTests
+//  MockBrazeInstance.swift
+//  TealiumBrazeTests
 //
 //  Created by Jonathan Wong on 11/16/18.
 //  Copyright © 2018 Tealium. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 @testable import TealiumBraze
 
-class MockBrazeTracker: BrazeTrackable {
+class MockBrazeInstance: BrazeCommand {
 
     var initializeBrazeCallCount = 0
     var logSingleLocationCallCount = 0
