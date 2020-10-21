@@ -22,7 +22,7 @@ public class BrazeRemoteCommand: RemoteCommand {
 
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
         self.brazeInstance = brazeInstance
-        weak var selfWorkaround: BrazeRemoteCommand?
+        weak var weakSelf: BrazeRemoteCommand?
         super.init(commandId: BrazeConstants.commandId,
                    description: BrazeConstants.description,
             type: type,
@@ -30,9 +30,9 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let payload = response.payload else {
                     return
                 }
-                selfWorkaround?.processRemoteCommand(with: payload)
+                weakSelf?.processRemoteCommand(with: payload)
             })
-        selfWorkaround = self
+        weakSelf = self
     }
 
     func processRemoteCommand(with payload: [String: Any]) {
