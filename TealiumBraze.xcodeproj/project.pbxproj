@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,8 +15,6 @@
 		CF3277C22522A38900696BB4 /* BrazeRemoteCommand.swift in Headers */ = {isa = PBXBuildFile; fileRef = CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		CF3277C32522A38900696BB4 /* BrazeInstance.swift in Headers */ = {isa = PBXBuildFile; fileRef = CFA79627251D40DC004D4FA4 /* BrazeInstance.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		CF3277C42522A38900696BB4 /* DateConverter.swift in Headers */ = {isa = PBXBuildFile; fileRef = CFA79624251D40DC004D4FA4 /* DateConverter.swift */; settings = {ATTRIBUTES = (Public, ); }; };
-		CF4728C524194D4800F7B604 /* Appboy_iOS_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF4917F236CC18C00CA46EC /* Appboy_iOS_SDK.framework */; };
-		CF4728C624194D4800F7B604 /* Appboy_iOS_SDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF4917F236CC18C00CA46EC /* Appboy_iOS_SDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFA795DC251D1709004D4FA4 /* TealiumRemoteCommands.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49185236CC19C00CA46EC /* TealiumRemoteCommands.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFA795DE251D1709004D4FA4 /* TealiumTagManagement.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49187236CC1AE00CA46EC /* TealiumTagManagement.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFA795E0251D1709004D4FA4 /* TealiumCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF49181236CC19400CA46EC /* TealiumCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -28,6 +26,10 @@
 		CFD61FE02389F78A006DFDDB /* TealiumBraze.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B8DB65C22E622E00074687A /* TealiumBraze.framework */; };
 		CFD62044238C7F6F006DFDDB /* TealiumRemoteCommands.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF49185236CC19C00CA46EC /* TealiumRemoteCommands.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CFD62045238C7F6F006DFDDB /* TealiumCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF49181236CC19400CA46EC /* TealiumCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D58C2046276011C00063FBFA /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D58C2045276011C00063FBFA /* SDWebImage.xcframework */; };
+		D58C2047276011C00063FBFA /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D58C2045276011C00063FBFA /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D58C2049276011EB0063FBFA /* Appboy_iOS_SDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D58C2048276011EB0063FBFA /* Appboy_iOS_SDK.xcframework */; };
+		D58C204A276011EB0063FBFA /* Appboy_iOS_SDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D58C2048276011EB0063FBFA /* Appboy_iOS_SDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,9 +49,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				D58C204A276011EB0063FBFA /* Appboy_iOS_SDK.xcframework in Embed Frameworks */,
 				CFA795DE251D1709004D4FA4 /* TealiumTagManagement.framework in Embed Frameworks */,
+				D58C2047276011C00063FBFA /* SDWebImage.xcframework in Embed Frameworks */,
 				CFA795DC251D1709004D4FA4 /* TealiumRemoteCommands.framework in Embed Frameworks */,
-				CF4728C624194D4800F7B604 /* Appboy_iOS_SDK.framework in Embed Frameworks */,
 				CFA795E0251D1709004D4FA4 /* TealiumCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -75,7 +78,6 @@
 		4B8DB66022E622E00074687A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4BCDE3E722E6272D000A501B /* MockBrazeInstance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBrazeInstance.swift; sourceTree = "<group>"; };
 		4BCDE3E822E6272D000A501B /* BrazeInstanceWebviewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeInstanceWebviewTests.swift; sourceTree = "<group>"; };
-		4BF4917F236CC18C00CA46EC /* Appboy_iOS_SDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Appboy_iOS_SDK.framework; path = Carthage/Build/iOS/Appboy_iOS_SDK.framework; sourceTree = "<group>"; };
 		4BF49181236CC19400CA46EC /* TealiumCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumCore.framework; path = Carthage/Build/iOS/TealiumCore.framework; sourceTree = "<group>"; };
 		4BF49183236CC19800CA46EC /* TealiumDelegate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumDelegate.framework; path = Carthage/Build/iOS/TealiumDelegate.framework; sourceTree = "<group>"; };
 		4BF49185236CC19C00CA46EC /* TealiumRemoteCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TealiumRemoteCommands.framework; path = Carthage/Build/iOS/TealiumRemoteCommands.framework; sourceTree = "<group>"; };
@@ -88,6 +90,9 @@
 		CFA79625251D40DC004D4FA4 /* BrazeConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeConstants.swift; sourceTree = "<group>"; };
 		CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeRemoteCommand.swift; sourceTree = "<group>"; };
 		CFA79627251D40DC004D4FA4 /* BrazeInstance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeInstance.swift; sourceTree = "<group>"; };
+		D58C2042275EC3400063FBFA /* Appboy_iOS_SDK_core.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Appboy_iOS_SDK_core.xcframework; path = Carthage/Build/Appboy_iOS_SDK_core.xcframework; sourceTree = "<group>"; };
+		D58C2045276011C00063FBFA /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
+		D58C2048276011EB0063FBFA /* Appboy_iOS_SDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Appboy_iOS_SDK.xcframework; path = Carthage/Build/Appboy_iOS_SDK.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +100,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF4728C524194D4800F7B604 /* Appboy_iOS_SDK.framework in Frameworks */,
+				D58C2046276011C00063FBFA /* SDWebImage.xcframework in Frameworks */,
+				D58C2049276011EB0063FBFA /* Appboy_iOS_SDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,12 +163,14 @@
 		4BF4917E236CC18C00CA46EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D58C2048276011EB0063FBFA /* Appboy_iOS_SDK.xcframework */,
+				D58C2045276011C00063FBFA /* SDWebImage.xcframework */,
+				D58C2042275EC3400063FBFA /* Appboy_iOS_SDK_core.xcframework */,
 				4B38232C236CDDBF00C3AE37 /* SDWebImage.framework */,
 				4BF49187236CC1AE00CA46EC /* TealiumTagManagement.framework */,
 				4BF49185236CC19C00CA46EC /* TealiumRemoteCommands.framework */,
 				4BF49183236CC19800CA46EC /* TealiumDelegate.framework */,
 				4BF49181236CC19400CA46EC /* TealiumCore.framework */,
-				4BF4917F236CC18C00CA46EC /* Appboy_iOS_SDK.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -38,6 +38,6 @@ Pod::Spec.new do |s|
     s.ios.dependency 'tealium-swift/Core', '~> 2.1'
     s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.1'
     s.ios.dependency 'tealium-swift/TagManagement', '~> 2.1'
-    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.2'
+    s.ios.dependency 'Appboy-iOS-SDK', '~> 4.4.1'
 
 end
