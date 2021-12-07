@@ -128,7 +128,11 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
             Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
         }
     }
-    
+
+    public func addSdkMetadata(_ metadata: ABKSdkMetadata) {
+      Appboy.sharedInstance()?.addSdkMetadata([metadata])
+    }
+
     public func logSingleLocation() {
            Appboy.sharedInstance()?.locationManager.logSingleLocation()
     }

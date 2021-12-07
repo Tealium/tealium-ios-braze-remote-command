@@ -97,6 +97,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                     return brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
                 }
                 brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
+                brazeInstance.addSdkMetadata(.tealium)
             case .userIdentifier:
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
                     return
