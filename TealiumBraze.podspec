@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
     # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.name         = "TealiumBraze"
     s.module_name  = "TealiumBraze"
-    s.version      = "2.0.0"
+    s.version      = "2.1.0"
     s.summary      = "Tealium Swift and Braze integration"
     s.description  = <<-DESC
     Tealium's integration with Braze for iOS.
@@ -21,8 +21,8 @@ Pod::Spec.new do |s|
 
     # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.swift_version = "5.0"
-    s.platform     = :ios, "10.0"
-    s.ios.deployment_target = "10.0"
+    s.platform     = :ios, "11.0"
+    s.ios.deployment_target = "11.0"
 
     # ――― Excluded Archs ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
@@ -35,9 +35,9 @@ Pod::Spec.new do |s|
     s.ios.source_files      = "Sources/*.{swift}"
 
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.ios.dependency 'tealium-swift/Core', '~> 2.1'
-    s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.1'
-    s.ios.dependency 'tealium-swift/TagManagement', '~> 2.1'
-    s.ios.dependency 'Appboy-iOS-SDK', '~> 3.2'
+    s.ios.dependency 'tealium-swift/Core', '~> 2.6'
+    s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.6'
+    s.ios.dependency 'tealium-swift/TagManagement', '~> 2.6'
+    s.ios.dependency 'Appboy-iOS-SDK', '~> 4.0'
 
 end

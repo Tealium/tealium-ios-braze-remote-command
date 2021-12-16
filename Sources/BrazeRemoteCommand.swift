@@ -18,6 +18,9 @@ import Appboy_iOS_SDK
 
 public class BrazeRemoteCommand: RemoteCommand {
 
+    override public var version: String? {
+        return BrazeConstants.version
+    }
     let brazeInstance: BrazeCommand?
 
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
