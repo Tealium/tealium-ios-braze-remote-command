@@ -7,12 +7,17 @@
 //
 
 import UIKit
-import Appboy_iOS_SDK
+
+#if SWIFT_PACKAGE
+    import AppboyUI
+#else
+    import Appboy_iOS_SDK
+#endif
+
 #if COCOAPODS
     import TealiumSwift
 #else
     import TealiumCore
-    import TealiumTagManagement
     import TealiumRemoteCommands
 #endif
 
