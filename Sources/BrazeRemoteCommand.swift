@@ -101,9 +101,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
                     appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
                 }
-                guard let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
-                    return brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
-                }
+                let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any]
                 brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
             case .userIdentifier:
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
