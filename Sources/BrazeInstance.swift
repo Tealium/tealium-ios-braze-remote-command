@@ -7,12 +7,17 @@
 //
 
 import Foundation
-import Appboy_iOS_SDK
+
+#if SWIFT_PACKAGE
+    import AppboyUI
+#else
+    import Appboy_iOS_SDK
+#endif
+
 #if COCOAPODS
 import TealiumSwift
 #else
 import TealiumCore
-import TealiumTagManagement
 import TealiumRemoteCommands
 #endif
 
@@ -23,8 +28,6 @@ extension UIApplication: TealiumApplication { }
 public protocol BrazeCommand {
     
     // MARK: Initialization
-    func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?)
-    
     func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?)
     
     // MARK: Geofences
@@ -117,15 +120,10 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
     
     public init() { }
     
-    public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
-        DispatchQueue.main.async {
-            Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions)
-        }
-    }
-    
     public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
         DispatchQueue.main.async {
             Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
+            Appboy.sharedInstance()?.addSdkMetadata([.tealium])
         }
     }
     

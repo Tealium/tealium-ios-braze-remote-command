@@ -7,17 +7,25 @@
 //
 
 import UIKit
-import Appboy_iOS_SDK
+
+#if SWIFT_PACKAGE
+    import AppboyUI
+#else
+    import Appboy_iOS_SDK
+#endif
+
 #if COCOAPODS
     import TealiumSwift
 #else
     import TealiumCore
-    import TealiumTagManagement
     import TealiumRemoteCommands
 #endif
 
 public class BrazeRemoteCommand: RemoteCommand {
 
+    override public var version: String? {
+        return BrazeConstants.version
+    }
     let brazeInstance: BrazeCommand?
 
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
@@ -93,9 +101,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
                     appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
                 }
-                guard let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any] else {
-                    return brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, appboyOptions: appboyOptions)
-                }
+                let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any]
                 brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
             case .userIdentifier:
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {

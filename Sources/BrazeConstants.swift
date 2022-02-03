@@ -14,6 +14,7 @@ public enum BrazeConstants {
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
+    static let version = "2.1.0"
     
     enum Commands: String {
         case initialize = "initialize"
