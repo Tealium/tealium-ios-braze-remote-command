@@ -57,7 +57,6 @@
         "twitter": "twitteruser",
         "facebook": "facebookuser",
         "setengagement": "emailnotification,pushnotification",
-        "log_custom_event": "logcustomevent",
         "set_location": "setlastknownlocation",
         "custom_attribute": "setcustomattribute",
         "unset_custom_attribute": "unsetcustomattribute",
@@ -68,6 +67,7 @@
         "log_purchase": "logpurchase",
         "user_attribute": "userattribute,useridentifier,useralias",
         "user_login": "useridentifier,useralias",
-        "user_alias": "useralias"
+        "user_alias": "useralias",
+        "all_events": "logcustomevent"
     }
 }

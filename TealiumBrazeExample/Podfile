@@ -7,5 +7,6 @@ target 'TealiumBrazeExample' do
 
   # Pods for TealiumBrazeExample
   pod "TealiumBraze", :path=> "../"
-   pod "tealium-swift/Lifecycle", "~> 2.6"
+   pod "tealium-swift/Lifecycle", :git => 'https://github.com/Tealium/tealium-swift.git', :branch => 'mt-1115'
+   pod "tealium-swift/RemoteCommands", :git => 'https://github.com/Tealium/tealium-swift.git', :branch => 'mt-1115'
 end
