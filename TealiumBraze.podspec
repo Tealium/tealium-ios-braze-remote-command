@@ -39,5 +39,9 @@ Pod::Spec.new do |s|
     s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.6'
     s.ios.dependency 'tealium-swift/TagManagement', '~> 2.6'
     s.ios.dependency 'Appboy-iOS-SDK', '~> 4.4'
+    s.ios.dependency 'BrazeKit', '~> 5.4'
+    s.ios.dependency 'BrazeLocation', '~> 5.4'
+
+    s.static_framework = true
 
 end

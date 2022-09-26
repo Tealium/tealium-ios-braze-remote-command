@@ -12,6 +12,8 @@ import UIKit
     import AppboyUI
 #else
     import Appboy_iOS_SDK
+    import BrazeKit
+    import BrazeLocation
 #endif
 
 #if COCOAPODS
@@ -26,7 +28,7 @@ public class BrazeRemoteCommand: RemoteCommand {
     override public var version: String? {
         return BrazeConstants.version
     }
-    let brazeInstance: BrazeCommand?
+    public let brazeInstance: BrazeCommand? // Public to let people get braze instance
 
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
         self.brazeInstance = brazeInstance
@@ -61,47 +63,65 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let apiKey = payload[BrazeConstants.Keys.apiKey] as? String else {
                     return
                 }
-                if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? Int,
-                    let processingPolicy = ABKRequestProcessingPolicy(rawValue: requestProcessingPolicy) {
-                    appboyOptions[BrazeConstants.Options.ABKRequestProcessingPolicyOptionKey] = processingPolicy
+                var brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: "") // TODO: endpoint is not optional!! but the API underneath is.
+                
+                
+                if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? Int, // TODO: this has been changed to a STRING in the new SDK
+                   let processingPolicy = Braze.Configuration.Api.RequestPolicy(rawValue: "\(requestProcessingPolicy)") {
+                    brazeConfig.api.requestPolicy = processingPolicy
                 }
                 if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
-                    appboyOptions[BrazeConstants.Options.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
+                    brazeConfig.api.flushInterval = TimeInterval(flushInterval)
+//                    appboyOptions[BrazeConstants.Options.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
                 }
                 if let enableAdvertiserTracking = convertToBool(payload[BrazeConstants.Keys.enableAdvertiserTracking]) {
+                    // TODO: enableAdvertiserTracking
                     appboyOptions[BrazeConstants.Options.ABKIDFADelegateKey] = enableAdvertiserTracking
                 }
                 if let enableDeepLinkHandling = convertToBool(payload[BrazeConstants.Keys.enableDeepLinkHandling]) {
+                    // TODO: enableDeepLinkHandling
                     appboyOptions[BrazeConstants.Options.ABKURLDelegateKey] = enableDeepLinkHandling
                 }
                 if let deviceOptionsKey = payload[BrazeConstants.Keys.deviceOptions] as? Int {
                     let deviceOptions = ABKDeviceOptions(rawValue: UInt(deviceOptionsKey))
-                    appboyOptions[BrazeConstants.Options.ABKDeviceWhitelistKey] = deviceOptions
+//                    appboyOptions[BrazeConstants.Options.ABKDeviceWhitelistKey] = deviceOptions
+                    brazeConfig.devicePropertyAllowList = Set(Braze.Configuration.DeviceProperty.allCases) // TODO: convert Int to options
                 }
                 if let endpoint = payload[BrazeConstants.Keys.customEndpoint] as? String {
-                    appboyOptions[BrazeConstants.Options.ABKEndpointKey] = endpoint
+//                    appboyOptions[BrazeConstants.Options.ABKEndpointKey] = endpoint
+                    brazeConfig.api.endpoint = endpoint
                 }
                 if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? Int {
-                    appboyOptions[BrazeConstants.Options.ABKSessionTimeoutKey] = sessionTimeout
+                    brazeConfig.sessionTimeout = Double(sessionTimeout)
+//                    appboyOptions[BrazeConstants.Options.ABKSessionTimeoutKey] = sessionTimeout
                 }
-                if let disableLocation = convertToBool(payload[BrazeConstants.Keys.disableLocation]) {
-                    appboyOptions[BrazeConstants.Options.ABKEnableAutomaticLocationCollectionKey] = !disableLocation
+                let enableLocation: Bool = !(convertToBool(payload[BrazeConstants.Keys.disableLocation]) ?? false)
+                if enableLocation {
+                    brazeConfig.location.brazeLocation = BrazeLocation()
+                    brazeConfig.location.automaticLocationCollection = true
+//                    appboyOptions[BrazeConstants.Options.ABKEnableAutomaticLocationCollectionKey] = !disableLocation
                 }
                 if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
-                    appboyOptions[BrazeConstants.Options.ABKEnableGeofencesKey] = enableGeofences
+//                    appboyOptions[BrazeConstants.Options.ABKEnableGeofencesKey] = enableGeofences
+                    brazeConfig.location.automaticGeofenceRequests = enableGeofences
                     if enableGeofences {
                         brazeInstance.logSingleLocation()
                     }
                 }
                 if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Int {
-                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
+                    brazeConfig.triggerMinimumTimeInterval = Double(triggerInterval)
+//                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
                 } else if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Double {
-                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = Int(triggerInterval)
+                    brazeConfig.triggerMinimumTimeInterval = triggerInterval
+//                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = Int(triggerInterval)
                 }
                 if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
-                    appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
+//                    appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
+                    brazeConfig.push.appGroup = pushStoryIdentifier
                 }
                 let launchOptions = payload[BrazeConstants.Keys.launchOptions] as? [UIApplication.LaunchOptionsKey: Any]
+                
+                brazeConfig.api.flavor = .tealium
                 brazeInstance.initializeBraze(apiKey: apiKey, application: UIApplication.shared, launchOptions: launchOptions, appboyOptions: appboyOptions)
             case .userIdentifier:
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
@@ -182,7 +202,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
                 brazeInstance.incrementCustomUserAttributes(attributes)
             case .setCustomArrayAttribute:
-                guard let customAttributes = payload[BrazeConstants.Keys.customArrayAttribute] as? [String: [Any]] else {
+                guard let customAttributes = payload[BrazeConstants.Keys.customArrayAttribute] as? [String: [String]] else { // 
                     return
                 }
                 _ = customAttributes.compactMap { key, value in
@@ -222,18 +242,14 @@ public class BrazeRemoteCommand: RemoteCommand {
                 
                 guard let productIdentifier = payload[BrazeConstants.Keys.productIdentifier] as? [String],
                     let currency = payload[BrazeConstants.Keys.currency] as? String,
-                    let priceDouble = payload[BrazeConstants.Keys.price] as? [Double] else {
+                    let prices = payload[BrazeConstants.Keys.price] as? [Double] else {
                         return
-                }
-                let prices = priceDouble.map { price in
-                    NSDecimalNumber(floatLiteral: price)
                 }
                 let products = (productId: productIdentifier, price: prices)
 
                 if let quantity = payload[BrazeConstants.Keys.quantity] as? [Int] {
-                    let unsignedQty = quantity.map { UInt($0) }
-                    let products = (productId: productIdentifier, price: prices, quantity: unsignedQty)
-                    if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [AnyHashable: Any] {
+                    let products = (productId: productIdentifier, price: prices, quantity: quantity)
+                    if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
                         for (index, element) in products.productId.enumerated() {
                             return brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
                         }
@@ -241,7 +257,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                     for (index, element) in products.productId.enumerated() {
                         brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
                     }
-                } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [AnyHashable: Any] {
+                } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
                     for (index, element) in products.productId.enumerated() {
                         brazeInstance.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
                     }
