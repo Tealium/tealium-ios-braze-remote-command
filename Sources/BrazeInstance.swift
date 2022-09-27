@@ -14,6 +14,8 @@ import Foundation
 //    import Appboy_iOS_SDK
     import BrazeKit
     import BrazeLocation
+    import BrazeNotificationService
+    import BrazePushStory
 #endif
 
 #if COCOAPODS
@@ -32,7 +34,7 @@ public protocol BrazeCommand {
     var braze: Braze? { get }
 
     // MARK: Initialization
-    func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?)
+    func initializeBraze(brazeConfig: Braze.Configuration)
     
     // MARK: Geofences
     func logSingleLocation()
@@ -121,17 +123,12 @@ public protocol BrazeCommandNotifier {
 }
 
 public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
+    // TODO: should this be public or should we wrap braze methods with methods in the RemoteCommand?
     public var braze: Braze?
     public init() { }
     
-    public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
-        var config = Braze.Configuration(apiKey: apiKey, endpoint: "") // TODO: endpoint
-        config.location.brazeLocation = BrazeLocation()
-        braze = Braze(configuration: config)
-//        DispatchQueue.main.async {
-//            Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
-//            Appboy.sharedInstance()?.addSdkMetadata([.tealium])
-//        }
+    public func initializeBraze(brazeConfig: Braze.Configuration) {
+        braze = Braze(configuration: brazeConfig)
     }
     
     public func logSingleLocation() {
@@ -265,12 +262,12 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
     }
     
     public func setFacebookUser(_ user: [String: Any]) {
-        guard let userInfo = user[BrazeConstants.SocialMedia.userInfo] as? [String: Any],
-            let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int else {
-                return
-        }
-        let likes: [Any]? = user[BrazeConstants.SocialMedia.likes] as? [Any]
         // TODO: Facebook user
+//        guard let userInfo = user[BrazeConstants.SocialMedia.userInfo] as? [String: Any],
+//            let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int else {
+//                return
+//        }
+//        let likes: [Any]? = user[BrazeConstants.SocialMedia.likes] as? [Any]
 //        Appboy.sharedInstance()?.user.facebookUser = ABKFacebookUser(facebookUserDictionary: userInfo, numberOfFriends: friendsCount, likes: likes)
     }
     

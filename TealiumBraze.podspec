@@ -41,6 +41,8 @@ Pod::Spec.new do |s|
     s.ios.dependency 'Appboy-iOS-SDK', '~> 4.4'
     s.ios.dependency 'BrazeKit', '~> 5.4'
     s.ios.dependency 'BrazeLocation', '~> 5.4'
+    s.ios.dependency 'BrazeNotificationService', '~> 5.4'
+    s.ios.dependency 'BrazePushStory', '~> 5.4'
 
     s.static_framework = true
 
