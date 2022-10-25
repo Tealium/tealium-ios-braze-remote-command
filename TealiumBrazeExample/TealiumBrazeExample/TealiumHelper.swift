@@ -9,6 +9,7 @@
 import Foundation
 import TealiumSwift
 import TealiumBraze
+import BrazeLocation
 
 enum TealiumConfiguration {
     static let account = "tealiummobile"
@@ -29,7 +30,7 @@ class TealiumHelper {
     static var universalData = [String: Any]()
     
     // JSON Remote Command
-    let brazeRemoteCommand = BrazeRemoteCommand(type: .local(file:"braze"))
+    let brazeRemoteCommand = BrazeRemoteCommand(type: .local(file:"braze"), brazeLocation: BrazeLocation())
 //    let brazeRemoteCommand = BrazeRemoteCommand(type: .remote(url: "https://tags.tiqcdn.com/dle/tealiummobile/demo/braze.json"))
     
     private init() {

@@ -36,6 +36,12 @@ public enum BrazeConstants {
         case setLastKnownLocation = "setlastknownlocation"
         case enableSDK = "enablesdk"
         case wipeData = "wipedata"
+        
+        //        public static final String ENABLE_SDK = "enable_sdk"; // different
+//                public static final String WIPE_DATA = "wipe_data"; // different
+//                public static final String REGISTER_TOKEN = "registertoken"; // missing
+//                public static final String ADD_TO_SUBSCRIPTION_GROUP = "addtosubscriptiongroup"; // missing
+//                public static final String REMOVE_FROM_SUBSCRIPTION_GROUP = "removefromsubscriptiongroup"; // missing
     }
     
     enum Keys {
@@ -46,6 +52,7 @@ public enum BrazeConstants {
         static let userIdentifier = "user_id"
         static let userAlias = "user_alias"
         static let aliasLabel = "alias_label"
+//        public static final String ALIAS_LABEL = "user_alias_label"; // different
         static let customAttribute = "set_custom_attribute"
         static let customArrayAttribute = "set_custom_array_attribute"
         static let appendCustomArrayAttribute = "append_custom_array_attribute"

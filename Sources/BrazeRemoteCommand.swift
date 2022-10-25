@@ -13,9 +13,6 @@ import UIKit
 #else
     import Appboy_iOS_SDK
     import BrazeKit
-    import BrazeLocation
-    import BrazeNotificationService
-    import BrazePushStory
 #endif
 
 #if COCOAPODS
@@ -30,10 +27,16 @@ public class BrazeRemoteCommand: RemoteCommand {
     override public var version: String? {
         return BrazeConstants.version
     }
-    public let brazeInstance: BrazeCommand? // Public to let people get braze instance
-
-    public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview) {
+    let brazeInstance: BrazeCommand
+    public var braze: Braze? {
+        brazeInstance.braze
+    }
+    private let location: AnyObject?
+    
+    
+    public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview, brazeLocation: AnyObject? = nil) {
         self.brazeInstance = brazeInstance
+        self.location = brazeLocation
         weak var weakSelf: BrazeRemoteCommand?
         super.init(commandId: BrazeConstants.commandId,
                    description: BrazeConstants.description,
@@ -46,10 +49,15 @@ public class BrazeRemoteCommand: RemoteCommand {
             })
         weakSelf = self
     }
+    
+    public func onReady(_ onReady: @escaping (Braze) -> Void) {
+        TealiumQueues.backgroundSerialQueue.async {
+            self.brazeInstance.onReady.subscribeOnce(onReady)
+        }
+    }
 
     func processRemoteCommand(with payload: [String: Any]) {
-        guard let brazeInstance = brazeInstance,
-              let command = payload[BrazeConstants.commandName] as? String else {
+        guard let command = payload[BrazeConstants.commandName] as? String else {
                 return
         }
         let commands = command.split(separator: BrazeConstants.separator)
@@ -261,7 +269,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         Appboy.sharedInstance()?.user.setGender(gender)
     }
     
-    public func convertToBool<T>(_ value: T) -> Bool? {
+    func convertToBool<T>(_ value: T) -> Bool? {
         if let string = value as? String,
             let bool = Bool(string) {
             return bool
@@ -288,7 +296,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         }
         if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
             brazeConfig.api.flushInterval = TimeInterval(flushInterval)
-//                    appboyOptions[BrazeConstants.Options.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
+                    appboyOptions[BrazeConstants.Options.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
         }
         if let enableAdvertiserTracking = convertToBool(payload[BrazeConstants.Keys.enableAdvertiserTracking]) {
             // TODO: enableAdvertiserTracking
@@ -314,16 +322,13 @@ public class BrazeRemoteCommand: RemoteCommand {
         }
         let enableLocation: Bool = !(convertToBool(payload[BrazeConstants.Keys.disableLocation]) ?? false)
         if enableLocation {
-            brazeConfig.location.brazeLocation = BrazeLocation()
+            brazeConfig.location.brazeLocation = self.location
             brazeConfig.location.automaticLocationCollection = true
 //                    appboyOptions[BrazeConstants.Options.ABKEnableAutomaticLocationCollectionKey] = !disableLocation
         }
         if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
 //                    appboyOptions[BrazeConstants.Options.ABKEnableGeofencesKey] = enableGeofences
             brazeConfig.location.automaticGeofenceRequests = enableGeofences
-            if enableGeofences {
-//                brazeInstance.logSingleLocation()
-            }
         }
         if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Int {
             brazeConfig.triggerMinimumTimeInterval = Double(triggerInterval)

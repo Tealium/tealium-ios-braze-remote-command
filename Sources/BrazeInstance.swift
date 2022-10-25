@@ -11,11 +11,8 @@ import Foundation
 #if SWIFT_PACKAGE
     import AppboyUI
 #else
-//    import Appboy_iOS_SDK
+    import Appboy_iOS_SDK
     import BrazeKit
-    import BrazeLocation
-    import BrazeNotificationService
-    import BrazePushStory
 #endif
 
 #if COCOAPODS
@@ -25,19 +22,14 @@ import TealiumCore
 import TealiumRemoteCommands
 #endif
 
-
-public protocol TealiumApplication { }
-extension UIApplication: TealiumApplication { }
-
 public protocol BrazeCommand {
     
     var braze: Braze? { get }
+    
+    var onReady: TealiumObservable<Braze> { get }
 
     // MARK: Initialization
     func initializeBraze(brazeConfig: Braze.Configuration)
-    
-    // MARK: Geofences
-    func logSingleLocation()
     
     // MARK: User IDs
     func changeUser(_ userIdentifier: String)
@@ -112,28 +104,20 @@ public protocol BrazeCommand {
     func wipeData()
 }
 
-public protocol BrazeCommandNotifier {
-    func registerDeviceToken(_ deviceToken: Data)
-    
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void)
-    
-    func pushAuthorization(fromUserNotificationCenter: Bool)
-}
-
-public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
-    // TODO: should this be public or should we wrap braze methods with methods in the RemoteCommand?
+public class BrazeInstance: BrazeCommand {
     public var braze: Braze?
+    
+    private var _onReady = TealiumReplaySubject<Braze>(cacheSize: 1)
+    public var onReady: TealiumObservable<Braze> {
+        _onReady.asObservable()
+    }
+    
     public init() { }
     
     public func initializeBraze(brazeConfig: Braze.Configuration) {
-        braze = Braze(configuration: brazeConfig)
-    }
-    
-    public func logSingleLocation() {
-        // TODO: location
-//           Appboy.sharedInstance()?.locationManager.logSingleLocation()
+        let braze = Braze(configuration: brazeConfig)
+        self.braze = braze
+        _onReady.publish(braze)
     }
     
     public func changeUser(_ userIdentifier: String) {
@@ -262,43 +246,9 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
     }
     
     public func setFacebookUser(_ user: [String: Any]) {
-        // TODO: Facebook user
-//        guard let userInfo = user[BrazeConstants.SocialMedia.userInfo] as? [String: Any],
-//            let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int else {
-//                return
-//        }
-//        let likes: [Any]? = user[BrazeConstants.SocialMedia.likes] as? [Any]
-//        Appboy.sharedInstance()?.user.facebookUser = ABKFacebookUser(facebookUserDictionary: userInfo, numberOfFriends: friendsCount, likes: likes)
     }
     
     public func setTwitterUser(_ user: [String: Any]) {
-//        let twitterUser = ABKTwitterUser()
-//        if let userDescription = user[BrazeConstants.SocialMedia.userDescription] as? String {
-//            twitterUser.userDescription = userDescription
-//        }
-//        if let twitterName = user[BrazeConstants.SocialMedia.twitterName] as? String {
-//            twitterUser.twitterName = twitterName
-//        }
-//        if let profileImageUrl = user[BrazeConstants.SocialMedia.profileImageUrl] as? String {
-//            twitterUser.profileImageUrl = profileImageUrl
-//        }
-//        if let screenName = user[BrazeConstants.SocialMedia.screenName] as? String {
-//            twitterUser.screenName = screenName
-//        }
-//        if let followersCount = user[BrazeConstants.SocialMedia.followersCount] as? Int {
-//            twitterUser.followersCount = followersCount
-//        }
-//        if let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int {
-//            twitterUser.friendsCount = friendsCount
-//        }
-//        if let statusesCount = user[BrazeConstants.SocialMedia.statusesCount] as? Int {
-//            twitterUser.statusesCount = statusesCount
-//        }
-//        if let twitterId = user[BrazeConstants.SocialMedia.twitterId] as? Int {
-//            twitterUser.twitterID = twitterId
-//        }
-        // TODO: Twitter
-//        Appboy.sharedInstance()?.user.twitterUser = twitterUser
     }
     
     public func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription) {
@@ -380,28 +330,6 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
 //                                                                       horizontalAccuracy: horizontalAccuracy,
 //                                                                       altitude: altitude,
 //                                                                       verticalAccuracy: verticalAccuracy)
-    }
-    
-    public func registerDeviceToken(_ deviceToken: Data) {
-        braze?.notifications.register(deviceToken: deviceToken)
-//        Appboy.sharedInstance()?.registerDeviceToken(deviceToken)
-    }
-    
-    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        // TODO: didReceiveRemoteNotifiaction?
-        
-//        Appboy.sharedInstance()?.register(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
-    }
-    
-    // TODO: background notification - braze?.notifications.handleBackgroundNotification(userInfo:, fetchCompletionHandler:)
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        braze?.notifications.handleUserNotification(response: response, withCompletionHandler: completionHandler)
-//        Appboy.sharedInstance()?.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-    }
-    
-    public func pushAuthorization(fromUserNotificationCenter: Bool) {
-        // TODO: push authorization
-//        Appboy.sharedInstance()?.pushAuthorization(fromUserNotificationCenter: fromUserNotificationCenter)
     }
     
     public func enableSDK(_ enable: Bool) {
