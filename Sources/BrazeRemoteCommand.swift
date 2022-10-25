@@ -33,7 +33,6 @@ public class BrazeRemoteCommand: RemoteCommand {
     }
     private let location: AnyObject?
     
-    
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview, brazeLocation: AnyObject? = nil) {
         self.brazeInstance = brazeInstance
         self.location = brazeLocation
@@ -246,27 +245,6 @@ public class BrazeRemoteCommand: RemoteCommand {
                 break
             }
         }
-    }
-
-    public func setUserAttribute(value: AppboyUserGenderType) {
-        // currently only one int type
-        var gender: ABKUserGenderType
-        switch value {
-        case .male:
-            gender = ABKUserGenderType.male
-        case .female:
-            gender = ABKUserGenderType.female
-        case .other:
-            gender = ABKUserGenderType.other
-        case .unknown:
-            gender = ABKUserGenderType.unknown
-        case .notApplicable:
-            gender = ABKUserGenderType.notApplicable
-        case .preferNotToSay:
-            gender = ABKUserGenderType.preferNotToSay
-        }
-
-        Appboy.sharedInstance()?.user.setGender(gender)
     }
     
     func convertToBool<T>(_ value: T) -> Bool? {
