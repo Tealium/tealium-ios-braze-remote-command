@@ -51,7 +51,7 @@ public class BrazeRemoteCommand: RemoteCommand {
     
     public func onReady(_ onReady: @escaping (Braze) -> Void) {
         TealiumQueues.backgroundSerialQueue.async {
-            self.brazeInstance.onReady.subscribeOnce(onReady)
+            self.brazeInstance.onReady(onReady)
         }
     }
 
@@ -74,7 +74,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
                     return
                 }
-                brazeInstance.changeUser(userIdentifier)
+                self.brazeInstance.changeUser(userIdentifier)
             case .userAlias:
                 guard let userAlias = payload[BrazeConstants.Keys.userAlias] as? String,
                       let label = payload[BrazeConstants.Keys.aliasLabel] as? String else {

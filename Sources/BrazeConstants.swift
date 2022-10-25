@@ -40,8 +40,8 @@ public enum BrazeConstants {
         //        public static final String ENABLE_SDK = "enable_sdk"; // different
 //                public static final String WIPE_DATA = "wipe_data"; // different
 //                public static final String REGISTER_TOKEN = "registertoken"; // missing
-//                public static final String ADD_TO_SUBSCRIPTION_GROUP = "addtosubscriptiongroup"; // missing
-//                public static final String REMOVE_FROM_SUBSCRIPTION_GROUP = "removefromsubscriptiongroup"; // missing
+//                public static final String ADD_TO_SUBSCRIPTION_GROUP = "addtosubscriptiongroup"; // missing - different on the tag
+//                public static final String REMOVE_FROM_SUBSCRIPTION_GROUP = "removefromsubscriptiongroup"; // missing - different on the tag
     }
     
     enum Keys {
