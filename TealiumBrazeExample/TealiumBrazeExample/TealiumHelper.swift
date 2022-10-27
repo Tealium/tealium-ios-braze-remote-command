@@ -22,8 +22,8 @@ class TealiumHelper {
     static let shared = TealiumHelper()
 
     let config = TealiumConfig(account: TealiumConfiguration.account,
-        profile: TealiumConfiguration.profile,
-        environment: TealiumConfiguration.environment)
+                               profile: TealiumConfiguration.profile,
+                               environment: TealiumConfiguration.environment)
 
     var tealium: Tealium?
     
@@ -64,4 +64,29 @@ class TealiumHelper {
         TealiumHelper.shared.tealium?.track(tealiumEvent)
     }
 
+    func application(didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        brazeRemoteCommand.onReady { braze in
+            braze.notifications.register(deviceToken: deviceToken)
+        }
+    }
+    
+    func userNotificationCenter(didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        brazeRemoteCommand.onReady { braze in
+            if !braze.notifications.handleUserNotification(response: response,
+                                                           withCompletionHandler: completionHandler) {
+                completionHandler()
+            }
+        }
+    }
+
+    func application(didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        brazeRemoteCommand.onReady { braze in
+            if !braze.notifications.handleBackgroundNotification(userInfo: userInfo,
+                                                                 fetchCompletionHandler: completionHandler) {
+                completionHandler(.noData)
+            }
+        }
+      }
 }

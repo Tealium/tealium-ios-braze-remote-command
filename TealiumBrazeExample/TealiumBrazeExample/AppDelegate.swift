@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import UserNotifications
+import BrazeKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        application.registerForRemoteNotifications()
+        let center = UNUserNotificationCenter.current()
+        center.setNotificationCategories(Braze.Notifications.categories)
+        center.delegate = self
+        center.requestAuthorization(options: [.badge, .sound, .alert]) { granted, error in
+            print("Notification authorization, granted: \(granted), error: \(String(describing: error))")
+        }
         return true
     }
 
@@ -44,3 +53,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if #available(iOS 14.0, *) {
+          completionHandler([.list, .banner])
+        } else {
+          completionHandler(.alert)
+        }
+    }
+    
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        TealiumHelper.shared.application(didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        TealiumHelper.shared.userNotificationCenter(didReceive: response,
+                                                    withCompletionHandler: completionHandler)
+    }
+    
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        TealiumHelper.shared.application(didReceiveRemoteNotification: userInfo,
+                                         fetchCompletionHandler: completionHandler)
+    }
+}

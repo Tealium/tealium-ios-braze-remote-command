@@ -48,11 +48,10 @@ public enum BrazeConstants {
         static let apiKey = "api_key"
         static let launchOptions = "launch_options"
         static let pushToken = "push_token"
-        static let userAttribute = "user_attributes"
+//        static let userAttribute = "user_attributes"
         static let userIdentifier = "user_id"
         static let userAlias = "user_alias"
         static let aliasLabel = "alias_label"
-//        public static final String ALIAS_LABEL = "user_alias_label"; // different
         static let customAttribute = "set_custom_attribute"
         static let customArrayAttribute = "set_custom_array_attribute"
         static let appendCustomArrayAttribute = "append_custom_array_attribute"
@@ -106,7 +105,7 @@ public enum BrazeConstants {
     }
     
     enum SocialMedia {
-        static let userInfo = "user_info"
+//        static let userInfo = "user_info"
         static let friendsCount = "friends_count"
         static let likes = "likes"
         static let userDescription = "description"
