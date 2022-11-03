@@ -64,8 +64,9 @@ public class BrazeRemoteCommand: RemoteCommand {
             return command.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         }
 
-        brazeCommands.forEach {
-            let command = BrazeConstants.Commands(rawValue: $0.lowercased())
+        brazeCommands
+            .compactMap { BrazeConstants.Commands(rawValue: $0.lowercased()) }
+            .forEach { command in
             switch command {
             case .initialize:
                 guard let config = createConfig(payload: payload) else { return }
@@ -83,44 +84,6 @@ public class BrazeRemoteCommand: RemoteCommand {
                 brazeInstance.addAlias(userAlias, label: label)
             case .userAttribute:
                 brazeInstance.setUserAttributes(payload)
-            case .facebookUser:
-                guard var facebookInfo = payload[BrazeConstants.Keys.facebookUser] as? [String: Any] else {
-                    return
-                }
-                if let numberOfFriends = payload[BrazeConstants.SocialMedia.friendsCount] as? Int {
-                    facebookInfo[BrazeConstants.SocialMedia.friendsCount] = numberOfFriends
-                }
-                if let facebookLikes = payload[BrazeConstants.SocialMedia.likes] as? NSArray {
-                    facebookInfo[BrazeConstants.SocialMedia.likes] = facebookLikes
-                }
-                brazeInstance.setFacebookUser(facebookInfo)
-            case .twitterUser:
-                var twitterInfo = [String: Any]()
-                if let userDescription = payload[BrazeConstants.SocialMedia.userDescription] as? String {
-                    twitterInfo[BrazeConstants.SocialMedia.userDescription] = userDescription
-                }
-                if let twitterName = payload[BrazeConstants.SocialMedia.twitterName] as? String {
-                    twitterInfo[BrazeConstants.SocialMedia.twitterName] = twitterName
-                }
-                if let profileImageUrl = payload[BrazeConstants.SocialMedia.profileImageUrl] as? String {
-                    twitterInfo[BrazeConstants.SocialMedia.profileImageUrl] = profileImageUrl
-                }
-                if let screenName = payload[BrazeConstants.SocialMedia.screenName] as? String {
-                    twitterInfo[BrazeConstants.SocialMedia.screenName] = screenName
-                }
-                if let followersCount = payload[BrazeConstants.SocialMedia.followersCount] as? Int {
-                    twitterInfo[BrazeConstants.SocialMedia.followersCount] = followersCount
-                }
-                if let friendsCount = payload[BrazeConstants.SocialMedia.friendsCount] as? Int {
-                    twitterInfo[BrazeConstants.SocialMedia.friendsCount] = friendsCount
-                }
-                if let statusesCount = payload[BrazeConstants.SocialMedia.statusesCount] as? Int {
-                    twitterInfo[BrazeConstants.SocialMedia.statusesCount] = statusesCount
-                }
-                if let twitterId = payload[BrazeConstants.SocialMedia.twitterId] as? Int {
-                    twitterInfo[BrazeConstants.SocialMedia.twitterId] = twitterId
-                }
-                brazeInstance.setTwitterUser(twitterInfo)
             case .logCustomEvent:
                 var payload = payload
                 guard let eventName = payload[BrazeConstants.Keys.eventName] as? String else {
@@ -152,21 +115,21 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let customAttributes = payload[BrazeConstants.Keys.customArrayAttribute] as? [String: [String]] else {
                     return
                 }
-                _ = customAttributes.compactMap { key, value in
+                customAttributes.forEach { key, value in
                     brazeInstance.setCustomAttributeArrayWithKey(key, array: value)
                 }
             case .appendCustomArrayAttribute:
                 guard let customAttributes = payload[BrazeConstants.Keys.appendCustomArrayAttribute] as? [String: String] else {
                     return
                 }
-                _ = customAttributes.map { key, value in
+                customAttributes.forEach { key, value in
                     brazeInstance.addToCustomAttributeArrayWithKey(key, value: value)
                 }
             case .removeCustomArrayAttribute:
                 guard let customAttributes = payload[BrazeConstants.Keys.removeCustomArrayAttribute] as? [String: String] else {
                     return
                 }
-                _ = customAttributes.map { key, value in
+                customAttributes.forEach { key, value in
                     brazeInstance.removeFromCustomAttributeArrayWithKey(key, value: value)
                 }
             case .emailNotification:
@@ -235,14 +198,19 @@ public class BrazeRemoteCommand: RemoteCommand {
                                                                           altitude: altitude,
                                                                           verticalAccuracy: verticalAccuracy)
             case .enableSDK:
-                guard let enabled = payload[BrazeConstants.Keys.enableSDK] as? Bool else {
-                    return
-                }
-                brazeInstance.enableSDK(enabled)
+                brazeInstance.enableSDK(true)
+            case .disableSDK:
+                brazeInstance.enableSDK(false)
             case .wipeData:
                 brazeInstance.wipeData()
-            default:
-                break
+            case .flush:
+                brazeInstance.flush()
+            case .addToSubsriptionGroup:
+                guard let groupId = payload[BrazeConstants.Keys.subscriptionGroupId] as? String else { return }
+                brazeInstance.addToSubscriptionGroup(groupId)
+            case .removeFromSubscriptionGroup:
+                guard let groupId = payload[BrazeConstants.Keys.subscriptionGroupId] as? String else { return }
+                brazeInstance.removeFromSubscriptionGroup(groupId)
             }
         }
     }
@@ -266,6 +234,10 @@ public class BrazeRemoteCommand: RemoteCommand {
             return nil
         }
         var brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: "") // TODO: endpoint is not optional anymore! but the API underneath is.
+        
+        if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
+            brazeConfig.api.sdkAuthentication = authenticationEnabled
+        }
         
         
         if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? Int, // TODO: this has been changed to a STRING in the new SDK

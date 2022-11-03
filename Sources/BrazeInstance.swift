@@ -28,6 +28,8 @@ public protocol BrazeCommand {
     
     func onReady(_ onReady: @escaping (Braze) -> Void)
 
+    func flush()
+    
     // MARK: Initialization
     func initializeBraze(brazeConfig: Braze.Configuration)
     
@@ -51,11 +53,6 @@ public protocol BrazeCommand {
     
     func incrementCustomUserAttributes(_ attributes: [String: Int])
     
-    // MARK: Social Media
-    func setFacebookUser(_ user: [String: Any])
-    
-    func setTwitterUser(_ user:[String: Any])
-    
     // MARK: Array Attributes
     func setCustomAttributeArrayWithKey(_ key: String, array: [String]?)
     
@@ -67,6 +64,10 @@ public protocol BrazeCommand {
     func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription)
     
     func setPushNotificationSubscriptionType(value: AppboyNotificationSubscription)
+    
+    func addToSubscriptionGroup(_ group: String)
+    
+    func removeFromSubscriptionGroup(_ group: String)
     
     // MARK: Purchases
     func logPurchase(_ productIdentifier: String, currency: String, price: Double)
@@ -100,7 +101,9 @@ public protocol BrazeCommand {
 }
 
 public class BrazeInstance: BrazeCommand {
-    public var braze: Braze?
+    public var braze: Braze? {
+        _onReady.last()
+    }
     
     private var _onReady = TealiumReplaySubject<Braze>(cacheSize: 1)
 
@@ -108,7 +111,6 @@ public class BrazeInstance: BrazeCommand {
     
     public func initializeBraze(brazeConfig: Braze.Configuration) {
         let braze = Braze(configuration: brazeConfig)
-        self.braze = braze
         _onReady.publish(braze)
     }
     
@@ -184,10 +186,6 @@ public class BrazeInstance: BrazeCommand {
         case .phone:
             braze.user.set(phoneNumber: value)
 //            Appboy.sharedInstance()?.user.phone = value
-        case .avatarImageURL:
-            break
-            // TODO: avatarImageURL
-//            Appboy.sharedInstance()?.user.avatarImageURL = value
         case .gender:
             guard let type = AppboyUserGenderType(rawValue: 1), // TODO: type has changed to string!
                 let gender = Braze.User.Gender(rawValue: "\(type.rawValue)") else {
@@ -256,12 +254,6 @@ public class BrazeInstance: BrazeCommand {
 //        Appboy.sharedInstance()?.user.removeFromCustomAttributeArray(withKey: key, value: value)
     }
     
-    public func setFacebookUser(_ user: [String: Any]) {
-    }
-    
-    public func setTwitterUser(_ user: [String: Any]) {
-    }
-    
     public func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription) {
         onReady { braze in
             braze.user.set(emailSubscriptionState: value.brazeSubscriptionState)
@@ -292,7 +284,7 @@ public class BrazeInstance: BrazeCommand {
 ////            Appboy.sharedInstance()?.user.setPush(.unsubscribed)
 //        }
     }
-    
+
     public func incrementCustomUserAttributes(_ attributes: [String: Int]) {
         onReady { braze in
             attributes.forEach { attribute in
@@ -376,6 +368,24 @@ public class BrazeInstance: BrazeCommand {
 //                                                                       horizontalAccuracy: horizontalAccuracy,
 //                                                                       altitude: altitude,
 //                                                                       verticalAccuracy: verticalAccuracy)
+    }
+    
+    public func flush() {
+        onReady { braze in
+            braze.requestImmediateDataFlush()
+        }
+    }
+    
+    public func addToSubscriptionGroup(_ group: String) {
+        onReady { braze in
+            braze.user.addToSubscriptionGroup(id: group)
+        }
+    }
+    
+    public func removeFromSubscriptionGroup(_ group: String) {
+        onReady { braze in
+            braze.user.removeFromSubscriptionGroup(id: group)
+        }
     }
     
     public func enableSDK(_ enable: Bool) {

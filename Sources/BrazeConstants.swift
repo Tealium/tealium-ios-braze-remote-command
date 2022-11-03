@@ -21,8 +21,6 @@ public enum BrazeConstants {
         case userIdentifier = "useridentifier"
         case userAlias = "useralias"
         case userAttribute = "userattribute"
-        case facebookUser = "facebookuser"
-        case twitterUser = "twitteruser"
         case setCustomAttribute = "setcustomattribute"
         case unsetCustomAttribute = "unsetcustomattribute"
         case setCustomArrayAttribute = "setcustomarrayattribute"
@@ -35,20 +33,17 @@ public enum BrazeConstants {
         case logPurchase = "logpurchase"
         case setLastKnownLocation = "setlastknownlocation"
         case enableSDK = "enablesdk"
+        case disableSDK = "disablesdk"
         case wipeData = "wipedata"
-        
-        //        public static final String ENABLE_SDK = "enable_sdk"; // different
-//                public static final String WIPE_DATA = "wipe_data"; // different
-//                public static final String REGISTER_TOKEN = "registertoken"; // missing
-//                public static final String ADD_TO_SUBSCRIPTION_GROUP = "addtosubscriptiongroup"; // missing - different on the tag
-//                public static final String REMOVE_FROM_SUBSCRIPTION_GROUP = "removefromsubscriptiongroup"; // missing - different on the tag
+        case flush = "flush"
+        case addToSubsriptionGroup = "addtosubscriptiongroup"
+        case removeFromSubscriptionGroup = "removefromsubscriptiongroup"
     }
     
     enum Keys {
         static let apiKey = "api_key"
         static let launchOptions = "launch_options"
-        static let pushToken = "push_token"
-//        static let userAttribute = "user_attributes"
+        static let isSdkAuthEnabled = "is_sdk_authentication_enabled"
         static let userIdentifier = "user_id"
         static let userAlias = "user_alias"
         static let aliasLabel = "alias_label"
@@ -69,9 +64,6 @@ public enum BrazeConstants {
         static let quantity = "quantity"
         static let purchaseKey = "purchase"
         static let purchaseProperties = "purchase_properties"
-        static let facebookUser = "facebook_user"
-        static let twitterUser = "twitter_user"
-        static let enableSDK = "enable_sdk"
         static let sessionTimeout = "session_timeout"
         static let disableLocation = "disable_location"
         static let enableGeofences = "enable_geofences"
@@ -88,6 +80,7 @@ public enum BrazeConstants {
         static let customEndpoint = "custom_endpoint"
         static let deviceOptions = "device_options"
         static let pushStoryIdentifier = "push_story_identifier"
+        static let subscriptionGroupId = "subscription_group_id"
     }
     
     enum Options {
@@ -103,20 +96,6 @@ public enum BrazeConstants {
         static let ABKDeviceWhitelistKey = "ABKDeviceWhitelistKey"
         static let ABKPushStoryAppGroupKey = "ABKPushStoryAppGroupKey"
     }
-    
-    enum SocialMedia {
-//        static let userInfo = "user_info"
-        static let friendsCount = "friends_count"
-        static let likes = "likes"
-        static let userDescription = "description"
-        static let twitterName = "twitter_name"
-        static let profileImageUrl = "profile_image_url"
-        static let screenName = "screen_name"
-        static let followersCount = "followers_count"
-        static let statusesCount = "statuses_count"
-        static let twitterId = "twitter_id"
-    }
-    
 }
 
 public enum AppboyUserAttribute: String, CaseIterable {
@@ -128,7 +107,6 @@ public enum AppboyUserAttribute: String, CaseIterable {
     case language
     case homeCity = "home_city"
     case phone
-    case avatarImageURL = "avatar_image_url"
     case gender
 }
 
