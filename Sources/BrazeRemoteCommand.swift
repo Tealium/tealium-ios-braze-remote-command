@@ -8,12 +8,7 @@
 
 import UIKit
 
-#if SWIFT_PACKAGE
-    import AppboyUI
-#else
-    import Appboy_iOS_SDK
-    import BrazeKit
-#endif
+import BrazeKit
 
 #if COCOAPODS
     import TealiumSwift
@@ -76,6 +71,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                     return
                 }
                 self.brazeInstance.changeUser(userIdentifier)
+                // TODO: pass auth signature!
             case .userAlias:
                 guard let userAlias = payload[BrazeConstants.Keys.userAlias] as? String,
                       let label = payload[BrazeConstants.Keys.aliasLabel] as? String else {
@@ -134,13 +130,13 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
             case .emailNotification:
                 guard let emailNotification = payload[BrazeConstants.Keys.emailNotification] as? String,
-                      let subscriptionType = AppboyNotificationSubscription.from(emailNotification) else {
+                      let subscriptionType = Braze.User.SubscriptionState.from(emailNotification) else {
                     return
                 }
                 brazeInstance.setEmailNotificationSubscriptionType(value: subscriptionType)
             case .pushNotification:
                 guard let pushNotification = payload[BrazeConstants.Keys.pushNotification] as? String,
-                      let subscriptionType = AppboyNotificationSubscription.from(pushNotification) else {
+                      let subscriptionType = Braze.User.SubscriptionState.from(pushNotification) else {
                     return
                 }
                 brazeInstance.setPushNotificationSubscriptionType(value: subscriptionType)
@@ -229,71 +225,44 @@ public class BrazeRemoteCommand: RemoteCommand {
     }
 
     func createConfig(payload: [String: Any]) -> Braze.Configuration? {
-        var appboyOptions = [String: Any]()
-        guard let apiKey = payload[BrazeConstants.Keys.apiKey] as? String else {
+        guard let apiKey = payload[BrazeConstants.Keys.apiKey] as? String,
+              let endpoint = payload[BrazeConstants.Keys.customEndpoint] as? String else {
             return nil
         }
-        var brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: "") // TODO: endpoint is not optional anymore! but the API underneath is.
+        var brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
         
         if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
         }
-        
-        
-        if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? Int, // TODO: this has been changed to a STRING in the new SDK
-           let processingPolicy = Braze.Configuration.Api.RequestPolicy(rawValue: "\(requestProcessingPolicy)") {
+        if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? String,
+           let processingPolicy = Braze.Configuration.Api.RequestPolicy.from(requestProcessingPolicy) {
             brazeConfig.api.requestPolicy = processingPolicy
         }
         if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
-            brazeConfig.api.flushInterval = TimeInterval(flushInterval)
-                    appboyOptions[BrazeConstants.Options.ABKFlushIntervalOptionKey] = TimeInterval(flushInterval)
+            brazeConfig.api.flushInterval = flushInterval
         }
-        if let enableAdvertiserTracking = convertToBool(payload[BrazeConstants.Keys.enableAdvertiserTracking]) {
-            // TODO: enableAdvertiserTracking
-            appboyOptions[BrazeConstants.Options.ABKIDFADelegateKey] = enableAdvertiserTracking
+        if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
+            brazeConfig.devicePropertyAllowList = Set(deviceOptions.compactMap{Braze.Configuration.DeviceProperty.from($0)})
         }
-        if let enableDeepLinkHandling = convertToBool(payload[BrazeConstants.Keys.enableDeepLinkHandling]) {
-            // TODO: enableDeepLinkHandling
-            appboyOptions[BrazeConstants.Options.ABKURLDelegateKey] = enableDeepLinkHandling
-        }
-        if let deviceOptionsKey = payload[BrazeConstants.Keys.deviceOptions] as? Int {
-            let deviceOptions = ABKDeviceOptions(rawValue: UInt(deviceOptionsKey))
-                    appboyOptions[BrazeConstants.Options.ABKDeviceWhitelistKey] = deviceOptions
-            appboyOptions
-            brazeConfig.devicePropertyAllowList = Set(Braze.Configuration.DeviceProperty.allCases) // TODO: convert Int to options
-        }
-        if let endpoint = payload[BrazeConstants.Keys.customEndpoint] as? String {
-//                    appboyOptions[BrazeConstants.Options.ABKEndpointKey] = endpoint
-            brazeConfig.api.endpoint = endpoint
-        }
-        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? Int {
-            brazeConfig.sessionTimeout = Double(sessionTimeout)
-//                    appboyOptions[BrazeConstants.Options.ABKSessionTimeoutKey] = sessionTimeout
+        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
+            brazeConfig.sessionTimeout = sessionTimeout.doubleValue
         }
         let enableLocation: Bool = !(convertToBool(payload[BrazeConstants.Keys.disableLocation]) ?? false)
         if enableLocation {
             brazeConfig.location.brazeLocation = self.location
             brazeConfig.location.automaticLocationCollection = true
-//                    appboyOptions[BrazeConstants.Options.ABKEnableAutomaticLocationCollectionKey] = !disableLocation
         }
         if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
-//                    appboyOptions[BrazeConstants.Options.ABKEnableGeofencesKey] = enableGeofences
             brazeConfig.location.automaticGeofenceRequests = enableGeofences
         }
-        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Int {
-            brazeConfig.triggerMinimumTimeInterval = Double(triggerInterval)
-//                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = triggerInterval
-        } else if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? Double {
-            brazeConfig.triggerMinimumTimeInterval = triggerInterval
-//                    appboyOptions[BrazeConstants.Options.ABKMinimumTriggerTimeIntervalKey] = Int(triggerInterval)
+        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
+            brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
         }
         if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
-//                    appboyOptions[BrazeConstants.Options.ABKPushStoryAppGroupKey] = pushStoryIdentifier
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
         brazeConfig.api.flavor = .tealium
         return brazeConfig
     }
-
 }
 

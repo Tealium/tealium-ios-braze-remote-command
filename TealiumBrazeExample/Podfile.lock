@@ -1,27 +1,7 @@
 PODS:
-  - Appboy-iOS-SDK (4.5.1):
-    - Appboy-iOS-SDK/UI (= 4.5.1)
-  - Appboy-iOS-SDK/ContentCards (4.5.1):
-    - Appboy-iOS-SDK/Core
-    - SDWebImage (< 6, >= 5.8.2)
-  - Appboy-iOS-SDK/Core (4.5.1)
-  - Appboy-iOS-SDK/InAppMessage (4.5.1):
-    - Appboy-iOS-SDK/Core
-    - SDWebImage (< 6, >= 5.8.2)
-  - Appboy-iOS-SDK/NewsFeed (4.5.1):
-    - Appboy-iOS-SDK/Core
-    - SDWebImage (< 6, >= 5.8.2)
-  - Appboy-iOS-SDK/UI (4.5.1):
-    - Appboy-iOS-SDK/ContentCards
-    - Appboy-iOS-SDK/Core
-    - Appboy-iOS-SDK/InAppMessage
-    - Appboy-iOS-SDK/NewsFeed
   - BrazeKit (5.4.0)
   - BrazeLocation (5.4.0):
     - BrazeKit (= 5.4.0)
-  - SDWebImage (5.13.3):
-    - SDWebImage/Core (= 5.13.3)
-  - SDWebImage/Core (5.13.3)
   - tealium-swift/Core (2.8.1)
   - tealium-swift/Lifecycle (2.8.1):
     - tealium-swift/Core
@@ -30,7 +10,6 @@ PODS:
   - tealium-swift/TagManagement (2.8.1):
     - tealium-swift/Core
   - TealiumBraze (2.1.0):
-    - Appboy-iOS-SDK (~> 4.4)
     - BrazeKit (~> 5.4)
     - tealium-swift/Core (~> 2.6)
     - tealium-swift/RemoteCommands (~> 2.6)
@@ -43,10 +22,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Appboy-iOS-SDK
     - BrazeKit
     - BrazeLocation
-    - SDWebImage
     - tealium-swift
 
 EXTERNAL SOURCES:
@@ -54,12 +31,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Appboy-iOS-SDK: 93f8c7e0820a79b4ef5367fae32406f03a30ca97
   BrazeKit: 137bad74b121824f387aa8a859fc47047e582cee
   BrazeLocation: 936a680f97248a13509eb936f16f7247aa2ad0eb
-  SDWebImage: af5bbffef2cde09f148d826f9733dcde1a9414cd
   tealium-swift: acbfdd59cb609514c565421a7459a336c0f508ce
-  TealiumBraze: 163b25d6009319f9915efe1f52251e1b243d9b86
+  TealiumBraze: b4e0083f28055c6ab08882a04cc6b128acfa0a7b
 
 PODFILE CHECKSUM: c4ab3ddead56fc34224beede77b44ced421b0109
 

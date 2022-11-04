@@ -82,20 +82,6 @@ public enum BrazeConstants {
         static let pushStoryIdentifier = "push_story_identifier"
         static let subscriptionGroupId = "subscription_group_id"
     }
-    
-    enum Options {
-        static let ABKRequestProcessingPolicyOptionKey = "ABKRequestProcessingPolicyOptionKey"
-        static let ABKFlushIntervalOptionKey = "ABKFlushIntervalOptionKey"
-        static let ABKEnableAutomaticLocationCollectionKey = "ABKEnableAutomaticLocationCollectionKey"
-        static let ABKEnableGeofencesKey = "ABKEnableGeofencesKey"
-        static let ABKIDFADelegateKey = "ABKIDFADelegateKey"
-        static let ABKEndpointKey = "ABKEndpointKey"
-        static let ABKURLDelegateKey = "ABKURLDelegateKey"
-        static let ABKSessionTimeoutKey = "ABKSessionTimeoutKey"
-        static let ABKMinimumTriggerTimeIntervalKey = "ABKMinimumTriggerTimeIntervalKey"
-        static let ABKDeviceWhitelistKey = "ABKDeviceWhitelistKey"
-        static let ABKPushStoryAppGroupKey = "ABKPushStoryAppGroupKey"
-    }
 }
 
 public enum AppboyUserAttribute: String, CaseIterable {
@@ -108,49 +94,4 @@ public enum AppboyUserAttribute: String, CaseIterable {
     case homeCity = "home_city"
     case phone
     case gender
-}
-
-public enum AppboyUserGenderType: Int {
-    case male
-    case female
-    case other
-    case unknown
-    case notApplicable
-    case preferNotToSay
-
-    static func from(_ value: String) -> AppboyUserGenderType {
-        let lowercasedGender = value.lowercased()
-        if lowercasedGender == "male" {
-            return .male
-        } else if lowercasedGender == "female" {
-            return .female
-        } else if lowercasedGender == "other" {
-            return .other
-        } else if lowercasedGender == "unknown" {
-            return .unknown
-        } else if lowercasedGender == "notapplicable" || lowercasedGender == "not_applicable" {
-            return .notApplicable
-        } else {
-            return .preferNotToSay
-        }
-    }
-}
-
-public enum AppboyNotificationSubscription: String {
-    case optedIn
-    case subscribed
-    case unsubscribed
-
-    static func from(_ value: String) -> AppboyNotificationSubscription? {
-        let lowercasedSubscription = value.lowercased()
-        if lowercasedSubscription == "optedin" {
-            return .optedIn
-        } else if lowercasedSubscription == "subscribed" {
-            return .subscribed
-        } else if lowercasedSubscription == "unsubscribed" {
-            return .unsubscribed
-        } else {
-            return nil
-        }
-    }
 }
