@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		152C6E922919584900BE9F6B /* BrazeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 152C6E912919584900BE9F6B /* BrazeKit.xcframework */; };
+		152C6E942919587A00BE9F6B /* BrazeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152C6E932919587A00BE9F6B /* BrazeExtensions.swift */; };
 		15A82EBB277B3E4400A29E32 /* TealiumRemoteCommands.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EB8277B3E4400A29E32 /* TealiumRemoteCommands.xcframework */; };
 		15A82EBC277B3E4400A29E32 /* TealiumCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EB9277B3E4400A29E32 /* TealiumCore.xcframework */; };
-		15A82EBE277B42DA00A29E32 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EBD277B42DA00A29E32 /* SDWebImage.xcframework */; };
-		15A82EBF277B433B00A29E32 /* Appboy_iOS_SDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EB7277B3E4400A29E32 /* Appboy_iOS_SDK.xcframework */; };
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF4919B236CC47000CA46EC /* BrazeInstanceWebviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E822E6272D000A501B /* BrazeInstanceWebviewTests.swift */; };
 		4BF4919C236CC47000CA46EC /* MockBrazeInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E722E6272D000A501B /* MockBrazeInstance.swift */; };
@@ -60,10 +60,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		15A82EB7277B3E4400A29E32 /* Appboy_iOS_SDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Appboy_iOS_SDK.xcframework; path = Carthage/Build/Appboy_iOS_SDK.xcframework; sourceTree = "<group>"; };
+		152C6E912919584900BE9F6B /* BrazeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = BrazeKit.xcframework; path = Carthage/Build/BrazeKit.xcframework; sourceTree = "<group>"; };
+		152C6E932919587A00BE9F6B /* BrazeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeExtensions.swift; sourceTree = "<group>"; };
 		15A82EB8277B3E4400A29E32 /* TealiumRemoteCommands.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TealiumRemoteCommands.xcframework; path = Carthage/Build/TealiumRemoteCommands.xcframework; sourceTree = "<group>"; };
 		15A82EB9277B3E4400A29E32 /* TealiumCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TealiumCore.xcframework; path = Carthage/Build/TealiumCore.xcframework; sourceTree = "<group>"; };
-		15A82EBD277B42DA00A29E32 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
 		4B8DB65C22E622E00074687A /* TealiumBraze.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TealiumBraze.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B8DB65F22E622E00074687A /* TealiumBraze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TealiumBraze.h; sourceTree = "<group>"; };
 		4B8DB66022E622E00074687A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,9 +84,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15A82EBF277B433B00A29E32 /* Appboy_iOS_SDK.xcframework in Frameworks */,
 				15A82EBC277B3E4400A29E32 /* TealiumCore.xcframework in Frameworks */,
-				15A82EBE277B42DA00A29E32 /* SDWebImage.xcframework in Frameworks */,
+				152C6E922919584900BE9F6B /* BrazeKit.xcframework in Frameworks */,
 				15A82EBB277B3E4400A29E32 /* TealiumRemoteCommands.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,6 +127,7 @@
 				CFA79626251D40DC004D4FA4 /* BrazeRemoteCommand.swift */,
 				CFA79627251D40DC004D4FA4 /* BrazeInstance.swift */,
 				CFA79624251D40DC004D4FA4 /* DateConverter.swift */,
+				152C6E932919587A00BE9F6B /* BrazeExtensions.swift */,
 				4B8DB65F22E622E00074687A /* TealiumBraze.h */,
 				4B8DB66022E622E00074687A /* Info.plist */,
 			);
@@ -149,10 +149,9 @@
 		4BF4917E236CC18C00CA46EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				15A82EB7277B3E4400A29E32 /* Appboy_iOS_SDK.xcframework */,
 				15A82EB9277B3E4400A29E32 /* TealiumCore.xcframework */,
 				15A82EB8277B3E4400A29E32 /* TealiumRemoteCommands.xcframework */,
-				15A82EBD277B42DA00A29E32 /* SDWebImage.xcframework */,
+				152C6E912919584900BE9F6B /* BrazeKit.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -276,6 +275,7 @@
 				CFA7962A251D40DC004D4FA4 /* BrazeRemoteCommand.swift in Sources */,
 				CFA7962B251D40DC004D4FA4 /* BrazeInstance.swift in Sources */,
 				CFA79628251D40DC004D4FA4 /* DateConverter.swift in Sources */,
+				152C6E942919587A00BE9F6B /* BrazeExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

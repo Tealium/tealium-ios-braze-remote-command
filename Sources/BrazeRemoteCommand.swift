@@ -238,8 +238,7 @@ public class BrazeRemoteCommand: RemoteCommand {
               let endpoint = payload[BrazeConstants.Keys.customEndpoint] as? String else {
             return nil
         }
-        var brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
-        
+        let brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
         if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
         }
@@ -270,7 +269,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
-        brazeConfig.api.flavor = .tealium
+        brazeConfig.api.sdkFlavor = .tealium
         return brazeConfig
     }
 }
