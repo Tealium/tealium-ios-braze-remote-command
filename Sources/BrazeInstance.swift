@@ -29,7 +29,9 @@ public protocol BrazeCommand {
     func initializeBraze(brazeConfig: Braze.Configuration)
     
     // MARK: User IDs
-    func changeUser(_ userIdentifier: String)
+    func changeUser(_ userIdentifier: String, sdkAuthSignature: String?)
+    
+    func setSdkAuthenticationSignature(_ signature: String)
     
     func addAlias(_ aliasName: String, label: String)
     
@@ -37,6 +39,8 @@ public protocol BrazeCommand {
     func logCustomEvent(eventName: String)
     
     func logCustomEvent(_ eventName: String, properties: [String: Any])
+    
+    func setAdTrackingEnabled(_ enabled: Bool)
     
     // MARK: Attributes
     
@@ -113,9 +117,15 @@ public class BrazeInstance: BrazeCommand {
         _onReady.subscribeOnce(onReady)
     }
     
-    public func changeUser(_ userIdentifier: String) {
+    public func changeUser(_ userIdentifier: String, sdkAuthSignature: String?) {
         onReady { braze in
-            braze.changeUser(userId: userIdentifier, sdkAuthSignature: nil) // TODO: sdkAuthSignature
+            braze.changeUser(userId: userIdentifier, sdkAuthSignature: sdkAuthSignature)
+        }
+    }
+    
+    public func setSdkAuthenticationSignature(_ signature: String) {
+        onReady { braze in
+            braze.set(sdkAuthenticationSignature: signature)
         }
     }
     
@@ -134,6 +144,12 @@ public class BrazeInstance: BrazeCommand {
     public func logCustomEvent(_ eventName: String, properties: [String: Any]) {
         onReady { braze in
             braze.logCustomEvent(name: eventName, properties: properties)
+        }
+    }
+    
+    public func setAdTrackingEnabled(_ enabled: Bool) {
+        onReady { braze in
+            braze.set(adTrackingEnabled: enabled)
         }
     }
     

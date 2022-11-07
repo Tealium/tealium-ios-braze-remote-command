@@ -70,8 +70,12 @@ public class BrazeRemoteCommand: RemoteCommand {
                 guard let userIdentifier = payload[BrazeConstants.Keys.userIdentifier] as? String else {
                     return
                 }
-                self.brazeInstance.changeUser(userIdentifier)
-                // TODO: pass auth signature!
+                self.brazeInstance.changeUser(userIdentifier, sdkAuthSignature: payload[BrazeConstants.Keys.sdkAuthSignature] as? String)
+            case .setSdkAuthSignature:
+                guard let signature = payload[BrazeConstants.Keys.sdkAuthSignature] as? String else {
+                    return
+                }
+                self.brazeInstance.setSdkAuthenticationSignature(signature)
             case .userAlias:
                 guard let userAlias = payload[BrazeConstants.Keys.userAlias] as? String,
                       let label = payload[BrazeConstants.Keys.aliasLabel] as? String else {
@@ -172,6 +176,11 @@ public class BrazeRemoteCommand: RemoteCommand {
                         brazeInstance.logPurchase(element, currency: currency, price: products.price[index])
                     }
                 }
+            case .setAdTrackingEnabled:
+                guard let enabled = convertToBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
+                    return
+                }
+                self.brazeInstance.setAdTrackingEnabled(enabled)
             case .setLastKnownLocation:
                 guard let latitude = payload[BrazeConstants.Keys.latitude] as? Double,
                     let longitude = payload[BrazeConstants.Keys.longitude] as? Double,
