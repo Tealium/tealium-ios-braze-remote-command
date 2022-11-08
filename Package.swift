@@ -11,13 +11,13 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/tealium/tealium-swift", .upToNextMajor(from: "2.6.0")),
-        .package(url: "https://github.com/Appboy/appboy-ios-sdk", .upToNextMajor(from: "4.4.1"))
+        .package(url: "https://github.com/braze-inc/braze-swift-sdk", .upToNextMajor(from: "5.6.2"))
     ],
     targets: [
         .target(
             name: "TealiumBraze",
             dependencies: [
-                .product(name: "AppboyUI", package: "appboy-ios-sdk"),
+                .product(name: "BrazeKit", package: "braze-swift-sdk"),
                 .product(name: "TealiumCore", package: "tealium-swift"),
                 .product(name: "TealiumRemoteCommands", package: "tealium-swift")
             ],
