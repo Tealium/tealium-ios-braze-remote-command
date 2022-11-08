@@ -11,6 +11,8 @@
 		152C6E942919587A00BE9F6B /* BrazeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152C6E932919587A00BE9F6B /* BrazeExtensions.swift */; };
 		15A82EBB277B3E4400A29E32 /* TealiumRemoteCommands.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EB8277B3E4400A29E32 /* TealiumRemoteCommands.xcframework */; };
 		15A82EBC277B3E4400A29E32 /* TealiumCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A82EB9277B3E4400A29E32 /* TealiumCore.xcframework */; };
+		15C8270D291A9A4F00BB96E8 /* BrazeRemoteCommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C8270C291A9A4F00BB96E8 /* BrazeRemoteCommandTests.swift */; };
+		15C8270F291AB19500BB96E8 /* BrazeExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C8270E291AB19500BB96E8 /* BrazeExtensionsTests.swift */; };
 		4B8DB66122E622E00074687A /* TealiumBraze.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8DB65F22E622E00074687A /* TealiumBraze.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF4919B236CC47000CA46EC /* BrazeInstanceWebviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E822E6272D000A501B /* BrazeInstanceWebviewTests.swift */; };
 		4BF4919C236CC47000CA46EC /* MockBrazeInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCDE3E722E6272D000A501B /* MockBrazeInstance.swift */; };
@@ -64,6 +66,8 @@
 		152C6E932919587A00BE9F6B /* BrazeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrazeExtensions.swift; sourceTree = "<group>"; };
 		15A82EB8277B3E4400A29E32 /* TealiumRemoteCommands.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TealiumRemoteCommands.xcframework; path = Carthage/Build/TealiumRemoteCommands.xcframework; sourceTree = "<group>"; };
 		15A82EB9277B3E4400A29E32 /* TealiumCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TealiumCore.xcframework; path = Carthage/Build/TealiumCore.xcframework; sourceTree = "<group>"; };
+		15C8270C291A9A4F00BB96E8 /* BrazeRemoteCommandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrazeRemoteCommandTests.swift; sourceTree = "<group>"; };
+		15C8270E291AB19500BB96E8 /* BrazeExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrazeExtensionsTests.swift; sourceTree = "<group>"; };
 		4B8DB65C22E622E00074687A /* TealiumBraze.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TealiumBraze.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B8DB65F22E622E00074687A /* TealiumBraze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TealiumBraze.h; sourceTree = "<group>"; };
 		4B8DB66022E622E00074687A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 				4BCDE3E722E6272D000A501B /* MockBrazeInstance.swift */,
 				4BF49199236CC28000CA46EC /* HttpTestHelpers.swift */,
 				4BF49192236CC25700CA46EC /* Info.plist */,
+				15C8270C291A9A4F00BB96E8 /* BrazeRemoteCommandTests.swift */,
+				15C8270E291AB19500BB96E8 /* BrazeExtensionsTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -283,9 +289,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15C8270D291A9A4F00BB96E8 /* BrazeRemoteCommandTests.swift in Sources */,
 				4BF4919B236CC47000CA46EC /* BrazeInstanceWebviewTests.swift in Sources */,
 				4BF4919C236CC47000CA46EC /* MockBrazeInstance.swift in Sources */,
 				4BF4919D236CC47000CA46EC /* HttpTestHelpers.swift in Sources */,
+				15C8270F291AB19500BB96E8 /* BrazeExtensionsTests.swift in Sources */,
 				CFA795E9251D3041004D4FA4 /* BrazeInstanceJSONTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

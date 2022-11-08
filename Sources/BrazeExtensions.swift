@@ -17,13 +17,12 @@ extension Braze.User.SubscriptionState {
         } else if lowercasedSubscription == "unsubscribed" {
             return .unsubscribed
         } else {
-            return nil
+            return Self(rawValue: value)
         }
     }
 }
 
 extension Braze.User.Gender {
-    
     static func from(_ value: String) -> Self {
         let lowercasedGender = value.lowercased()
         if lowercasedGender == "male" {

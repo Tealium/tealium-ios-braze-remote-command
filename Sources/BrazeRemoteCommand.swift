@@ -273,4 +273,3 @@ public class BrazeRemoteCommand: RemoteCommand {
         return brazeConfig
     }
 }
-
