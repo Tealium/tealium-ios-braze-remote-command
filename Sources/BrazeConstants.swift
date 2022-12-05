@@ -14,7 +14,7 @@ public enum BrazeConstants {
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
-    static let version = "2.1.0"
+    static let version = "3.0.0"
     
     enum Commands: String {
         case initialize = "initialize"
@@ -68,8 +68,9 @@ public enum BrazeConstants {
         static let purchaseKey = "purchase"
         static let purchaseProperties = "purchase_properties"
         static let sessionTimeout = "session_timeout"
-        static let disableLocation = "disable_location"
+        static let enableAutomaticLocation = "enable_automatic_location"
         static let enableGeofences = "enable_geofences"
+        static let enableAutomaticGeofences = "enable_automatic_geofences"
         static let triggerIntervalSeconds = "trigger_interval_seconds"
         static let latitude = "location_latitude"
         static let longitude = "location_longitude"

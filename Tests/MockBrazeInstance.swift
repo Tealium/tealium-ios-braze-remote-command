@@ -13,6 +13,8 @@ import BrazeKit
 class MockBrazeInstance: BrazeCommand {
     var braze: Braze?
     
+    var config: Braze.Configuration?
+    
     func onReady(_ onReady: @escaping (Braze) -> Void) {
     }
 
@@ -47,6 +49,7 @@ class MockBrazeInstance: BrazeCommand {
     
     func initializeBraze(brazeConfig: Braze.Configuration) {
         initializeBrazeCallCount += 1
+        config = brazeConfig
     }
     
     

@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import TealiumBraze
+import BrazeKit
 #if COCOAPODS
 #else
     import TealiumRemoteCommands
@@ -49,24 +50,36 @@ class BrazeInstanceJSONTests: XCTestCase {
         wait(for: [expect], timeout: 2.0)
     }
 
-    func testInitializeWithAppboyOptions() {
+    func testInitializeWithBrazeConfig() {
         let expect = expectation(description: "test initialize with appboy options")
         let payload: [String: Any] = [
             "command_name": "initialize",
             "api_key": "abc123",
-            "disable_location": "false",
+            "custom_endpoint": "test_endpoint",
+            "enable_automatic_location": "true",
             "enable_geofences": "true",
+            "enable_automatic_geofences": "true",
             "trigger_interval_seconds": 5.0,
             "flush_interval": 12.0,
-            "request_processing_policy": 1,
-            "device_options": 10,
+            "request_processing_policy": "manual",
+            "device_options": ["carrier", "locale", "model"],
             "push_story_identifier": "test.push.story.id",
-            "enable_advertiser_tracking": true,
-            "enable_deep_link_handling": true
         ]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
+            let config = brazeInstance.config
+            XCTAssertNotNil(config)
+            XCTAssertEqual(config!.api.key, (payload["api_key"] as! String))
+            XCTAssertEqual(config!.api.endpoint, (payload["custom_endpoint"] as! String))
+            XCTAssertEqual(config!.api.flushInterval, payload["flush_interval"] as! Double)
+            XCTAssertEqual(config!.api.requestPolicy, Braze.Configuration.Api.RequestPolicy.from((payload["request_processing_policy"] as! String)))
+            XCTAssertEqual(config!.devicePropertyAllowList, Set((payload["device_options"] as! [String]).compactMap(Braze.Configuration.DeviceProperty.from(_:))))
+            XCTAssertEqual(config!.push.appGroup, (payload["push_story_identifier"] as! String))
+            XCTAssertEqual(config!.triggerMinimumTimeInterval, payload["trigger_interval_seconds"] as! Double)
+            XCTAssertEqual("\(config!.location.geofencesEnabled)", payload["enable_geofences"] as! String)
+            XCTAssertEqual("\(config!.location.automaticGeofenceRequests)", payload["enable_automatic_geofences"] as! String)
+            XCTAssertEqual("\(config!.location.automaticLocationCollection)", (payload["enable_automatic_location"] as! String))
         }
         wait(for: [expect], timeout: 2.0)
     }

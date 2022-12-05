@@ -255,13 +255,15 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
             brazeConfig.sessionTimeout = sessionTimeout.doubleValue
         }
-        let enableLocation: Bool = !(convertToBool(payload[BrazeConstants.Keys.disableLocation]) ?? false)
-        if enableLocation {
-            brazeConfig.location.brazeLocation = self.location
-            brazeConfig.location.automaticLocationCollection = true
+        brazeConfig.location.brazeLocation = self.location
+        if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
+            brazeConfig.location.automaticLocationCollection = enableAutomaticLocation
         }
         if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
-            brazeConfig.location.automaticGeofenceRequests = enableGeofences
+            brazeConfig.location.geofencesEnabled = enableGeofences
+        }
+        if let enableAutomaticGeofences = convertToBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
+            brazeConfig.location.automaticGeofenceRequests = enableAutomaticGeofences
         }
         if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
             brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
