@@ -71,4 +71,9 @@ class EventViewController: UIViewController {
         locationInfo["horizontal_accuracy"] = 99.00
         TealiumHelper.trackEvent(title: "set_location", data: locationInfo)
     }
+    
+    @IBAction func logUnknownEvent(_ sender: Any) {
+        TealiumHelper.trackEvent(title: "unknown_event", data: nil)
+    }
+    
 }

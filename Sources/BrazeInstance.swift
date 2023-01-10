@@ -8,11 +8,7 @@
 
 import Foundation
 
-#if SWIFT_PACKAGE
-    import AppboyUI
-#else
-    import Appboy_iOS_SDK
-#endif
+import BrazeKit
 
 #if COCOAPODS
 import TealiumSwift
@@ -21,75 +17,72 @@ import TealiumCore
 import TealiumRemoteCommands
 #endif
 
-
-public protocol TealiumApplication { }
-extension UIApplication: TealiumApplication { }
-
 public protocol BrazeCommand {
     
-    // MARK: Initialization
-    func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?)
+    var braze: Braze? { get }
     
-    // MARK: Geofences
-    func logSingleLocation()
+    func onReady(_ onReady: @escaping (Braze) -> Void)
+
+    func flush()
+    
+    // MARK: Initialization
+    func initializeBraze(brazeConfig: Braze.Configuration)
     
     // MARK: User IDs
-    func changeUser(_ userIdentifier: String)
+    func changeUser(_ userIdentifier: String, sdkAuthSignature: String?)
+    
+    func setSdkAuthenticationSignature(_ signature: String)
     
     func addAlias(_ aliasName: String, label: String)
     
     // MARK: Events
     func logCustomEvent(eventName: String)
     
-    func logCustomEvent(_ eventName: String, properties: [AnyHashable: Any])
+    func logCustomEvent(_ eventName: String, properties: [String: Any])
+    
+    func setAdTrackingEnabled(_ enabled: Bool)
     
     // MARK: Attributes
-    func setUserAttribute(key: AppboyUserAttribute, value: String)
     
     func setUserAttributes(_ attributes: [String: Any])
     
     func setCustomAttributes(_ attributes: [String: Any])
     
-    func setCustomAttributeWithKey(_ key: String, value: AnyHashable)
-    
     func unsetCustomAttributeWithKey(_ key: String)
     
     func incrementCustomUserAttributes(_ attributes: [String: Int])
     
-    func incrementCustomUserAttribute(_ key: String, by: Int)
-    
-    // MARK: Social Media
-    func setFacebookUser(_ user: [String: Any])
-    
-    func setTwitterUser(_ user:[String: Any])
-    
     // MARK: Array Attributes
-    func setCustomAttributeArrayWithKey(_ key: String, array: [Any]?)
+    func setCustomAttributeArrayWithKey(_ key: String, array: [String]?)
     
     func addToCustomAttributeArrayWithKey(_ key: String, value: String)
     
     func removeFromCustomAttributeArrayWithKey(_ key: String, value: String)
     
     // MARK: Subscriptions
-    func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription)
+    func setEmailNotificationSubscriptionType(value: Braze.User.SubscriptionState)
     
-    func setPushNotificationSubscriptionType(value: AppboyNotificationSubscription)
+    func setPushNotificationSubscriptionType(value: Braze.User.SubscriptionState)
+    
+    func addToSubscriptionGroup(_ group: String)
+    
+    func removeFromSubscriptionGroup(_ group: String)
     
     // MARK: Purchases
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber)
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double)
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt)
-    
-    func logPurchase(_ productIdentifier: String,
-                     currency: String,
-                     price: NSDecimalNumber,
-                     properties: [AnyHashable: Any]?)
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int)
     
     func logPurchase(_ productIdentifier: String,
                      currency: String,
-                     price: NSDecimalNumber,
-                     quantity: UInt,
-                     properties: [AnyHashable: Any]?)
+                     price: Double,
+                     properties: [String: Any]?)
+    
+    func logPurchase(_ productIdentifier: String,
+                     currency: String,
+                     price: Double,
+                     quantity: Int,
+                     properties: [String: Any]?)
     
     // MARK: Location
     func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double)
@@ -106,228 +99,215 @@ public protocol BrazeCommand {
     func wipeData()
 }
 
-public protocol BrazeCommandNotifier {
-    func registerDeviceToken(_ deviceToken: Data)
+public class BrazeInstance: BrazeCommand {
+    public var braze: Braze? {
+        _onReady.last()
+    }
     
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void)
-    
-    func pushAuthorization(fromUserNotificationCenter: Bool)
-}
+    private var _onReady = TealiumReplaySubject<Braze>(cacheSize: 1)
 
-public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
-    
     public init() { }
     
-    public func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
-        DispatchQueue.main.async {
-            Appboy.start(withApiKey: apiKey, in: application as? UIApplication ?? UIApplication.shared, withLaunchOptions: launchOptions, withAppboyOptions: appboyOptions)
-            Appboy.sharedInstance()?.addSdkMetadata([.tealium])
+    public func initializeBraze(brazeConfig: Braze.Configuration) {
+        let braze = Braze(configuration: brazeConfig)
+        _onReady.publish(braze)
+    }
+    
+    public func onReady(_ onReady: @escaping (Braze) -> Void) {
+        _onReady.subscribeOnce(onReady)
+    }
+    
+    public func changeUser(_ userIdentifier: String, sdkAuthSignature: String?) {
+        onReady { braze in
+            braze.changeUser(userId: userIdentifier, sdkAuthSignature: sdkAuthSignature)
         }
     }
     
-    public func logSingleLocation() {
-           Appboy.sharedInstance()?.locationManager.logSingleLocation()
-    }
-    
-    public func changeUser(_ userIdentifier: String) {
-        Appboy.sharedInstance()?.changeUser(userIdentifier)
+    public func setSdkAuthenticationSignature(_ signature: String) {
+        onReady { braze in
+            braze.set(sdkAuthenticationSignature: signature)
+        }
     }
     
     public func addAlias(_ aliasName: String, label: String) {
-        Appboy.sharedInstance()?.user.addAlias(aliasName, withLabel: label)
-    }
-    
-    public func logCustomEvent(eventName: String) {
-        Appboy.sharedInstance()?.logCustomEvent(eventName)
-    }
-    
-    public func logCustomEvent(_ eventName: String, properties: [AnyHashable: Any]) {
-        Appboy.sharedInstance()?.logCustomEvent(eventName, withProperties: properties)
-    }
-    
-    public func setUserAttributes(_ attributes: [String : Any]) {
-        _ = AppboyUserAttribute.allCases.map {
-            guard let value = attributes["\($0.rawValue)"] as? String else {
-                return
-            }
-            setUserAttribute(key: $0, value: value)
+        onReady { braze in
+            braze.user.add(alias: aliasName, label: label)
         }
     }
     
-    public func setUserAttribute(key: AppboyUserAttribute, value: String) {
+    public func logCustomEvent(eventName: String) {
+        onReady { braze in
+            braze.logCustomEvent(name: eventName)
+        }
+    }
+    
+    public func logCustomEvent(_ eventName: String, properties: [String: Any]) {
+        onReady { braze in
+            braze.logCustomEvent(name: eventName, properties: properties)
+        }
+    }
+    
+    public func setAdTrackingEnabled(_ enabled: Bool) {
+        onReady { braze in
+            braze.set(adTrackingEnabled: enabled)
+        }
+    }
+    
+    public func setUserAttributes(_ attributes: [String : Any]) {
+        onReady { braze in
+            AppboyUserAttribute.allCases.forEach {
+                guard let value = attributes["\($0.rawValue)"] as? String else {
+                    return
+                }
+                BrazeInstance.setUserAttribute(braze, key: $0, value: value)
+            }
+        }
+    }
+    
+    static private func setUserAttribute(_ braze: Braze, key: AppboyUserAttribute, value: String) {
         switch key {
         case .firstName:
-            Appboy.sharedInstance()?.user.firstName = value
+            braze.user.set(firstName: value)
         case .lastName:
-            Appboy.sharedInstance()?.user.lastName = value
+            braze.user.set(lastName: value)
         case .email:
-            Appboy.sharedInstance()?.user.email = value
+            braze.user.set(email: value)
         case .dateOfBirth:
             guard let date = DateConverter.shared.iso8601DateFormatter.date(from: value) else {
                 return
             }
-            Appboy.sharedInstance()?.user.dateOfBirth = date
+            braze.user.set(dateOfBirth: date)
         case .country:
-            Appboy.sharedInstance()?.user.country = value
+            braze.user.set(country: value)
         case .language:
-            Appboy.sharedInstance()?.user.language = value
+            braze.user.set(language: value)
         case .homeCity:
-            Appboy.sharedInstance()?.user.homeCity = value
+            braze.user.set(homeCity: value)
         case .phone:
-            Appboy.sharedInstance()?.user.phone = value
-        case .avatarImageURL:
-            Appboy.sharedInstance()?.user.avatarImageURL = value
+            braze.user.set(phoneNumber: value)
         case .gender:
-            guard let gender = ABKUserGenderType(rawValue: AppboyUserGenderType.from(value).rawValue) else {
-                return
-            }
-            Appboy.sharedInstance()?.user.setGender(gender)
+            braze.user.set(gender: Braze.User.Gender.from(value))
         }
     }
     
     public func setCustomAttributes(_ attributes: [String : Any]) {
-        _ = attributes.map { attribute in
-            guard let value = attribute.value as? AnyHashable else {
-                return
+        onReady {  braze in
+            attributes.forEach { attribute in
+                guard let value = attribute.value as? AnyHashable else {
+                    return
+                }
+                BrazeInstance.setCustomAttribute(braze, withKey: attribute.key, value: value)
             }
-            setCustomAttributeWithKey(attribute.key, value: value)
         }
     }
     
-    public func setCustomAttributeWithKey(_ key: String, value: AnyHashable) {
+    static private func setCustomAttribute(_ braze: Braze, withKey key: String, value: AnyHashable) {
         if let value = value as? Bool {
-            Appboy.sharedInstance()?.user.setCustomAttributeWithKey(key, andBOOLValue: value)
+            braze.user.setCustomAttribute(key: key, value: value)
         } else if let value = value as? Int {
-            Appboy.sharedInstance()?.user.setCustomAttributeWithKey(key, andIntegerValue: value)
+            braze.user.setCustomAttribute(key: key, value: value)
         } else if let value = value as? Double {
-            Appboy.sharedInstance()?.user.setCustomAttributeWithKey(key, andDoubleValue: value)
+            braze.user.setCustomAttribute(key: key, value: value)
         } else if let value = value as? String {
-            Appboy.sharedInstance()?.user.setCustomAttributeWithKey(key, andStringValue: value)
+            braze.user.setCustomAttribute(key: key, value: value)
         } else if let value = value as? Date {
-            Appboy.sharedInstance()?.user.setCustomAttributeWithKey(key, andDateValue: value)
+            braze.user.setCustomAttribute(key: key, value: value)
         }
     }
     
     public func unsetCustomAttributeWithKey(_ key: String) {
-        Appboy.sharedInstance()?.user.unsetCustomAttribute(withKey: key)
+        onReady { braze in
+            braze.user.unsetCustomAttribute(key: key)
+        }
     }
     
-    public func incrementCustomUserAttribute(_ key: String, by: Int) {
-        Appboy.sharedInstance()?.user.incrementCustomUserAttribute(key, by: by)
-    }
-    
-    public func setCustomAttributeArrayWithKey(_ key: String, array: [Any]?) {
-        Appboy.sharedInstance()?.user.setCustomAttributeArrayWithKey(key, array: array)
+    public func setCustomAttributeArrayWithKey(_ key: String, array: [String]?) {
+        onReady { braze in
+            braze.user.setCustomAttributeArray(key: key, array: array)
+        }
     }
     
     public func addToCustomAttributeArrayWithKey(_ key: String, value: String) {
-        Appboy.sharedInstance()?.user.addToCustomAttributeArray(withKey: key, value: value)
+        onReady { braze in
+            braze.user.addToCustomAttributeArray(key: key, value: value)
+        }
     }
     
     public func removeFromCustomAttributeArrayWithKey(_ key: String, value: String) {
-        Appboy.sharedInstance()?.user.removeFromCustomAttributeArray(withKey: key, value: value)
-    }
-    
-    public func setFacebookUser(_ user: [String: Any]) {
-        guard let userInfo = user[BrazeConstants.SocialMedia.userInfo] as? [String: Any],
-            let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int else {
-                return
-        }
-        let likes: [Any]? = user[BrazeConstants.SocialMedia.likes] as? [Any]
-        Appboy.sharedInstance()?.user.facebookUser = ABKFacebookUser(facebookUserDictionary: userInfo, numberOfFriends: friendsCount, likes: likes)
-    }
-    
-    public func setTwitterUser(_ user: [String: Any]) {
-        let twitterUser = ABKTwitterUser()
-        if let userDescription = user[BrazeConstants.SocialMedia.userDescription] as? String {
-            twitterUser.userDescription = userDescription
-        }
-        if let twitterName = user[BrazeConstants.SocialMedia.twitterName] as? String {
-            twitterUser.twitterName = twitterName
-        }
-        if let profileImageUrl = user[BrazeConstants.SocialMedia.profileImageUrl] as? String {
-            twitterUser.profileImageUrl = profileImageUrl
-        }
-        if let screenName = user[BrazeConstants.SocialMedia.screenName] as? String {
-            twitterUser.screenName = screenName
-        }
-        if let followersCount = user[BrazeConstants.SocialMedia.followersCount] as? Int {
-            twitterUser.followersCount = followersCount
-        }
-        if let friendsCount = user[BrazeConstants.SocialMedia.friendsCount] as? Int {
-            twitterUser.friendsCount = friendsCount
-        }
-        if let statusesCount = user[BrazeConstants.SocialMedia.statusesCount] as? Int {
-            twitterUser.statusesCount = statusesCount
-        }
-        if let twitterId = user[BrazeConstants.SocialMedia.twitterId] as? Int {
-            twitterUser.twitterID = twitterId
-        }
-        Appboy.sharedInstance()?.user.twitterUser = twitterUser
-    }
-    
-    public func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription) {
-        switch value {
-        case .optedIn:
-            Appboy.sharedInstance()?.user.setEmailNotificationSubscriptionType(.optedIn)
-        case .subscribed:
-            Appboy.sharedInstance()?.user.setEmailNotificationSubscriptionType(.subscribed)
-        case .unsubscribed:
-            Appboy.sharedInstance()?.user.setEmailNotificationSubscriptionType(.unsubscribed)
+        onReady { braze in
+            braze.user.removeFromCustomAttributeArray(key: key, value: value)
         }
     }
     
-    public func setPushNotificationSubscriptionType(value: AppboyNotificationSubscription) {
-        switch value {
-        case .optedIn:
-            Appboy.sharedInstance()?.user.setPush(.optedIn)
-        case .subscribed:
-            Appboy.sharedInstance()?.user.setPush(.subscribed)
-        case .unsubscribed:
-            Appboy.sharedInstance()?.user.setPush(.unsubscribed)
+    public func setEmailNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
+        onReady { braze in
+            braze.user.set(emailSubscriptionState: value)
         }
     }
     
+    public func setPushNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
+        onReady { braze in
+            braze.user.set(pushNotificationSubscriptionState: value)
+        }
+    }
+
     public func incrementCustomUserAttributes(_ attributes: [String: Int]) {
-        attributes.forEach { attribute in
-            incrementCustomUserAttribute(attribute.key, by: attribute.value)
+        onReady { braze in
+            attributes.forEach { attribute in
+                braze.user.incrementCustomUserAttribute(key: attribute.key, by: attribute.value)
+            }
         }
     }
     
-    public func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier, inCurrency: currency, atPrice: price)
+    public func logPurchase(_ productIdentifier: String, currency: String, price: Double) {
+        onReady { braze in
+            braze.logPurchase(productId: productIdentifier, currency: currency, price: price)
+        }
     }
     
-    public func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier, inCurrency: currency, atPrice: price, withQuantity: quantity)
-    }
-    
-    public func logPurchase(_ productIdentifier: String,
-                            currency: String,
-                            price: NSDecimalNumber,
-                            properties: [AnyHashable: Any]?) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier,
-                                             inCurrency: currency,
-                                             atPrice: price,
-                                             withProperties: properties)
+    public func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int) {
+        onReady { braze in
+            braze.logPurchase(productId: productIdentifier,
+                              currency: currency,
+                              price: price,
+                              quantity: quantity)
+        }
     }
     
     public func logPurchase(_ productIdentifier: String,
                             currency: String,
-                            price: NSDecimalNumber,
-                            quantity: UInt,
-                            properties: [AnyHashable: Any]?) {
-        Appboy.sharedInstance()?.logPurchase(productIdentifier,
-                                             inCurrency: currency,
-                                             atPrice: price,
-                                             withQuantity: quantity,
-                                             andProperties: properties)
+                            price: Double,
+                            properties: [String: Any]?) {
+        onReady { braze in
+            braze.logPurchase(productId: productIdentifier,
+                              currency: currency,
+                              price: price,
+                              properties: properties)
+        }
     }
     
-    public func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double) {
-        Appboy.sharedInstance()?.user.setLastKnownLocationWithLatitude(latitude, longitude: longitude, horizontalAccuracy: horizontalAccuracy)
+    public func logPurchase(_ productIdentifier: String,
+                            currency: String,
+                            price: Double,
+                            quantity: Int,
+                            properties: [String: Any]?) {
+        onReady { braze in
+            braze.logPurchase(productId: productIdentifier,
+                              currency: currency,
+                              price: price,
+                              quantity: quantity,
+                              properties: properties)
+        }
+    }
+    
+    public func setLastKnownLocationWithLatitude(latitude: Double,
+                                                 longitude: Double,
+                                                 horizontalAccuracy: Double) {
+        onReady { braze in
+            braze.user.setLastKnownLocation(latitude: latitude,
+                                            longitude: longitude,
+                                            horizontalAccuracy: horizontalAccuracy)
+        }
     }
 
     public func setLastKnownLocationWithLatitude(latitude: Double,
@@ -335,39 +315,42 @@ public class BrazeInstance: BrazeCommand, BrazeCommandNotifier {
                                                  horizontalAccuracy: Double,
                                                  altitude: Double,
                                                  verticalAccuracy: Double) {
-        Appboy.sharedInstance()?.user.setLastKnownLocationWithLatitude(latitude,
-                                                                       longitude: longitude,
-                                                                       horizontalAccuracy: horizontalAccuracy,
-                                                                       altitude: altitude,
-                                                                       verticalAccuracy: verticalAccuracy)
+        onReady { braze in
+            braze.user.setLastKnownLocation(latitude: latitude,
+                                            longitude: longitude,
+                                            altitude: altitude,
+                                            horizontalAccuracy: horizontalAccuracy,
+                                            verticalAccuracy: verticalAccuracy)
+        }
     }
     
-    public func registerDeviceToken(_ deviceToken: Data) {
-        Appboy.sharedInstance()?.registerDeviceToken(deviceToken)
+    public func flush() {
+        onReady { braze in
+            braze.requestImmediateDataFlush()
+        }
     }
     
-    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        Appboy.sharedInstance()?.register(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+    public func addToSubscriptionGroup(_ group: String) {
+        onReady { braze in
+            braze.user.addToSubscriptionGroup(id: group)
+        }
     }
     
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        Appboy.sharedInstance()?.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-    }
-    
-    public func pushAuthorization(fromUserNotificationCenter: Bool) {
-        Appboy.sharedInstance()?.pushAuthorization(fromUserNotificationCenter: fromUserNotificationCenter)
+    public func removeFromSubscriptionGroup(_ group: String) {
+        onReady { braze in
+            braze.user.removeFromSubscriptionGroup(id: group)
+        }
     }
     
     public func enableSDK(_ enable: Bool) {
-        if enable {
-            Appboy.requestEnableSDKOnNextAppRun()
-        } else {
-            Appboy.disableSDK()
+        onReady { braze in
+            braze.enabled = enable
         }
     }
     
     public func wipeData() {
-        Appboy.wipeDataAndDisableForAppRun()
+        onReady { braze in
+            braze.wipeData()
+        }
     }
 }
-

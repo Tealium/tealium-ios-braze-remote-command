@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import TealiumBraze
+import BrazeKit
 #if COCOAPODS
 #else
     import TealiumRemoteCommands
@@ -40,7 +41,7 @@ class BrazeInstanceJSONTests: XCTestCase {
     // HERE
     func testInitializeCalledWithApiKey() {
         let expect = expectation(description: "test initialize called with api key")
-        let payload = ["command_name": "initialize", "api_key": "test123"]
+        let payload = ["command_name": "initialize", "api_key": "test123", "custom_endpoint": "testEndpoint"]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
@@ -49,33 +50,36 @@ class BrazeInstanceJSONTests: XCTestCase {
         wait(for: [expect], timeout: 2.0)
     }
 
-    func testInitializeWithAppboyOptions() {
+    func testInitializeWithBrazeConfig() {
         let expect = expectation(description: "test initialize with appboy options")
         let payload: [String: Any] = [
             "command_name": "initialize",
             "api_key": "abc123",
-            "disable_location": "false",
+            "custom_endpoint": "test_endpoint",
+            "enable_automatic_location": "true",
             "enable_geofences": "true",
+            "enable_automatic_geofences": "true",
             "trigger_interval_seconds": 5.0,
             "flush_interval": 12.0,
-            "request_processing_policy": 1,
-            "device_options": 10,
+            "request_processing_policy": "manual",
+            "device_options": ["carrier", "locale", "model"],
             "push_story_identifier": "test.push.story.id",
-            "enable_advertiser_tracking": true,
-            "enable_deep_link_handling": true
         ]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKEnableGeofencesKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKFlushIntervalOptionKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKDeviceWhitelistKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKPushStoryAppGroupKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKIDFADelegateKey"]!)
-            XCTAssertEqual(1, brazeInstance.appBoyOptionsCount["ABKURLDelegateKey"]!)
+            let config = brazeInstance.config
+            XCTAssertNotNil(config)
+            XCTAssertEqual(config!.api.key, (payload["api_key"] as! String))
+            XCTAssertEqual(config!.api.endpoint, (payload["custom_endpoint"] as! String))
+            XCTAssertEqual(config!.api.flushInterval, payload["flush_interval"] as! Double)
+            XCTAssertEqual(config!.api.requestPolicy, Braze.Configuration.Api.RequestPolicy.from((payload["request_processing_policy"] as! String)))
+            XCTAssertEqual(config!.devicePropertyAllowList, Set((payload["device_options"] as! [String]).compactMap(Braze.Configuration.DeviceProperty.from(_:))))
+            XCTAssertEqual(config!.push.appGroup, (payload["push_story_identifier"] as! String))
+            XCTAssertEqual(config!.triggerMinimumTimeInterval, payload["trigger_interval_seconds"] as! Double)
+            XCTAssertEqual("\(config!.location.geofencesEnabled)", payload["enable_geofences"] as! String)
+            XCTAssertEqual("\(config!.location.automaticGeofenceRequests)", payload["enable_automatic_geofences"] as! String)
+            XCTAssertEqual("\(config!.location.automaticLocationCollection)", (payload["enable_automatic_location"] as! String))
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -88,22 +92,6 @@ class BrazeInstanceJSONTests: XCTestCase {
             brazeCommand.completion(response)
             expect.fulfill()
             XCTAssertEqual(1, brazeInstance.changeUserCallCount)
-        }
-        wait(for: [expect], timeout: 2.0)
-    }
-
-    func testLogSingleLocation() {
-        let expect = expectation(description: "test log single location")
-        let payload: [String: Any] = [
-            "command_name": "initialize",
-            "api_key": "abc123",
-            "disable_location": "false",
-            "enable_geofences": "true"
-        ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
-            brazeCommand.completion(response)
-            expect.fulfill()
-            XCTAssertEqual(1, brazeInstance.logSingleLocationCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -245,12 +233,11 @@ class BrazeInstanceJSONTests: XCTestCase {
             "language": "language_test",
             "home_city": "home_city_test",
             "phone": "phone_test",
-            "avatar_image_url": "avatar_image_url_test",
             "gender": "male"]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(10, brazeInstance.setUserAttributeCallCount)
+            XCTAssertEqual(9, brazeInstance.setUserAttributeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -266,48 +253,13 @@ class BrazeInstanceJSONTests: XCTestCase {
             "language": "language_test",
             "home_city": "home_city_test",
             "phone": "phone_test",
-            "avatar_image_url": "avatar_image_url_test",
             "not_a_user_attribute_key": "123",
             "not_a_user_attribute_key2": "456"
         ]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
-            XCTAssertEqual(8, brazeInstance.setUserAttributeCallCount)
-        }
-        wait(for: [expect], timeout: 2.0)
-    }
-
-    func testFacebookUserSet() {
-        let expect = expectation(description: "test facebook user set")
-        let payload: [String: Any] = ["command_name": "initialize,facebookuser",
-            "facebook_id": [
-                "user_info": [:],
-                "friends_count": 100,
-                "likes": ["apple", "orange"]
-            ]
-        ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
-            brazeCommand.completion(response)
-            expect.fulfill()
-            XCTAssertEqual(0, brazeInstance.facebookUserCallCount)
-        }
-        wait(for: [expect], timeout: 2.0)
-    }
-
-    func testTwitterUserSet() {
-        let expect = expectation(description: "test twitter user set")
-        let payload: [String: Any] = ["command_name": "initialize,twitteruser",
-            "twitter_user": [
-                "user_info": [:],
-                "friends_count": 100,
-                "likes": []
-            ]
-        ]
-        if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
-            brazeCommand.completion(response)
-            expect.fulfill()
-            XCTAssertEqual(1, brazeInstance.twitterUserCallCount)
+            XCTAssertEqual(7, brazeInstance.setUserAttributeCallCount)
         }
         wait(for: [expect], timeout: 2.0)
     }
@@ -607,8 +559,7 @@ class BrazeInstanceJSONTests: XCTestCase {
 
     func testDisableSDK() {
         let expect = expectation(description: "sdk is disabled")
-        let payload: [String: Any] = ["command_name": "enablesdk",
-            "enable_sdk": false]
+        let payload: [String: Any] = ["command_name": "disablesdk"]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()
@@ -619,8 +570,7 @@ class BrazeInstanceJSONTests: XCTestCase {
 
     func testReenableSDK() {
         let expect = expectation(description: "sdk is reenabled")
-        let payload: [String: Any] = ["command_name": "enablesdk",
-            "enable_sdk": true]
+        let payload: [String: Any] = ["command_name": "enablesdk"]
         if let response = HttpTestHelpers.createRemoteCommandResponse(type: .JSON, commandId: "braze", payload: payload) {
             brazeCommand.completion(response)
             expect.fulfill()

@@ -27,7 +27,6 @@ class UserViewController: UIViewController {
     @IBOutlet weak var birthdayTextField: UITextField!
     @IBOutlet weak var countryTextField: UITextField!
     @IBOutlet weak var homeCityTextField: UITextField!
-    @IBOutlet weak var avatarImageURLTextField: UITextField!
     @IBOutlet weak var genderSegmentedControl: UISegmentedControl!
     
     override func viewDidLoad() {

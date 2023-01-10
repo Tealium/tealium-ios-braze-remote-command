@@ -8,15 +8,20 @@
 
 import Foundation
 @testable import TealiumBraze
+import BrazeKit
 
 class MockBrazeInstance: BrazeCommand {
+    var braze: Braze?
+    
+    var config: Braze.Configuration?
+    
+    func onReady(_ onReady: @escaping (Braze) -> Void) {
+    }
 
     var initializeBrazeCallCount = 0
-    var logSingleLocationCallCount = 0
     var changeUserCallCount = 0
+    var setAuthSignatureCallCount = 0
     var setUserAttributeCallCount = 0
-    var facebookUserCallCount = 0
-    var twitterUserCallCount = 0
     var logCustomEventCallCount = 0
     var logCustomEventWithPropertiesCallCount = 0
     var addAliasCallCount = 0
@@ -38,65 +43,22 @@ class MockBrazeInstance: BrazeCommand {
     var disableCallCount = 0
     var reEnableCallCount = 0
     var wipeDataCallCount = 0
+    var flushCallCount = 0
     
     // Appboy Options
-    var appBoyOptionsCount = ["ABKRequestProcessingPolicyOptionKey": 0,
-                              "ABKFlushIntervalOptionKey": 0,
-                              "ABKIDFADelegateKey": 0,
-                              "ABKURLDelegateKey": 0,
-                              "ABKDeviceWhitelistKey": 0,
-                              "ABKEndpointKey": 0,
-                              "ABKSessionTimeoutKey": 0,
-                              "ABKEnableAutomaticLocationCollectionKey": 0,
-                              "ABKEnableGeofencesKey": 0,
-                              "ABKMinimumTriggerTimeIntervalKey": 0,
-                              "ABKPushStoryAppGroupKey": 0]
     
-    func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?) {
+    func initializeBraze(brazeConfig: Braze.Configuration) {
         initializeBrazeCallCount += 1
+        config = brazeConfig
     }
     
-    func initializeBraze(apiKey: String, application: TealiumApplication, launchOptions: [AnyHashable: Any]?, appboyOptions: [AnyHashable: Any]?) {
-        initializeBrazeCallCount += 1
-        
-        guard let options = appboyOptions as? [String: Any] else { return }
-        
-        options.compactMapValues { _ in }.forEach {
-            switch $0.key {
-            case "ABKRequestProcessingPolicyOptionKey":
-                appBoyOptionsCount["ABKRequestProcessingPolicyOptionKey"]! += 1
-                case "ABKFlushIntervalOptionKey":
-                appBoyOptionsCount["ABKFlushIntervalOptionKey"]! += 1
-                case "ABKIDFADelegateKey":
-                appBoyOptionsCount["ABKIDFADelegateKey"]! += 1
-                case "ABKURLDelegateKey":
-                appBoyOptionsCount["ABKURLDelegateKey"]! += 1
-                case "ABKEndpointKey":
-                appBoyOptionsCount["ABKEndpointKey"]! += 1
-                case "ABKSessionTimeoutKey":
-                appBoyOptionsCount["ABKSessionTimeoutKey"]! += 1
-                case "ABKEnableAutomaticLocationCollectionKey":
-                appBoyOptionsCount["ABKEnableAutomaticLocationCollectionKey"]! += 1
-                case "ABKEnableGeofencesKey":
-                appBoyOptionsCount["ABKEnableGeofencesKey"]! += 1
-                case "ABKMinimumTriggerTimeIntervalKey":
-                appBoyOptionsCount["ABKMinimumTriggerTimeIntervalKey"]! += 1
-                case "ABKPushStoryAppGroupKey":
-                appBoyOptionsCount["ABKPushStoryAppGroupKey"]! += 1
-                case "ABKDeviceWhitelistKey":
-                appBoyOptionsCount["ABKDeviceWhitelistKey"]! += 1
-                default:
-                    break
-            }
-        }
-    }
     
-    func logSingleLocation() {
-        logSingleLocationCallCount += 1
-    }
-    
-    func changeUser(_ userIdentifier: String) {
+    func changeUser(_ userIdentifier: String, sdkAuthSignature: String?) {
         changeUserCallCount += 1
+    }
+    
+    func setSdkAuthenticationSignature(_ signature: String) {
+        setAuthSignatureCallCount += 1
     }
     
     func setUserAttribute(key: AppboyUserAttribute, value: String) {
@@ -112,19 +74,11 @@ class MockBrazeInstance: BrazeCommand {
         }
     }
     
-    func setFacebookUser(_ user: [String : Any]) {
-        facebookUserCallCount += 1
-    }
-    
-    func setTwitterUser(_ user: [String : Any]) {
-        twitterUserCallCount += 1
-    }
-    
     func logCustomEvent(eventName: String) {
         logCustomEventCallCount += 1
     }
     
-    func logCustomEvent(_ eventName: String, properties: [AnyHashable: Any]) {
+    func logCustomEvent(_ eventName: String, properties: [String: Any]) {
         logCustomEventWithPropertiesCallCount += 1
     }
     
@@ -159,7 +113,7 @@ class MockBrazeInstance: BrazeCommand {
         incrementCustomUserAttributeCallCount += 1
     }
     
-    func setCustomAttributeArrayWithKey(_ key: String, array: [Any]?) {
+    func setCustomAttributeArrayWithKey(_ key: String, array: [String]?) {
         setCustomAttributeWithKeyCallCount += 1
     }
     
@@ -171,27 +125,27 @@ class MockBrazeInstance: BrazeCommand {
         removeFromCustomAttributeArrayWithKeyCallCount += 1
     }
     
-    func setEmailNotificationSubscriptionType(value: AppboyNotificationSubscription) {
+    func setEmailNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
         setEmailNotificationSubscriptionTypeCallCount += 1
     }
     
-    func setPushNotificationSubscriptionType(value: AppboyNotificationSubscription) {
+    func setPushNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
         setPushNotificationSubscriptionTypeCallCount += 1
     }
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber) {
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double) {
         logPurchaseCallCount += 1
     }
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt) {
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int) {
         logPurchaseWithQuantityCallCount += 1
     }
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, properties: [AnyHashable : Any]?) {
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double, properties: [String : Any]?) {
         logPurchaseWithPropertiesCallCount += 1
     }
     
-    func logPurchase(_ productIdentifier: String, currency: String, price: NSDecimalNumber, quantity: UInt, properties: [AnyHashable : Any]?) {
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int, properties: [String : Any]?) {
         logPurchaseWithQuantityWithPropertiesCallCount += 1
     }
     
@@ -227,4 +181,21 @@ class MockBrazeInstance: BrazeCommand {
         wipeDataCallCount += 1
     }
     
+    func flush() {
+        flushCallCount += 1
+    }
+    
+    var adTrackingEnabled = false
+    func setAdTrackingEnabled(_ enabled: Bool) {
+        adTrackingEnabled = enabled
+    }
+    
+    var subscriptionGroups = Set<String>()
+    func addToSubscriptionGroup(_ group: String) {
+        subscriptionGroups.insert(group)
+    }
+    
+    func removeFromSubscriptionGroup(_ group: String) {
+        subscriptionGroups.remove(group)
+    }
 }
