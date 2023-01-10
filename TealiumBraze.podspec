@@ -24,10 +24,6 @@ Pod::Spec.new do |s|
     s.platform     = :ios, "11.0"
     s.ios.deployment_target = "11.0"
 
-    # ――― Excluded Archs ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
-    s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }    
-
     # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.source       = { :git => "https://github.com/Tealium/tealium-ios-braze-remote-command.git", :tag => "#{s.version}" }
 
@@ -35,9 +31,9 @@ Pod::Spec.new do |s|
     s.ios.source_files      = "Sources/*.{swift}"
 
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-    s.ios.dependency 'tealium-swift/Core', '~> 2.6'
-    s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.6'
-    s.ios.dependency 'BrazeKit', '~> 5.6'
+    s.ios.dependency 'tealium-swift/Core', '~> 2.8'
+    s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.8'
+    s.ios.dependency 'BrazeKit', '~> 5.8'
     s.static_framework = true
 
 end
