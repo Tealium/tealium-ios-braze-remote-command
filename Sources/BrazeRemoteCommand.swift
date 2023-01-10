@@ -255,7 +255,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
             brazeConfig.sessionTimeout = sessionTimeout.doubleValue
         }
-        brazeConfig.location.brazeLocation = self.location
+        brazeConfig.location.brazeLocationProvider = self.location
         if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
             brazeConfig.location.automaticLocationCollection = enableAutomaticLocation
         }

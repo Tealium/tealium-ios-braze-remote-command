@@ -1,2 +1,2 @@
-binary "https://raw.githubusercontent.com/Tealium/tealium-ios-braze-remote-command/mt-1133/braze.json" "5.6.2"
+binary "https://raw.githubusercontent.com/Tealium/tealium-ios-braze-remote-command/main/braze.json" "5.8.0"
 github "tealium/tealium-swift" "2.8.2"
