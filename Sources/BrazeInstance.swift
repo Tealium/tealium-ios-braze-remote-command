@@ -212,6 +212,12 @@ public class BrazeInstance: BrazeCommand {
             braze.user.setCustomAttribute(key: key, value: value)
         } else if let value = value as? Date {
             braze.user.setCustomAttribute(key: key, value: value)
+        } else if let value = value as? [String] {
+            braze.user.setCustomAttribute(key: key, array: value)
+        } else if let value = value as? [String: Any] {
+            braze.user.setCustomAttribute(key: key, dictionary: value)
+        } else if let value = value as? [[String: Any]] {
+            braze.user.setCustomAttribute(key: key, array: value)
         }
     }
     
@@ -223,19 +229,19 @@ public class BrazeInstance: BrazeCommand {
     
     public func setCustomAttributeArrayWithKey(_ key: String, array: [String]?) {
         onReady { braze in
-            braze.user.setCustomAttributeArray(key: key, array: array)
+            braze.user.setCustomAttribute(key: key, array: array)
         }
     }
     
     public func addToCustomAttributeArrayWithKey(_ key: String, value: String) {
         onReady { braze in
-            braze.user.addToCustomAttributeArray(key: key, value: value)
+            braze.user.addToCustomAttributeStringArray(key: key, value: value)
         }
     }
     
     public func removeFromCustomAttributeArrayWithKey(_ key: String, value: String) {
         onReady { braze in
-            braze.user.removeFromCustomAttributeArray(key: key, value: value)
+            braze.user.removeFromCustomAttributeStringArray(key: key, value: value)
         }
     }
     

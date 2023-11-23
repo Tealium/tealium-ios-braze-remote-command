@@ -272,6 +272,12 @@ public class BrazeRemoteCommand: RemoteCommand {
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
         brazeConfig.api.sdkFlavor = .tealium
+        if let useUUIDAsDeviceId = payload[BrazeConstants.Keys.useUUIDAsDeviceId] as? NSNumber {
+            brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId.boolValue
+        }
+        if let forwardUniversalLinks = payload[BrazeConstants.Keys.forwardUniversalLinks] as? NSNumber {
+            brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
+        }
         return brazeConfig
     }
 }

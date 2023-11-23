@@ -14,7 +14,7 @@ public enum BrazeConstants {
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
-    static let version = "3.0.0"
+    static let version = "3.1.0"
     
     enum Commands: String {
         case initialize = "initialize"
@@ -86,6 +86,8 @@ public enum BrazeConstants {
         static let deviceOptions = "device_options"
         static let pushStoryIdentifier = "push_story_identifier"
         static let subscriptionGroupId = "subscription_group_id"
+        static let forwardUniversalLinks = "forward_universal_links"
+        static let useUUIDAsDeviceId = "use_uuid_as_device_id"
     }
 }
 
