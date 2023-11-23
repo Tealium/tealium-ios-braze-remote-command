@@ -4,7 +4,9 @@
         "custom_endpoint": "sdk.iad-01.braze.com",
         "session_timeout": 30,
         "disable_location": false,
-        "trigger_interval_seconds": 100
+        "trigger_interval_seconds": 100,
+        "use_uuid_as_device_id": true,
+        "forward_universal_links": true
     },
     "mappings": {
         "customer_id": "user_id",
@@ -19,6 +21,9 @@
         "customer_alias_label": "alias_label",
         "pet": "set_custom_attribute.pet",
         "pet_count": "set_custom_attribute.pet_count",
+        "pet_objects": "set_custom_attribute.pet_objects",
+        "pet_dictionary": "set_custom_attribute.pet_dictionary",
+        "pet_array": "set_custom_attribute.pet_array",
         "pet_count_unset": "unset_custom_attribute",
         "pet_count_increment": "increment_custom_attribute.pet_count",
         "pet_names": "set_custom_array_attribute.pet_names",

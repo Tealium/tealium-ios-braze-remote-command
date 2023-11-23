@@ -25,8 +25,14 @@ class EventViewController: UIViewController {
     }
     
     @IBAction func setCustomAttributes(_ sender: UIButton) {
-        let customAttributes: [String: Any] = ["pet": "cat",
-                                "pet_count": 3]
+        let customAttributes: [String: Any] = [
+            "pet": "cat",
+            "pet_count": 3,
+            "pet_array": ["one", "two", "three"],
+            "pet_dictionary": ["key": "value", "anotherKey": "anotherValue"],
+            "pet_objects": [["key1": "value1", "anotherKey1": "anotherValue1"],
+                            ["key2": "value2", "anotherKey2": "anotherValue2"]]
+        ]
         TealiumHelper.trackEvent(title: "custom_attribute", data: customAttributes)
         
         let customArrayAttributes: [String: Any] = ["pet_names": ["Rosia", "Elsa", "Kawai"]]
