@@ -1,6 +1,6 @@
 {
     "config": {
-        "api_key": "d0e3ed67-b354-4160-bd38-f5e0be649bcc",
+        "api_key": "paste_your_api_key_here",
         "custom_endpoint": "sdk.iad-01.braze.com",
         "session_timeout": 30,
         "disable_location": false,
