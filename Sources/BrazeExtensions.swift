@@ -61,8 +61,6 @@ extension Braze.Configuration.DeviceProperty {
             return .pushEnabled
         case "pushauthstatus":
             return .pushAuthStatus
-        case "pushdisplayoptions":
-            return .pushDisplayOptions
         default:
             return Self(rawValue: value)
         }
