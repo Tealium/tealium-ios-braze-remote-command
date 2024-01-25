@@ -151,13 +151,13 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
                 
                 guard let productIdentifier = payload[BrazeConstants.Keys.productIdentifier] as? [String],
-                    let currency = payload[BrazeConstants.Keys.currency] as? String,
+                    let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
                     let prices = payload[BrazeConstants.Keys.price] as? [Double] else {
                         return
                 }
                 let products = (productId: productIdentifier, price: prices)
 
-                if let quantity = payload[BrazeConstants.Keys.quantity] as? [Int] {
+                if let quantity = (payload[BrazeConstants.Keys.productQuantity] ?? payload[BrazeConstants.Keys.quantity]) as? [Int] {
                     let products = (productId: productIdentifier, price: prices, quantity: quantity)
                     if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
                         for (index, element) in products.productId.enumerated() {
