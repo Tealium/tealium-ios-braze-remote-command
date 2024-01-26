@@ -344,12 +344,39 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
     }
 
+    func testLogPurchaseProductCurrencySuccess() {
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123"],
+            "product_currency": "USD",
+            "product_unit_price": [12.34]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityCallCount)
+        XCTAssertEqual(0, brazeInstance.logPurchaseWithPropertiesCallCount)
+        XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
+    }
+
     func testLogPurchaseWithQuantitySuccess() {
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
             "product_id": ["123"],
             "order_currency": "USD",
             "product_unit_price": [12.34],
             "quantity": [5]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual(1, brazeInstance.logPurchaseWithQuantityCallCount)
+        XCTAssertEqual(0, brazeInstance.logPurchaseWithPropertiesCallCount)
+        XCTAssertEqual(0, brazeInstance.logPurchaseWithQuantityWithPropertiesCallCount)
+    }
+
+    func testLogPurchaseWithNewProductQtySuccess() {
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123"],
+            "order_currency": "USD",
+            "product_unit_price": [12.34],
+            "product_qty": [5]
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logPurchaseCallCount)

@@ -14,7 +14,7 @@ public enum BrazeConstants {
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
-    static let version = "3.1.0"
+    static let version = "3.1.1"
     
     enum Commands: String {
         case initialize = "initialize"
@@ -44,7 +44,6 @@ public enum BrazeConstants {
     
     enum Keys {
         static let apiKey = "api_key"
-        static let launchOptions = "launch_options"
         static let isSdkAuthEnabled = "is_sdk_authentication_enabled"
         static let sdkAuthSignature = "sdk_authentication_signature"
         static let userIdentifier = "user_id"
@@ -62,9 +61,11 @@ public enum BrazeConstants {
         static let eventProperties = "event_properties"
         static let eventName = "event_name"
         static let productIdentifier = "product_id"
-        static let currency = "order_currency"
+        static let currency = "order_currency" // The constant is being changed to product_currency to unify it on all platforms.
+        static let productCurrency = "product_currency"
         static let price = "product_unit_price"
-        static let quantity = "quantity"
+        static let quantity = "quantity" // The constant is being changed to product_qty to unify it on all platforms
+        static let productQuantity = "product_qty"
         static let purchaseKey = "purchase"
         static let purchaseProperties = "purchase_properties"
         static let sessionTimeout = "session_timeout"
@@ -80,8 +81,6 @@ public enum BrazeConstants {
         static let requestProcessingPolicy = "request_processing_policy"
         static let flushInterval = "flush_interval"
         static let adTrackingEnabled = "ad_tracking_enabled"
-        static let enableAdvertiserTracking = "enable_advertiser_tracking"
-        static let enableDeepLinkHandling = "enable_deep_link_handling"
         static let customEndpoint = "custom_endpoint"
         static let deviceOptions = "device_options"
         static let pushStoryIdentifier = "push_story_identifier"
