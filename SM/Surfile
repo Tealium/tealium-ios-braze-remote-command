@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>output_path</key>
+        <string>tealium-xcframeworks</string>
+        <key>frameworks</key>
+        <array>
+            <dict>
+                <key>name</key>
+                <string>TealiumBraze</string>
+                <key>targets</key>
+                <array>
+                    <dict>
+                        <key>sdk</key>
+                        <string>iOS</string>
+                        <key>project</key>
+                        <string>TealiumBraze.xcodeproj</string>
+                        <key>scheme</key>
+                        <string>TealiumBraze</string>
+                    </dict>
+                    <dict>
+                        <key>sdk</key>
+                        <string>iOSSimulator</string>
+                        <key>project</key>
+                        <string>TealiumBraze.xcodeproj</string>
+                        <key>scheme</key>
+                        <string>TealiumBraze</string>
+                    </dict>
+                </array>
+            </dict>
+        </array>
+        <key>finalActions</key>
+        <array>
+            <string>openDirectory</string>
+        </array>
+    </dict>
+</plist>
