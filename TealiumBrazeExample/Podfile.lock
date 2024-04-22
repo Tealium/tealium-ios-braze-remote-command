@@ -9,7 +9,7 @@ PODS:
     - tealium-swift/Core
   - tealium-swift/TagManagement (2.12.3):
     - tealium-swift/Core
-  - TealiumBraze (3.2.0):
+  - TealiumBraze (3.3.0):
     - BrazeKit (~> 8.0)
     - tealium-swift/Core (~> 2.12)
     - tealium-swift/RemoteCommands (~> 2.12)
@@ -34,7 +34,7 @@ SPEC CHECKSUMS:
   BrazeKit: 7aa946734211e8371c6525447db98406ded44402
   BrazeLocation: cb2a1befb02fc7ef180fdfd1287f985bf0e87b0d
   tealium-swift: 3979f3eadf84e5c9ec391f2cba01375e36d4b26c
-  TealiumBraze: f22328420ac81595b789d8cb51b5981372c2cde3
+  TealiumBraze: d44c744362d04065f89d11f4d868bca95772a7a0
 
 PODFILE CHECKSUM: bd36620a6237490c846dcfc61142c9bc2791390d
 
