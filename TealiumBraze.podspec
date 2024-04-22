@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
     # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.name         = "TealiumBraze"
     s.module_name  = "TealiumBraze"
-    s.version      = "3.2.0"
+    s.version      = "4.0.0"
     s.summary      = "Tealium Swift and Braze integration"
     s.description  = <<-DESC
     Tealium's integration with Braze for iOS.
@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.ios.dependency 'tealium-swift/Core', '~> 2.12'
     s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.12'
-    s.ios.dependency 'BrazeKit', '~> 7.2'
+    s.ios.dependency 'BrazeKit', '~> 8.0'
     s.static_framework = true
 
 end
