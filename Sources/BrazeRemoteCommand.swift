@@ -181,6 +181,16 @@ public class BrazeRemoteCommand: RemoteCommand {
                     return
                 }
                 self.brazeInstance.setAdTrackingEnabled(enabled)
+            case .setIdentiferForAdvertiser:
+                guard let identifier = payload[BrazeConstants.Keys.advertiserIdentifier] as? String else {
+                    return
+                }
+                self.brazeInstance.setIdentiferForAdvertiser(identifier)
+            case .setIdentiferForVendor:
+                guard let identifier = payload[BrazeConstants.Keys.vendorIdentifier] as? String else {
+                    return
+                }
+                self.brazeInstance.setIdentiferForVendor(identifier)
             case .setLastKnownLocation:
                 guard let latitude = payload[BrazeConstants.Keys.latitude] as? Double,
                     let longitude = payload[BrazeConstants.Keys.longitude] as? Double,
@@ -239,6 +249,8 @@ public class BrazeRemoteCommand: RemoteCommand {
             return nil
         }
         let brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
+        
+        // API Config
         if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
         }
@@ -249,12 +261,10 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
             brazeConfig.api.flushInterval = flushInterval
         }
-        if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
-            brazeConfig.devicePropertyAllowList = Set(deviceOptions.compactMap{Braze.Configuration.DeviceProperty.from($0)})
-        }
-        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
-            brazeConfig.sessionTimeout = sessionTimeout.doubleValue
-        }
+        
+        brazeConfig.api.sdkFlavor = .tealium
+        
+        // Location Config
         brazeConfig.location.brazeLocationProvider = self.location
         if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
             brazeConfig.location.automaticLocationCollection = enableAutomaticLocation
@@ -265,19 +275,32 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let enableAutomaticGeofences = convertToBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
             brazeConfig.location.automaticGeofenceRequests = enableAutomaticGeofences
         }
-        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
-            brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
-        }
+        
+        // Push Config
         if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
-        brazeConfig.api.sdkFlavor = .tealium
+        
+        // BrazeConfig properties
         if let useUUIDAsDeviceId = payload[BrazeConstants.Keys.useUUIDAsDeviceId] as? NSNumber {
             brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId.boolValue
+        }
+        if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
+            brazeConfig.devicePropertyAllowList = Set(deviceOptions.compactMap{Braze.Configuration.DeviceProperty.from($0)})
+        }
+        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
+            brazeConfig.sessionTimeout = sessionTimeout.doubleValue
+        }
+        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
+            brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
         }
         if let forwardUniversalLinks = payload[BrazeConstants.Keys.forwardUniversalLinks] as? NSNumber {
             brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
         }
+        if let optInWhenPushAuthorized = payload[BrazeConstants.Keys.optInWhenPushAuthorized] as? Bool {
+            brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
+        }
+        
         return brazeConfig
     }
 }
