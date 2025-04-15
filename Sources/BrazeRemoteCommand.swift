@@ -298,7 +298,7 @@ public class BrazeRemoteCommand: RemoteCommand {
             brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
         }
         if let optInWhenPushAuthorized = payload[BrazeConstants.Keys.optInWhenPushAuthorized] as? Bool {
-            brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
+            brazeConfig.optInWhenPushAuthorized = optInWhenPushAuthorized
         }
         
         return brazeConfig

@@ -90,6 +90,7 @@ public enum BrazeConstants {
         static let pushStoryIdentifier = "push_story_identifier"
         static let subscriptionGroupId = "subscription_group_id"
         static let forwardUniversalLinks = "forward_universal_links"
+        static let optInWhenPushAuthorized = "opt_in_when_push_authorized"
         static let useUUIDAsDeviceId = "use_uuid_as_device_id"
     }
 }
