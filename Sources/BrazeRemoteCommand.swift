@@ -181,16 +181,16 @@ public class BrazeRemoteCommand: RemoteCommand {
                     return
                 }
                 self.brazeInstance.setAdTrackingEnabled(enabled)
-            case .setIdentiferForAdvertiser:
+            case .setIdentifierForAdvertiser:
                 guard let identifier = payload[BrazeConstants.Keys.advertiserIdentifier] as? String else {
                     return
                 }
-                self.brazeInstance.setIdentiferForAdvertiser(identifier)
-            case .setIdentiferForVendor:
+                self.brazeInstance.setIdentifierForAdvertiser(identifier)
+            case .setIdentifierForVendor:
                 guard let identifier = payload[BrazeConstants.Keys.vendorIdentifier] as? String else {
                     return
                 }
-                self.brazeInstance.setIdentiferForVendor(identifier)
+                self.brazeInstance.setIdentifierForVendor(identifier)
             case .setLastKnownLocation:
                 guard let latitude = payload[BrazeConstants.Keys.latitude] as? Double,
                     let longitude = payload[BrazeConstants.Keys.longitude] as? Double,

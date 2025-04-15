@@ -295,6 +295,22 @@ class BrazeProcessCommandTests: XCTestCase {
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.setPushNotificationSubscriptionTypeCallCount)
     }
+    
+    func testSetIdentifierForAdvertiserSuccess() {
+        let payload: [String: Any] = ["command_name": "initialize,setidentifierforadvertiser",
+            "advertiser_identifier": "test_id"
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.setIdentifierForAdvertiserCallCount)
+    }
+    
+    func testSetIdentifierVendorSuccess() {
+        let payload: [String: Any] = ["command_name": "initialize,setidentifierforvendor",
+            "vendor_identifier": "test_id"
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.setIdentifierForVendorCallCount)
+    }
 
     func testSetPushNotificationSubscriptionTypeNotCalled_incorrectSubscriptionType() {
         let payload: [String: Any] = ["command_name": "initialize,pushnotification",
