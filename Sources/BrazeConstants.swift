@@ -14,7 +14,7 @@ public enum BrazeConstants {
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
-    static let version = "3.4.0"
+    static let version = "3.5.0"
     
     enum Commands: String {
         case initialize = "initialize"
@@ -33,6 +33,8 @@ public enum BrazeConstants {
         case logCustomEvent = "logcustomevent"
         case logPurchase = "logpurchase"
         case setAdTrackingEnabled = "setadtrackingenabled"
+        case setIdentifierForAdvertiser = "setidentifierforadvertiser"
+        case setIdentifierForVendor = "setidentifierforvendor"
         case setLastKnownLocation = "setlastknownlocation"
         case enableSDK = "enablesdk"
         case disableSDK = "disablesdk"
@@ -81,11 +83,14 @@ public enum BrazeConstants {
         static let requestProcessingPolicy = "request_processing_policy"
         static let flushInterval = "flush_interval"
         static let adTrackingEnabled = "ad_tracking_enabled"
+        static let advertiserIdentifier = "advertiser_identifier"
+        static let vendorIdentifier = "vendor_identifier"
         static let customEndpoint = "custom_endpoint"
         static let deviceOptions = "device_options"
         static let pushStoryIdentifier = "push_story_identifier"
         static let subscriptionGroupId = "subscription_group_id"
         static let forwardUniversalLinks = "forward_universal_links"
+        static let optInWhenPushAuthorized = "opt_in_when_push_authorized"
         static let useUUIDAsDeviceId = "use_uuid_as_device_id"
     }
 }

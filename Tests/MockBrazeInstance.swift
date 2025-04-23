@@ -45,6 +45,10 @@ class MockBrazeInstance: BrazeCommand {
     var wipeDataCallCount = 0
     var flushCallCount = 0
     
+    var setIdentifierForAdvertiserCallCount = 0
+    var setIdentifierForVendorCallCount = 0
+    
+    
     // Appboy Options
     
     func initializeBraze(brazeConfig: Braze.Configuration) {
@@ -188,6 +192,14 @@ class MockBrazeInstance: BrazeCommand {
     var adTrackingEnabled = false
     func setAdTrackingEnabled(_ enabled: Bool) {
         adTrackingEnabled = enabled
+    }
+    
+    func setIdentifierForAdvertiser(_ identifier: String) {
+        setIdentifierForAdvertiserCallCount += 1
+    }
+    
+    func setIdentifierForVendor(_ identifier: String) {
+        setIdentifierForVendorCallCount += 1
     }
     
     var subscriptionGroups = Set<String>()

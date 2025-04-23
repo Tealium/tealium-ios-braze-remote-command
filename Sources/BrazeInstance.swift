@@ -42,6 +42,10 @@ public protocol BrazeCommand {
     
     func setAdTrackingEnabled(_ enabled: Bool)
     
+    func setIdentifierForAdvertiser(_ identifier: String)
+    
+    func setIdentifierForVendor(_ identifier: String)
+    
     // MARK: Attributes
     
     func setUserAttributes(_ attributes: [String: Any])
@@ -150,6 +154,18 @@ public class BrazeInstance: BrazeCommand {
     public func setAdTrackingEnabled(_ enabled: Bool) {
         onReady { braze in
             braze.set(adTrackingEnabled: enabled)
+        }
+    }
+    
+    public func setIdentifierForAdvertiser(_ identifier: String) {
+        onReady { braze in
+            braze.set(identifierForAdvertiser: identifier)
+        }
+    }
+    
+    public func setIdentifierForVendor(_ identifier: String) {
+        onReady { braze in
+            braze.set(identifierForVendor: identifier)
         }
     }
     
