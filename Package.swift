@@ -10,8 +10,8 @@ let package = Package(
         .library(name: "TealiumBraze", targets: ["TealiumBraze"])
     ],
     dependencies: [
-        .package(url: "https://github.com/tealium/tealium-swift", .upToNextMajor(from: "2.16.0")),
-        .package(url: "https://github.com/braze-inc/braze-swift-sdk", .upToNextMajor(from: "11.0.0"))
+        .package(url: "https://github.com/tealium/tealium-swift", .upToNextMajor(from: "2.18.0")),
+        .package(url: "https://github.com/braze-inc/braze-swift-sdk", .upToNextMajor(from: "14.0.0"))
     ],
     targets: [
         .target(
