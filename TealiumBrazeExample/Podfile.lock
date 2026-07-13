@@ -1,18 +1,18 @@
 PODS:
-  - BrazeKit (11.9.0)
-  - BrazeLocation (11.9.0):
-    - BrazeKit (= 11.9.0)
-  - tealium-swift/Core (2.16.0)
-  - tealium-swift/Lifecycle (2.16.0):
+  - BrazeKit (17.0.0)
+  - BrazeLocation (17.0.0):
+    - BrazeKit (= 17.0.0)
+  - tealium-swift/Core (2.18.3)
+  - tealium-swift/Lifecycle (2.18.3):
     - tealium-swift/Core
-  - tealium-swift/RemoteCommands (2.16.0):
+  - tealium-swift/RemoteCommands (2.18.3):
     - tealium-swift/Core
-  - tealium-swift/TagManagement (2.16.0):
+  - tealium-swift/TagManagement (2.18.3):
     - tealium-swift/Core
-  - TealiumBraze (3.5.0):
-    - BrazeKit (~> 11.0)
-    - tealium-swift/Core (~> 2.16)
-    - tealium-swift/RemoteCommands (~> 2.16)
+  - TealiumBraze (3.7.0):
+    - BrazeKit (~> 17.0)
+    - tealium-swift/Core (~> 2.18)
+    - tealium-swift/RemoteCommands (~> 2.18)
 
 DEPENDENCIES:
   - BrazeLocation
@@ -31,11 +31,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BrazeKit: b21335426470a4e80b0a21fdeec69bdbe6852222
-  BrazeLocation: 03848efc27e835646013aa297868707111a1e715
-  tealium-swift: b288efd08c4721cf0b70dcf1149f055fbaec977b
-  TealiumBraze: ff71a357bf661e5eb344b8ef80303471749faca9
+  BrazeKit: 79cea5ad1686252af497361c0bb3c888ee1746af
+  BrazeLocation: f26f6b2cc275b91d3ed1767cb75abfb9fc102283
+  tealium-swift: c9137d28fe7f92f89622e66403ec75a9c0892def
+  TealiumBraze: 799833a140da1f254fa8900f5dbf988921e24574
 
 PODFILE CHECKSUM: bd36620a6237490c846dcfc61142c9bc2791390d
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
