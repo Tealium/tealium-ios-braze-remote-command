@@ -282,6 +282,54 @@
                                             <action selector="setLastKnownLocationWithSender:" destination="1to-9j-H1z" eventType="touchUpInside" id="yno-wn-ZcQ"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec1-pr-vw0">
+                                        <state key="normal" title="Log Product Viewed"/>
+                                        <connections>
+                                            <action selector="logProductViewed:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec1-ac-vw0"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec2-ca-add">
+                                        <state key="normal" title="Log Cart Updated (Add)"/>
+                                        <connections>
+                                            <action selector="logCartUpdatedAdd:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec2-ac-add"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec3-ca-rmv">
+                                        <state key="normal" title="Log Cart Updated (Remove)"/>
+                                        <connections>
+                                            <action selector="logCartUpdatedRemove:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec3-ac-rmv"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec4-ca-rpl">
+                                        <state key="normal" title="Log Cart Updated (Replace)"/>
+                                        <connections>
+                                            <action selector="logCartUpdatedReplace:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec4-ac-rpl"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec5-ck-out">
+                                        <state key="normal" title="Log Checkout Started"/>
+                                        <connections>
+                                            <action selector="logCheckoutStarted:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec5-ac-out"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec6-or-plc">
+                                        <state key="normal" title="Log Order Placed"/>
+                                        <connections>
+                                            <action selector="logOrderPlaced:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec6-ac-plc"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec7-or-cnl">
+                                        <state key="normal" title="Log Order Cancelled"/>
+                                        <connections>
+                                            <action selector="logOrderCancelled:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec7-ac-cnl"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec8-or-rfd">
+                                        <state key="normal" title="Log Order Refunded"/>
+                                        <connections>
+                                            <action selector="logOrderRefunded:" destination="1to-9j-H1z" eventType="touchUpInside" id="ec8-ac-rfd"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iOr-ie-Oge">
                                         <rect key="frame" x="0.0" y="392" width="198" height="30"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>

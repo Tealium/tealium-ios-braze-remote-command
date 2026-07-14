@@ -9,13 +9,13 @@
 import Foundation
 
 public enum BrazeConstants {
-    
+
     static let commandName = "command_name"
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
     static let version = "3.7.0"
-    
+
     enum Commands: String {
         case initialize = "initialize"
         case userIdentifier = "useridentifier"
@@ -32,6 +32,15 @@ public enum BrazeConstants {
         case incrementCustomAttribute = "incrementcustomattribute"
         case logCustomEvent = "logcustomevent"
         case logPurchase = "logpurchase"
+        // Ecommerce recommended events
+        case logProductViewed = "logproductviewed"
+        case logCartUpdatedAdd = "logcartupdatedadd"
+        case logCartUpdatedRemove = "logcartupdatedremove"
+        case logCartUpdatedReplace = "logcartupdatedreplace"
+        case logCheckoutStarted = "logcheckoutstarted"
+        case logOrderPlaced = "logorderplaced"
+        case logOrderCancelled = "logordercancelled"
+        case logOrderRefunded = "logorderrefunded"
         case setAdTrackingEnabled = "setadtrackingenabled"
         case setIdentifierForAdvertiser = "setidentifierforadvertiser"
         case setIdentifierForVendor = "setidentifierforvendor"
@@ -43,7 +52,7 @@ public enum BrazeConstants {
         case addToSubsriptionGroup = "addtosubscriptiongroup"
         case removeFromSubscriptionGroup = "removefromsubscriptiongroup"
     }
-    
+
     enum Keys {
         static let apiKey = "api_key"
         static let isSdkAuthEnabled = "is_sdk_authentication_enabled"
@@ -70,6 +79,24 @@ public enum BrazeConstants {
         static let productQuantity = "product_qty"
         static let purchaseKey = "purchase"
         static let purchaseProperties = "purchase_properties"
+        static let productName = "product_name"
+        static let variantId = "variant_id"
+        static let imageUrl = "image_url"
+        static let productUrl = "product_url"
+        static let productSource = "ecommerce_source"
+        static let eventMetadata = "event_metadata"
+        static let productMetadata = "product_metadata"
+        static let typeIdentifiers = "type_identifiers"
+        static let cartId = "cart_id"
+        static let checkoutId = "checkout_id"
+        static let orderId = "order_id"
+        static let totalValue = "total_value"
+        static let subtotalValue = "subtotal_value"
+        static let tax = "tax"
+        static let shipping = "shipping"
+        static let totalDiscounts = "total_discounts"
+        static let discounts = "discounts"
+        static let cancelReason = "cancel_reason"
         static let sessionTimeout = "session_timeout"
         static let enableAutomaticLocation = "enable_automatic_location"
         static let enableGeofences = "enable_geofences"
