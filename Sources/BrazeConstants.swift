@@ -119,6 +119,16 @@ public enum BrazeConstants {
         static let forwardUniversalLinks = "forward_universal_links"
         static let optInWhenPushAuthorized = "opt_in_when_push_authorized"
         static let useUUIDAsDeviceId = "use_uuid_as_device_id"
+
+        // Braze ecommerce wire (output) keys - fixed by the Braze schema, distinct from the
+        // input mapping keys above even where the Swift names look similar (e.g. `currency`
+        // above is "order_currency", `wireOutputCurrency` here is "currency").
+        static let wireOutputCurrency = "currency"
+        static let wireOutputSource = "source"
+        static let wireOutputProducts = "products"
+        static let wireOutputMetadata = "metadata"
+        static let wireOutputQuantity = "quantity"
+        static let wireOutputPrice = "price"
     }
 }
 

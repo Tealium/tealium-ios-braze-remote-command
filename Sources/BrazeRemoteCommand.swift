@@ -177,185 +177,41 @@ public class BrazeRemoteCommand: RemoteCommand {
                     }
                 }
             case .logProductViewed:
-                guard let productId = (payload[BrazeConstants.Keys.productIdentifier] as? [String])?.first,
-                      let productName = (payload[BrazeConstants.Keys.productName] as? [String])?.first,
-                      let variantId = (payload[BrazeConstants.Keys.variantId] as? [String])?.first,
-                      let price = doubleArray(payload[BrazeConstants.Keys.price])?.first,
-                      let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String else {
-                    print("*** Tealium Remote Command Error - Braze: logProductViewed missing required field(s)")
-                    return
-                }
-                logEcommerceEvent {
-                    try Braze.Ecommerce.ProductViewedEvent(
-                        productId: productId,
-                        productName: productName,
-                        variantId: variantId,
-                        imageUrl: (payload[BrazeConstants.Keys.imageUrl] as? [String])?.first,
-                        productUrl: (payload[BrazeConstants.Keys.productUrl] as? [String])?.first,
-                        price: price,
-                        currency: currency,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any],
-                        typeIdentifiers: payload[BrazeConstants.Keys.typeIdentifiers] as? [String])
+                do {
+                    try EcommerceEventParser.parseProductViewedEventBuilders(payload: payload).forEach { build in
+                        logEcommerceEvent(commandName: "logProductViewed", build)
+                    }
+                } catch {
+                    print("*** Tealium Remote Command Error - Braze: logProductViewed failed to build ecommerce event: \(error)")
                 }
             case .logCartUpdatedAdd:
-                logCartUpdatedEvent(commandName: "logCartUpdatedAdd", payload: payload) { cartId, currency, source, products in
-                    try Braze.Ecommerce.CartUpdated.Add(
-                        cartId: cartId,
-                        totalValue: doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                        currency: currency,
-                        subtotalValue: doubleValue(payload[BrazeConstants.Keys.subtotalValue]),
-                        tax: doubleValue(payload[BrazeConstants.Keys.tax]),
-                        shipping: doubleValue(payload[BrazeConstants.Keys.shipping]),
-                        products: products,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any])
+                logEcommerceEvent(commandName: "logCartUpdatedAdd") {
+                    try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
                 }
             case .logCartUpdatedRemove:
-                logCartUpdatedEvent(commandName: "logCartUpdatedRemove", payload: payload) { cartId, currency, source, products in
-                    try Braze.Ecommerce.CartUpdated.Remove(
-                        cartId: cartId,
-                        totalValue: doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                        currency: currency,
-                        subtotalValue: doubleValue(payload[BrazeConstants.Keys.subtotalValue]),
-                        tax: doubleValue(payload[BrazeConstants.Keys.tax]),
-                        shipping: doubleValue(payload[BrazeConstants.Keys.shipping]),
-                        products: products,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any])
+                logEcommerceEvent(commandName: "logCartUpdatedRemove") {
+                    try EcommerceEventParser.parseCartUpdatedRemoveEvent(payload: payload)
                 }
             case .logCartUpdatedReplace:
-                // Unlike Add/Remove, the full-snapshot Replace requires a non-optional `total_value`.
-                guard let cartId = payload[BrazeConstants.Keys.cartId] as? String,
-                      let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String,
-                      let totalValue = doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                      let products = parseProductLineItems(from: payload) else {
-                    print("*** Tealium Remote Command Error - Braze: logCartUpdatedReplace missing required field(s)")
-                    return
-                }
-                logEcommerceEvent {
-                    try Braze.Ecommerce.CartUpdated.Replace(
-                        cartId: cartId,
-                        totalValue: totalValue,
-                        currency: currency,
-                        subtotalValue: doubleValue(payload[BrazeConstants.Keys.subtotalValue]),
-                        tax: doubleValue(payload[BrazeConstants.Keys.tax]),
-                        shipping: doubleValue(payload[BrazeConstants.Keys.shipping]),
-                        products: products,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any])
+                logEcommerceEvent(commandName: "logCartUpdatedReplace") {
+                    try EcommerceEventParser.parseCartUpdatedReplaceEvent(payload: payload)
                 }
             case .logCheckoutStarted:
-                guard let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String,
-                      let checkoutId = payload[BrazeConstants.Keys.checkoutId] as? String,
-                      let totalValue = doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                      let products = parseProductLineItems(from: payload) else {
-                    print("*** Tealium Remote Command Error - Braze: logCheckoutStarted missing required field(s)")
-                    return
-                }
-                logEcommerceEvent {
-                    try Braze.Ecommerce.CheckoutStartedEvent(
-                        checkoutId: checkoutId,
-                        cartId: payload[BrazeConstants.Keys.cartId] as? String,
-                        totalValue: totalValue,
-                        currency: currency,
-                        subtotalValue: doubleValue(payload[BrazeConstants.Keys.subtotalValue]),
-                        tax: doubleValue(payload[BrazeConstants.Keys.tax]),
-                        shipping: doubleValue(payload[BrazeConstants.Keys.shipping]),
-                        products: products,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any])
+                logEcommerceEvent(commandName: "logCheckoutStarted") {
+                    try EcommerceEventParser.parseCheckoutStartedEvent(payload: payload)
                 }
             case .logOrderPlaced:
-                guard let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String,
-                      let orderId = payload[BrazeConstants.Keys.orderId] as? String,
-                      let totalValue = doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                      let products = parseProductLineItems(from: payload) else {
-                    print("*** Tealium Remote Command Error - Braze: logOrderPlaced missing required field(s)")
-                    return
-                }
-                logEcommerceEvent {
-                    try Braze.Ecommerce.OrderPlacedEvent(
-                        orderId: orderId,
-                        cartId: payload[BrazeConstants.Keys.cartId] as? String,
-                        totalValue: totalValue,
-                        currency: currency,
-                        subtotalValue: doubleValue(payload[BrazeConstants.Keys.subtotalValue]),
-                        tax: doubleValue(payload[BrazeConstants.Keys.tax]),
-                        shipping: doubleValue(payload[BrazeConstants.Keys.shipping]),
-                        totalDiscounts: doubleValue(payload[BrazeConstants.Keys.totalDiscounts]),
-                        discounts: payload[BrazeConstants.Keys.discounts] as? [Any],
-                        products: products,
-                        source: source,
-                        metadata: payload[BrazeConstants.Keys.eventMetadata] as? [String: Any])
+                logEcommerceEvent(commandName: "logOrderPlaced") {
+                    try EcommerceEventParser.parseOrderPlacedEvent(payload: payload)
                 }
             case .logOrderCancelled:
-                guard let orderId = payload[BrazeConstants.Keys.orderId] as? String,
-                      let totalValue = doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                      let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String,
-                      let cancelReason = payload[BrazeConstants.Keys.cancelReason] as? String,
-                      let products = buildEcommerceProductDictionaries(from: payload) else {
-                    print("*** Tealium Remote Command Error - Braze: logOrderCancelled missing required field(s)")
-                    return
+                logCustomEcommerceEvent(commandName: "logOrderCancelled") {
+                    try EcommerceEventParser.parseOrderCancelledEvent(payload: payload)
                 }
-                var properties: [String: Any] = [
-                    "order_id": orderId,
-                    "total_value": totalValue,
-                    "currency": currency,
-                    "cancel_reason": cancelReason,
-                    "products": products,
-                    "source": source
-                ]
-                if let subtotalValue = doubleValue(payload[BrazeConstants.Keys.subtotalValue]) {
-                    properties["subtotal_value"] = subtotalValue
-                }
-                if let tax = doubleValue(payload[BrazeConstants.Keys.tax]) {
-                    properties["tax"] = tax
-                }
-                if let shipping = doubleValue(payload[BrazeConstants.Keys.shipping]) {
-                    properties["shipping"] = shipping
-                }
-                if let totalDiscounts = doubleValue(payload[BrazeConstants.Keys.totalDiscounts]) {
-                    properties["total_discounts"] = totalDiscounts
-                }
-                if let discounts = payload[BrazeConstants.Keys.discounts] as? [Any] {
-                    properties["discounts"] = discounts
-                }
-                if let metadata = payload[BrazeConstants.Keys.eventMetadata] as? [String: Any] {
-                    properties["metadata"] = metadata
-                }
-                brazeInstance.logCustomEvent("ecommerce.order_cancelled", properties: properties)
             case .logOrderRefunded:
-                guard let orderId = payload[BrazeConstants.Keys.orderId] as? String,
-                      let totalValue = doubleValue(payload[BrazeConstants.Keys.totalValue]),
-                      let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                      let source = payload[BrazeConstants.Keys.productSource] as? String,
-                      let products = buildEcommerceProductDictionaries(from: payload) else {
-                    print("*** Tealium Remote Command Error - Braze: logOrderRefunded missing required field(s)")
-                    return
+                logCustomEcommerceEvent(commandName: "logOrderRefunded") {
+                    try EcommerceEventParser.parseOrderRefundedEvent(payload: payload)
                 }
-                var properties: [String: Any] = [
-                    "order_id": orderId,
-                    "total_value": totalValue,
-                    "currency": currency,
-                    "products": products,
-                    "source": source
-                ]
-                if let totalDiscounts = doubleValue(payload[BrazeConstants.Keys.totalDiscounts]) {
-                    properties["total_discounts"] = totalDiscounts
-                }
-                if let discounts = payload[BrazeConstants.Keys.discounts] as? [Any] {
-                    properties["discounts"] = discounts
-                }
-                if let metadata = payload[BrazeConstants.Keys.eventMetadata] as? [String: Any] {
-                    properties["metadata"] = metadata
-                }
-                brazeInstance.logCustomEvent("ecommerce.order_refunded", properties: properties)
             case .setAdTrackingEnabled:
                 guard let enabled = convertToBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
                     return
@@ -411,167 +267,26 @@ public class BrazeRemoteCommand: RemoteCommand {
     }
 
     /// Builds an ecommerce event via the throwing `build` closure and forwards it to Braze.
-    /// Braze validates event fields on construction; validation failures are logged and the event is skipped.
-    private func logEcommerceEvent<E: Braze.Ecommerce.Event>(_ build: () throws -> E) {
+    /// Parsing failures (`ParsingError`) and SDK validation failures on construction are both
+    /// logged (tagged with `commandName`) and the event is skipped.
+    private func logEcommerceEvent<E: Braze.Ecommerce.Event>(commandName: String, _ build: () throws -> E) {
         do {
             let event = try build()
             brazeInstance.logEcommerceEvent(event)
         } catch {
-            print("*** Tealium Remote Command Error - Braze: failed to build ecommerce event: \(error)")
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
         }
     }
 
-    /// Shared dispatch for the three `CartUpdated` variants (Add / Remove / Replace), which have
-    /// identical required payloads. Guards the required fields and product list, then delegates
-    /// event construction to `build`. `commandName` identifies the caller (Add or Remove) in the
-    /// diagnostic printed when required fields are missing.
-    private func logCartUpdatedEvent<E: Braze.Ecommerce.Event>(
-        commandName: String,
-        payload: [String: Any],
-        build: (_ cartId: String, _ currency: String, _ source: String, _ products: [Braze.Ecommerce.ProductLineItem]) throws -> E) {
-        guard let cartId = payload[BrazeConstants.Keys.cartId] as? String,
-              let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-              let source = payload[BrazeConstants.Keys.productSource] as? String,
-              let products = parseProductLineItems(from: payload) else {
-            print("*** Tealium Remote Command Error - Braze: \(commandName) missing required field(s)")
-            return
+    /// Builds an order_cancelled / order_refunded custom event (no typed Braze SDK class exists)
+    /// via the throwing `build` closure and forwards it through `logCustomEvent`.
+    private func logCustomEcommerceEvent(commandName: String, _ build: () throws -> CustomEvent) {
+        do {
+            let event = try build()
+            brazeInstance.logCustomEvent(event.eventName, properties: event.properties)
+        } catch {
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
         }
-        logEcommerceEvent {
-            try build(cartId, currency, source, products)
-        }
-    }
-
-    /// The parallel product arrays (`product_id`, `product_name`, `variant_id`, `product_qty`,
-    /// `product_unit_price`, plus optional `image_url` / `product_url` / `product_metadata`) shared
-    /// by both the typed `ProductLineItem` events and the untyped order_cancelled / order_refunded
-    /// custom events.
-    private struct ProductArrays {
-        let productIds: [String]
-        let productNames: [String]
-        let variantIds: [String]
-        let quantities: [Int]
-        let prices: [Double]
-        let imageUrls: [String]?
-        let productUrls: [String]?
-        let metadatas: [[String: Any]]?
-        let count: Int
-    }
-
-    /// Parses and validates the parallel product arrays from the payload. Returns `nil` if any
-    /// required array is missing or the array lengths are inconsistent.
-    private func parseProductArrays(from payload: [String: Any]) -> ProductArrays? {
-        guard let productIds = payload[BrazeConstants.Keys.productIdentifier] as? [String],
-              let productNames = payload[BrazeConstants.Keys.productName] as? [String],
-              let variantIds = payload[BrazeConstants.Keys.variantId] as? [String],
-              let quantities = intArray(payload[BrazeConstants.Keys.productQuantity] ?? payload[BrazeConstants.Keys.quantity]),
-              let prices = doubleArray(payload[BrazeConstants.Keys.price]) else {
-            return nil
-        }
-        let count = productIds.count
-        guard productNames.count == count,
-              variantIds.count == count,
-              quantities.count == count,
-              prices.count == count else {
-            return nil
-        }
-        return ProductArrays(
-            productIds: productIds,
-            productNames: productNames,
-            variantIds: variantIds,
-            quantities: quantities,
-            prices: prices,
-            imageUrls: payload[BrazeConstants.Keys.imageUrl] as? [String],
-            productUrls: payload[BrazeConstants.Keys.productUrl] as? [String],
-            metadatas: payload[BrazeConstants.Keys.productMetadata] as? [[String: Any]],
-            count: count)
-    }
-
-    /// Parses the parallel product arrays into `[ProductLineItem]`, zipping by index. Returns `nil`
-    /// if any required array is missing or lengths are inconsistent. Individual `ProductLineItem`
-    /// init failures are logged and that product is skipped.
-    private func parseProductLineItems(from payload: [String: Any]) -> [Braze.Ecommerce.ProductLineItem]? {
-        guard let arrays = parseProductArrays(from: payload) else {
-            return nil
-        }
-        var items = [Braze.Ecommerce.ProductLineItem]()
-        for index in 0..<arrays.count {
-            do {
-                let item = try Braze.Ecommerce.ProductLineItem(
-                    productId: arrays.productIds[index],
-                    productName: arrays.productNames[index],
-                    variantId: arrays.variantIds[index],
-                    imageUrl: arrays.imageUrls.flatMap { index < $0.count ? $0[index] : nil },
-                    productUrl: arrays.productUrls.flatMap { index < $0.count ? $0[index] : nil },
-                    quantity: arrays.quantities[index],
-                    price: arrays.prices[index],
-                    metadata: arrays.metadatas.flatMap { index < $0.count ? $0[index] : nil })
-                items.append(item)
-            } catch {
-                print("*** Tealium Remote Command Error - Braze: failed to build product line item at index \(index): \(error)")
-            }
-        }
-        return items
-    }
-
-    /// Builds raw `[String: Any]` product dictionaries (matching Braze's `ecommerce.order_cancelled` /
-    /// `ecommerce.order_refunded` custom event schema) from the same parallel product arrays used by
-    /// `parseProductLineItems`. Braze has no typed SDK class for these events, so no SDK-side
-    /// field validation is performed here.
-    private func buildEcommerceProductDictionaries(from payload: [String: Any]) -> [[String: Any]]? {
-        guard let arrays = parseProductArrays(from: payload) else {
-            return nil
-        }
-        var products = [[String: Any]]()
-        for index in 0..<arrays.count {
-            var product: [String: Any] = [
-                "product_id": arrays.productIds[index],
-                "product_name": arrays.productNames[index],
-                "variant_id": arrays.variantIds[index],
-                "quantity": arrays.quantities[index],
-                "price": arrays.prices[index]
-            ]
-            if let imageUrl = arrays.imageUrls.flatMap({ index < $0.count ? $0[index] : nil }) {
-                product["image_url"] = imageUrl
-            }
-            if let productUrl = arrays.productUrls.flatMap({ index < $0.count ? $0[index] : nil }) {
-                product["product_url"] = productUrl
-            }
-            if let metadata = arrays.metadatas.flatMap({ index < $0.count ? $0[index] : nil }) {
-                product["metadata"] = metadata
-            }
-            products.append(product)
-        }
-        return products
-    }
-
-    /// Casts a payload value to `[Int]`, first attempting `[NSNumber]`. Numeric arrays in the payload
-    /// often arrive as `[NSNumber]` (from the webview/JSON bridge) rather than native `[Int]`; the
-    /// `NSNumber` path also recovers native `[Double]` values that hold whole numbers.
-    private func intArray(_ value: Any?) -> [Int]? {
-        if let array = value as? [NSNumber] {
-            return array.map { $0.intValue }
-        }
-        return value as? [Int]
-    }
-
-    /// Casts a payload value to `[Double]`, first attempting `[NSNumber]`. This is required because a
-    /// native Swift `[Int]` (e.g. `product_unit_price: [60, 20]` with no decimals) fails a direct
-    /// `as? [Double]` cast; routing through `NSNumber` recovers it, since Swift `Int` bridges to `NSNumber`.
-    private func doubleArray(_ value: Any?) -> [Double]? {
-        if let array = value as? [NSNumber] {
-            return array.map { $0.doubleValue }
-        }
-        return value as? [Double]
-    }
-
-    /// Casts a payload value to `Double`, first attempting `NSNumber`. This is required because a
-    /// native Swift `Int` (e.g. `total_value: 200` with no decimals) fails a direct `as? Double`
-    /// cast; routing through `NSNumber` recovers it, since Swift `Int` bridges to `NSNumber`.
-    private func doubleValue(_ value: Any?) -> Double? {
-        if let number = value as? NSNumber {
-            return number.doubleValue
-        }
-        return value as? Double
     }
 
     func convertToBool<T>(_ value: T) -> Bool? {
