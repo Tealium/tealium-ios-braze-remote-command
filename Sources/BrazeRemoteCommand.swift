@@ -177,12 +177,8 @@ public class BrazeRemoteCommand: RemoteCommand {
                     }
                 }
             case .logProductViewed:
-                do {
-                    try EcommerceEventParser.parseProductViewedEventBuilders(payload: payload).forEach { build in
-                        logEcommerceEvent(commandName: "logProductViewed", build)
-                    }
-                } catch {
-                    print("*** Tealium Remote Command Error - Braze: logProductViewed failed to build ecommerce event: \(error)")
+                logEcommerceEvent(commandName: "logProductViewed") {
+                    try EcommerceEventParser.parseProductViewedEvent(payload: payload)
                 }
             case .logCartUpdatedAdd:
                 logEcommerceEvent(commandName: "logCartUpdatedAdd") {

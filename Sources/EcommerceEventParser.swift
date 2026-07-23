@@ -40,37 +40,10 @@ extension [String: Any] {
         return nil
     }
 
-    /// Reads a required field as `T`, falling back to NSNumber-bridging for `Double`/`Int`/
-    /// `[Double]`/`[Int]` when a direct cast fails (native `Int` payloads from the JS bridge
-    /// fail a direct `as? Double` cast; routing through `NSNumber` recovers them).
-    func require<T>(_ key: String, fallbackKey: String? = nil) throws -> T {
-        guard let raw = get(key: key, fallbackKey: fallbackKey) else {
-            throw ParsingError.missingField(fallbackKey.map { "\(key) or \($0)" } ?? key)
-        }
-        if let value = raw as? T {
-            return value
-        }
-        if T.self == Double.self, let number = raw as? NSNumber {
-            return number.doubleValue as! T
-        }
-        if T.self == Int.self, let number = raw as? NSNumber {
-            return number.intValue as! T
-        }
-        if T.self == [Double].self, let array = raw as? [NSNumber] {
-            return array.map { $0.doubleValue } as! T
-        }
-        if T.self == [Int].self, let array = raw as? [NSNumber] {
-            return array.map { $0.intValue } as! T
-        }
-        throw ParsingError.typeMismatch(
-            field: key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: raw)))
-    }
-
-    /// Same NSNumber-bridging as `require<T>`, but returns `nil` instead of throwing when the key
-    /// is absent or the value can't be coerced to `T`. Use for genuinely optional numeric fields
-    /// (`total_value` on Add/Remove, `tax`, `shipping`, etc.).
-    func optionalValue<T>(_ key: String) -> T? {
-        guard let raw = self[key] else { return nil }
+    /// Casts `raw` to `T`, falling back to NSNumber-bridging for `Double`/`Int`/`[Double]`/`[Int]`
+    /// when a direct cast fails (native `Int` payloads from the JS bridge fail a direct `as? Double`
+    /// cast; routing through `NSNumber` recovers them). Returns `nil` when no cast applies.
+    private func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
         if T.self == Double.self, let number = raw as? NSNumber {
             return number.doubleValue as? T
@@ -87,6 +60,27 @@ extension [String: Any] {
         return nil
     }
 
+    /// Reads a required field as `T`, using `lenientCast`'s NSNumber-bridging. Throws
+    /// `missingField` when absent, `typeMismatch` when present but not coercible to `T`.
+    func require<T>(_ key: String, fallbackKey: String? = nil) throws -> T {
+        guard let raw = get(key: key, fallbackKey: fallbackKey) else {
+            throw ParsingError.missingField(fallbackKey.map { "\(key) or \($0)" } ?? key)
+        }
+        guard let value: T = lenientCast(raw, as: T.self) else {
+            throw ParsingError.typeMismatch(
+                field: key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: raw)))
+        }
+        return value
+    }
+
+    /// Same NSNumber-bridging as `require<T>`, but returns `nil` instead of throwing when the key
+    /// is absent or the value can't be coerced to `T`. Use for genuinely optional numeric fields
+    /// (`total_value` on Add/Remove, `tax`, `shipping`, etc.).
+    func optionalValue<T>(_ key: String) -> T? {
+        guard let raw = self[key] else { return nil }
+        return lenientCast(raw, as: T.self)
+    }
+
     /// Reads an optional per-product array field (e.g. `image_url`), tolerating individual `nil`/
     /// mismatched-type elements as `nil` rather than discarding every element in the array. Casting
     /// the whole array to `[String]` would turn one product's missing `image_url` into ALL products
@@ -98,10 +92,9 @@ extension [String: Any] {
         return raw.map { $0 as? T }
     }
 
-    /// Event-level custom metadata, read from `Keys.eventMetadata`. Every ecommerce event carries
-    /// this optional field under the same key.
+    /// Optional event-level custom metadata, shared by every ecommerce event under the same key.
     var ecommerceEventMetadata: [String: Any]? {
-        self[BrazeConstants.Keys.eventMetadata] as? [String: Any]
+        self[BrazeConstants.Ecommerce.metadata] as? [String: Any]
     }
 
     /// Merges `required` with whichever `optional` entries are non-`nil`, omitting the rest.
@@ -122,52 +115,33 @@ extension [String: Any] {
 // MARK: - EcommerceEventParser
 
 final class EcommerceEventParser {
-    typealias Keys = BrazeConstants.Keys
+    typealias Keys = BrazeConstants.Ecommerce
+    typealias Wire = BrazeConstants.EcommerceWireKeys
 
-    // MARK: Product Viewed (fires one event per parallel-array index)
+    // MARK: Product Viewed (single product detail view)
 
-    /// Validates the shared product-viewed fields once, then returns one throwing builder
-    /// closure per product. Each closure independently constructs a `ProductViewedEvent`; the
-    /// caller fires each with its own `logEcommerceEvent`, so one product's SDK-validation
-    /// failure does not affect its siblings.
-    static func parseProductViewedEventBuilders(
-        payload: [String: Any]
-    ) throws -> [() throws -> Braze.Ecommerce.ProductViewedEvent] {
-        let productIds = try requireLenientStringArray(payload: payload, key: Keys.productIdentifier)
-        let productNames = try requireLenientStringArray(payload: payload, key: Keys.productName)
-        let variantIds = try requireLenientStringArray(payload: payload, key: Keys.variantId)
-        let prices = try requireLenientDoubleArray(payload: payload, key: Keys.price)
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+    /// `logProductViewed` targets a single product detail view, so every product field is a plain
+    /// scalar. Unlike cart/checkout/order, this event carries no `products` array -- an array value
+    /// is a caller mistake and fails validation (`require` throws) rather than being coerced.
+    static func parseProductViewedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.ProductViewedEvent {
+        let productId: String = try payload.require(Keys.productId)
+        let productName: String = try payload.require(Keys.productName)
+        let variantId: String = try payload.require(Keys.variantId)
+        let price: Double = try payload.require(Keys.price)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
 
-        guard productIds.count == productNames.count,
-              productNames.count == variantIds.count,
-              variantIds.count == prices.count else {
-            throw ParsingError.mismatchedArrayLengths(
-                fields: [Keys.productIdentifier, Keys.productName, Keys.variantId, Keys.price])
-        }
-
-        let count = productIds.count
-        let imageUrls = lenientOptionalStringArray(payload[Keys.imageUrl], count: count)
-        let productUrls = lenientOptionalStringArray(payload[Keys.productUrl], count: count)
-        let metadata = payload.ecommerceEventMetadata
-        let typeIdentifiers = payload[Keys.typeIdentifiers] as? [String]
-
-        return productIds.indices.map { index in
-            {
-                try Braze.Ecommerce.ProductViewedEvent(
-                    productId: productIds[index],
-                    productName: productNames[index],
-                    variantId: variantIds[index],
-                    imageUrl: imageUrls?[index],
-                    productUrl: productUrls?[index],
-                    price: prices[index],
-                    currency: currency,
-                    source: source,
-                    metadata: metadata,
-                    typeIdentifiers: typeIdentifiers)
-            }
-        }
+        return try Braze.Ecommerce.ProductViewedEvent(
+            productId: productId,
+            productName: productName,
+            variantId: variantId,
+            imageUrl: payload.optionalValue(Keys.imageUrl),
+            productUrl: payload.optionalValue(Keys.productUrl),
+            price: price,
+            currency: currency,
+            source: source,
+            metadata: payload.ecommerceEventMetadata,
+            typeIdentifiers: payload.optionalValue(Keys.typeIdentifiers))
     }
 
     // MARK: Cart Updated (Add / Remove / Replace)
@@ -226,8 +200,8 @@ final class EcommerceEventParser {
         build: (_ cartId: String, _ currency: String, _ source: String, _ products: [Braze.Ecommerce.ProductLineItem]) throws -> E
     ) throws -> E {
         let cartId: String = try payload.require(Keys.cartId)
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
         let products = try parseProductLineItems(from: payload)
         return try build(cartId, currency, source, products)
     }
@@ -235,14 +209,14 @@ final class EcommerceEventParser {
     // MARK: Checkout Started / Order Placed
 
     static func parseCheckoutStartedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.CheckoutStartedEvent {
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
         let checkoutId: String = try payload.require(Keys.checkoutId)
         let totalValue: Double = try payload.require(Keys.totalValue)
         let products = try parseProductLineItems(from: payload)
         return try Braze.Ecommerce.CheckoutStartedEvent(
             checkoutId: checkoutId,
-            cartId: payload[Keys.cartId] as? String,
+            cartId: payload.optionalValue(Keys.cartId),
             totalValue: totalValue,
             currency: currency,
             subtotalValue: payload.optionalValue(Keys.subtotalValue),
@@ -254,21 +228,21 @@ final class EcommerceEventParser {
     }
 
     static func parseOrderPlacedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.OrderPlacedEvent {
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
         let products = try parseProductLineItems(from: payload)
         return try Braze.Ecommerce.OrderPlacedEvent(
             orderId: orderId,
-            cartId: payload[Keys.cartId] as? String,
+            cartId: payload.optionalValue(Keys.cartId),
             totalValue: totalValue,
             currency: currency,
             subtotalValue: payload.optionalValue(Keys.subtotalValue),
             tax: payload.optionalValue(Keys.tax),
             shipping: payload.optionalValue(Keys.shipping),
             totalDiscounts: payload.optionalValue(Keys.totalDiscounts),
-            discounts: payload[Keys.discounts] as? [Any],
+            discounts: payload.optionalValue(Keys.discounts) as [Any]?,
             products: products,
             source: source,
             metadata: payload.ecommerceEventMetadata)
@@ -279,27 +253,27 @@ final class EcommerceEventParser {
     static func parseOrderCancelledEvent(payload: [String: Any]) throws -> CustomEvent {
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
         let cancelReason: String = try payload.require(Keys.cancelReason)
         let products = try buildEcommerceProductDictionaries(from: payload)
 
         let properties = [String: Any].merging(
             [
                 Keys.orderId: orderId,
-                Keys.totalValue: totalValue,
-                Keys.wireOutputCurrency: currency,
+                Wire.totalValue: totalValue,
+                Wire.currency: currency,
                 Keys.cancelReason: cancelReason,
-                Keys.wireOutputProducts: products,
-                Keys.wireOutputSource: source
+                Wire.products: products,
+                Wire.source: source
             ],
             ifPresent: [
-                Keys.subtotalValue: payload.optionalValue(Keys.subtotalValue) as Double?,
-                Keys.tax: payload.optionalValue(Keys.tax) as Double?,
-                Keys.shipping: payload.optionalValue(Keys.shipping) as Double?,
-                Keys.totalDiscounts: payload.optionalValue(Keys.totalDiscounts) as Double?,
-                Keys.discounts: payload[Keys.discounts] as? [Any],
-                Keys.wireOutputMetadata: payload.ecommerceEventMetadata
+                Wire.subtotalValue: payload.optionalValue(Keys.subtotalValue) as Double?,
+                Wire.tax: payload.optionalValue(Keys.tax) as Double?,
+                Wire.shipping: payload.optionalValue(Keys.shipping) as Double?,
+                Wire.totalDiscounts: payload.optionalValue(Keys.totalDiscounts) as Double?,
+                Keys.discounts: payload.optionalValue(Keys.discounts) as [Any]?,
+                Wire.metadata: payload.ecommerceEventMetadata
             ])
         return CustomEvent(eventName: "ecommerce.order_cancelled", properties: properties)
     }
@@ -307,22 +281,22 @@ final class EcommerceEventParser {
     static func parseOrderRefundedEvent(payload: [String: Any]) throws -> CustomEvent {
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
-        let currency: String = try payload.require(Keys.productCurrency)
-        let source: String = try payload.require(Keys.productSource)
+        let currency: String = try payload.require(Keys.currency)
+        let source: String = try payload.require(Keys.source)
         let products = try buildEcommerceProductDictionaries(from: payload)
 
         let properties = [String: Any].merging(
             [
                 Keys.orderId: orderId,
-                Keys.totalValue: totalValue,
-                Keys.wireOutputCurrency: currency,
-                Keys.wireOutputProducts: products,
-                Keys.wireOutputSource: source
+                Wire.totalValue: totalValue,
+                Wire.currency: currency,
+                Wire.products: products,
+                Wire.source: source
             ],
             ifPresent: [
-                Keys.totalDiscounts: payload.optionalValue(Keys.totalDiscounts) as Double?,
-                Keys.discounts: payload[Keys.discounts] as? [Any],
-                Keys.wireOutputMetadata: payload.ecommerceEventMetadata
+                Wire.totalDiscounts: payload.optionalValue(Keys.totalDiscounts) as Double?,
+                Keys.discounts: payload.optionalValue(Keys.discounts) as [Any]?,
+                Wire.metadata: payload.ecommerceEventMetadata
             ])
         return CustomEvent(eventName: "ecommerce.order_refunded", properties: properties)
     }
@@ -342,10 +316,10 @@ final class EcommerceEventParser {
     }
 
     private static func parseProductArrays(from payload: [String: Any]) throws -> ProductArrays {
-        let productIds: [String] = try payload.require(Keys.productIdentifier)
+        let productIds: [String] = try payload.require(Keys.productId)
         let productNames: [String] = try payload.require(Keys.productName)
         let variantIds: [String] = try payload.require(Keys.variantId)
-        let quantities: [Int] = try payload.require(Keys.productQuantity, fallbackKey: Keys.quantity)
+        let quantities: [Int] = try payload.require(Keys.quantity, fallbackKey: Keys.quantityFallback)
         let prices: [Double] = try payload.require(Keys.price)
 
         let count = productIds.count
@@ -354,7 +328,7 @@ final class EcommerceEventParser {
               quantities.count == count,
               prices.count == count else {
             throw ParsingError.mismatchedArrayLengths(
-                fields: [Keys.productIdentifier, Keys.productName, Keys.variantId, Keys.productQuantity, Keys.price])
+                fields: [Keys.productId, Keys.productName, Keys.variantId, Keys.quantity, Keys.price])
         }
         return ProductArrays(
             productIds: productIds,
@@ -397,54 +371,21 @@ final class EcommerceEventParser {
         let arrays = try parseProductArrays(from: payload)
         var products = [[String: Any]]()
         for index in 0..<arrays.count {
-            var product: [String: Any] = [
-                Keys.productIdentifier: arrays.productIds[index],
-                Keys.productName: arrays.productNames[index],
-                Keys.variantId: arrays.variantIds[index],
-                Keys.wireOutputQuantity: arrays.quantities[index],
-                Keys.wireOutputPrice: arrays.prices[index]
-            ]
-            if let imageUrl = arrays.imageUrls?[index] {
-                product[Keys.imageUrl] = imageUrl
-            }
-            if let productUrl = arrays.productUrls?[index] {
-                product[Keys.productUrl] = productUrl
-            }
-            if let metadata = arrays.metadatas?[index] {
-                product[Keys.wireOutputMetadata] = metadata
-            }
+            let product: [String: Any] = .merging(
+                [
+                    Keys.productId: arrays.productIds[index],
+                    Keys.productName: arrays.productNames[index],
+                    Keys.variantId: arrays.variantIds[index],
+                    Wire.quantity: arrays.quantities[index],
+                    Wire.price: arrays.prices[index]
+                ],
+                ifPresent: [
+                    Keys.imageUrl: arrays.imageUrls?[index],
+                    Keys.productUrl: arrays.productUrls?[index],
+                    Wire.metadata: arrays.metadatas?[index]
+                ])
             products.append(product)
         }
         return products
-    }
-
-    // MARK: Scalar-or-array leniency for logProductViewed only
-
-    private static func requireLenientStringArray(payload: [String: Any], key: String) throws -> [String] {
-        guard let raw = payload[key] else {
-            throw ParsingError.missingField(key)
-        }
-        if let array = raw as? [String] { return array }
-        if let scalar = raw as? String { return [scalar] }
-        throw ParsingError.typeMismatch(
-            field: key, expected: "String or [String]", actual: String(describing: Swift.type(of: raw)))
-    }
-
-    private static func requireLenientDoubleArray(payload: [String: Any], key: String) throws -> [Double] {
-        guard let raw = payload[key] else {
-            throw ParsingError.missingField(key)
-        }
-        if let array: [Double] = payload.optionalValue(key) { return array }
-        if let scalar: Double = payload.optionalValue(key) { return [scalar] }
-        throw ParsingError.typeMismatch(
-            field: key, expected: "Double or [Double]", actual: String(describing: Swift.type(of: raw)))
-    }
-
-    /// Same whole-array-cast pitfall as `[String: Any].optionalArray` (see its doc comment), plus
-    /// tolerance for a single scalar value in place of a one-element array.
-    private static func lenientOptionalStringArray(_ value: Any?, count: Int) -> [String?]? {
-        if let scalar = value as? String { return count == 1 ? [scalar] : nil }
-        guard let array = value as? [Any], array.count == count else { return nil }
-        return array.map { $0 as? String }
     }
 }
