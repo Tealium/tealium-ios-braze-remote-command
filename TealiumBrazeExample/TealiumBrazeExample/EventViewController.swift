@@ -71,12 +71,13 @@ class EventViewController: UIViewController {
     }
     
     @IBAction func logProductViewed(_ sender: Any) {
+        // logProductViewed describes a single product, so its fields are plain scalars (no arrays).
         let data: [String: Any] = [
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "product_variant_id": ["red-42"],
-            "product_unit_price": [59.99],
-            "currency_code": "USD",
+            "product_id": "sku123",
+            "product_name": "Running Shoes",
+            "product_variant_id": "red-42",
+            "product_unit_price": 59.99,
+            "ecommerce_currency": "USD",
             "ecommerce_source": "iOS App"
         ]
         TealiumHelper.trackEvent(title: "log_product_viewed", data: data)
@@ -134,7 +135,7 @@ class EventViewController: UIViewController {
     private func cartData() -> [String: Any] {
         return [
             "cart_id": "cart-1",
-            "currency_code": "USD",
+            "ecommerce_currency": "USD",
             "ecommerce_source": "iOS App",
             "product_id": ["sku123", "sku456"],
             "product_name": ["Running Shoes", "Socks"],
