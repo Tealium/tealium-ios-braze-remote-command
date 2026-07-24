@@ -180,17 +180,20 @@ public class BrazeRemoteCommand: RemoteCommand {
                 logEcommerceEvent(commandName: "logProductViewed") {
                     try EcommerceEventParser.parseProductViewedEvent(payload: payload)
                 }
-            case .logCartUpdatedAdd:
-                logEcommerceEvent(commandName: "logCartUpdatedAdd") {
-                    try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
-                }
-            case .logCartUpdatedRemove:
-                logEcommerceEvent(commandName: "logCartUpdatedRemove") {
-                    try EcommerceEventParser.parseCartUpdatedRemoveEvent(payload: payload)
-                }
-            case .logCartUpdatedReplace:
-                logEcommerceEvent(commandName: "logCartUpdatedReplace") {
-                    try EcommerceEventParser.parseCartUpdatedReplaceEvent(payload: payload)
+            case .logCartUpdated:
+                switch BrazeConstants.Ecommerce.Action.from(payload[BrazeConstants.Ecommerce.action] as? String) {
+                case .add:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
+                    }
+                case .remove:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedRemoveEvent(payload: payload)
+                    }
+                case .replace:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedReplaceEvent(payload: payload)
+                    }
                 }
             case .logCheckoutStarted:
                 logEcommerceEvent(commandName: "logCheckoutStarted") {
