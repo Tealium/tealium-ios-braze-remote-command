@@ -466,6 +466,24 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual("iOS App", properties?["source"] as? String)
     }
 
+    func testLogProductViewedWithTypeIdentifiers() {
+        // `type` carries Braze catalog-trigger identifiers (price_drop / back_in_stock). It maps to
+        // the SDK's `typeIdentifiers` init parameter, which is iOS-only. A successful log proves the
+        // throwing initializer accepted the identifiers.
+        let payload: [String: Any] = ["command_name": "logproductviewed",
+            "product_id": "sku123",
+            "product_name": "Running Shoes",
+            "variant_id": "red-42",
+            "price": 59.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "type": ["price_drop", "back_in_stock"]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
+        XCTAssertEqual("ecommerce.product_viewed", brazeInstance.loggedEcommerceEventNames.last)
+    }
+
     func testLogProductViewedNotCalled_sourceMissing() {
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": "sku123",
@@ -713,6 +731,37 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual("sku123", products?.first?["product_id"] as? String)
     }
 
+    func testLogOrderPlacedWithDiscounts() {
+        // `discounts` is a nested dictionary of parallel arrays (code/amount/type), zipped by index
+        // like `products`. Braze's OrderPlacedEvent.discounts is typed [Any]?, so the entries are
+        // forwarded as [String: Any] dictionaries.
+        let payload: [String: Any] = ["command_name": "logorderplaced",
+            "order_id": "order-1",
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "total_discounts": 15.0,
+            "discounts": [
+                "code": ["SUMMER10", "VIP5"],
+                "amount": [10.0, 5.0],
+                "type": ["percentage", "fixed"]
+            ],
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
+        XCTAssertEqual("ecommerce.order_placed", brazeInstance.loggedEcommerceEventNames.last)
+        let properties = brazeInstance.loggedEcommerceEventProperties.last
+        XCTAssertEqual(15.0, properties?["total_discounts"] as? Double)
+        let discounts = properties?["discounts"] as? [[String: Any]]
+        XCTAssertEqual(2, discounts?.count)
+        XCTAssertEqual("SUMMER10", discounts?.first?["code"] as? String)
+        XCTAssertEqual(10.0, discounts?.first?["amount"] as? Double)
+        XCTAssertEqual("percentage", discounts?.first?["type"] as? String)
+    }
+
     func testLogOrderPlacedNotCalled_orderIdMissing() {
         let payload: [String: Any] = ["command_name": "logorderplaced",
             "total_value": 79.98,
@@ -811,6 +860,42 @@ class BrazeProcessCommandTests: XCTestCase {
         let products = properties?["products"] as? [[String: Any]]
         XCTAssertEqual(1, products?.count)
         XCTAssertEqual("sku123", products?.first?["product_id"] as? String)
+    }
+
+    func testLogOrderCancelledWithOptionalFieldsAndDiscounts() {
+        // order_cancelled has no typed SDK class, so subtotal_value/tax/shipping/discounts are
+        // forwarded through the logCustomEvent wire payload (unlike the typed cart/checkout/order
+        // events, which cannot carry subtotal/tax/shipping on iOS's counterpart Android SDK).
+        let payload: [String: Any] = ["command_name": "logordercancelled",
+            "order_id": "order-1",
+            "total_value": 79.98,
+            "subtotal_value": 69.99,
+            "tax": 5.0,
+            "shipping": 4.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "cancel_reason": "customer_request",
+            "total_discounts": 10.0,
+            "discounts": [
+                "code": ["SUMMER10"],
+                "amount": [10.0],
+                "type": ["percentage"]
+            ],
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.logCustomEventWithPropertiesCallCount)
+        XCTAssertEqual("ecommerce.order_cancelled", brazeInstance.lastCustomEventName)
+        let properties = brazeInstance.lastCustomEventProperties
+        XCTAssertEqual(69.99, properties?["subtotal_value"] as? Double)
+        XCTAssertEqual(5.0, properties?["tax"] as? Double)
+        XCTAssertEqual(4.99, properties?["shipping"] as? Double)
+        XCTAssertEqual(10.0, properties?["total_discounts"] as? Double)
+        let discounts = properties?["discounts"] as? [[String: Any]]
+        XCTAssertEqual(1, discounts?.count)
+        XCTAssertEqual("SUMMER10", discounts?.first?["code"] as? String)
     }
 
     func testLogOrderCancelledNotCalled_cancelReasonMissing() {

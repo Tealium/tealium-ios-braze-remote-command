@@ -245,10 +245,6 @@ final class EcommerceEventParser {
             tax: payload.optionalValue(Keys.tax),
             shipping: payload.optionalValue(Keys.shipping),
             totalDiscounts: payload.optionalValue(Keys.totalDiscounts),
-            // NOTE: OrderPlacedEvent's discounts parameter type is not confirmed from available
-            // docs (examples show `.structured(code:amount:type:)`, not raw dictionaries). Passing
-            // plain [String: Any] entries as-is, matching the previous implementation's approach;
-            // revisit if the SDK requires the typed case instead.
             discounts: buildDiscountDictionaries(from: payload) as [Any]?,
             products: products,
             source: source,
