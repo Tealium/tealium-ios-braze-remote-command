@@ -431,20 +431,26 @@ class BrazeProcessCommandTests: XCTestCase {
     }
 
     // MARK: - Ecommerce events
+    //
+    // `products`/`discounts` are nested dictionaries holding PARALLEL ARRAYS zipped by index --
+    // matching tealium-android-firebase-remote-command's items_params convention -- not a literal
+    // array of product objects. Keys match the Braze recommended-event schema 1:1 (plain `price`,
+    // `quantity`, `currency`, `source`, `total_value`, no `ecommerce_`/`product_unit_price`/
+    // `product_qty` prefixes).
 
     func testLogProductViewedSuccess() {
         // logProductViewed describes a single product detail view, so every product field is a
-        // plain scalar (no array support -- this event carries no products array, unlike
+        // plain scalar (no products dictionary -- this event carries no products, unlike
         // cart/checkout/order).
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": "sku123",
             "product_name": "Running Shoes",
             "variant_id": "red-42",
-            "product_unit_price": 59.99,
+            "price": 59.99,
             "image_url": "https://example.com/shoe.png",
             "product_url": "https://example.com/product/sku123",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "currency": "USD",
+            "source": "iOS App"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -465,8 +471,8 @@ class BrazeProcessCommandTests: XCTestCase {
             "product_id": "sku123",
             "product_name": "Running Shoes",
             "variant_id": "red-42",
-            "product_unit_price": 59.99,
-            "ecommerce_currency": "USD"
+            "price": 59.99,
+            "currency": "USD"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -476,25 +482,25 @@ class BrazeProcessCommandTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": "sku123",
             "variant_id": "red-42",
-            "product_unit_price": 59.99,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "price": 59.99,
+            "currency": "USD",
+            "source": "iOS App"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
     func testLogProductViewedNotCalled_arrayRejected() {
-        // Scalar-only: logProductViewed carries no products array, so an array value for a product
-        // field (even a single-element one) is a caller mistake and fails validation rather than
-        // being coerced to a scalar.
+        // Scalar-only: logProductViewed carries no products dictionary, so an array value for a
+        // product field (even a single-element one) is a caller mistake and fails validation
+        // rather than being coerced to a scalar.
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": ["sku123"],
             "product_name": ["Running Shoes"],
             "variant_id": ["red-42"],
-            "product_unit_price": [59.99],
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "price": [59.99],
+            "currency": "USD",
+            "source": "iOS App"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -506,24 +512,36 @@ class BrazeProcessCommandTests: XCTestCase {
             "product_id": ["sku123", "sku456"],
             "product_name": ["Running Shoes", "Winter Jacket"],
             "variant_id": ["red-42", "blue-L"],
-            "product_unit_price": [59.99, 129.99],
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "price": [59.99, 129.99],
+            "currency": "USD",
+            "source": "iOS App"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
+    /// Builds the nested `products` dictionary -- parallel arrays zipped by index -- from flat
+    /// per-product field dictionaries, matching what EcommerceEventParser reads from a real
+    /// payload.
+    private func productsDictionary(_ products: [[String: Any]]) -> [String: Any] {
+        [
+            "product_id": products.map { $0["product_id"] },
+            "product_name": products.map { $0["product_name"] },
+            "variant_id": products.map { $0["variant_id"] },
+            "price": products.map { $0["price"] },
+            "quantity": products.map { $0["quantity"] }
+        ]
+    }
+
     func testLogCartUpdatedAddSuccess() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedadd",
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [2],
-            "product_unit_price": [59.99]
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "add",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 2]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -538,15 +556,14 @@ class BrazeProcessCommandTests: XCTestCase {
     }
 
     func testLogCartUpdatedRemoveSuccess() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedremove",
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "remove",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -560,16 +577,16 @@ class BrazeProcessCommandTests: XCTestCase {
     }
 
     func testLogCartUpdatedReplaceSuccess() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedreplace",
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "ecommerce_total_value": 119.98,
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes", "Socks"],
-            "variant_id": ["red-42", "black-M"],
-            "product_qty": [1, 3],
-            "product_unit_price": [59.99, 19.99]
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "replace",
+            "total_value": 119.98,
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1],
+                ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 3]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -583,49 +600,50 @@ class BrazeProcessCommandTests: XCTestCase {
     }
 
     func testLogCartUpdatedReplace_partialProductMetadata() {
-        // Regression guard: a whole-array cast (`payload["product_metadata"] as? [[String: Any]]`)
-        // would fail outright once ANY element is non-dictionary (e.g. NSNull for a product with
-        // no metadata), silently dropping metadata for every product rather than just that one.
-        let payload: [String: Any] = ["command_name": "logcartupdatedreplace",
+        // Regression guard: a whole-array cast (`products["metadata"] as? [[String: Any]]`) would
+        // fail outright once ANY element is non-dictionary (e.g. NSNull for a product with no
+        // metadata), silently dropping metadata for every product rather than just that one.
+        var products = productsDictionary([
+            ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1],
+            ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 3]
+        ])
+        products["metadata"] = [["color": "red"], NSNull()]
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "ecommerce_total_value": 119.98,
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes", "Socks"],
-            "variant_id": ["red-42", "black-M"],
-            "product_qty": [1, 3],
-            "product_unit_price": [59.99, 19.99],
-            "product_metadata": [["color": "red"], NSNull()]
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "replace",
+            "total_value": 119.98,
+            "products": products
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
-        let products = brazeInstance.loggedEcommerceEventProperties.last?["products"] as? [[String: Any]]
-        XCTAssertEqual(2, products?.count)
-        let firstMetadata = products?.first?["metadata"] as? [String: Any]
+        let resultProducts = brazeInstance.loggedEcommerceEventProperties.last?["products"] as? [[String: Any]]
+        XCTAssertEqual(2, resultProducts?.count)
+        let firstMetadata = resultProducts?.first?["metadata"] as? [String: Any]
         XCTAssertEqual("red", firstMetadata?["color"] as? String)
-        XCTAssertNil(products?.last?["metadata"])
+        XCTAssertNil(resultProducts?.last?["metadata"])
     }
 
     func testLogCartUpdatedNotCalled_cartIdMissing() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedadd",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [2],
-            "product_unit_price": [59.99]
+        let payload: [String: Any] = ["command_name": "logcartupdated",
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "add",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 2]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
     func testLogCartUpdatedNotCalled_productsMissing() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedadd",
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "add"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -635,14 +653,12 @@ class BrazeProcessCommandTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "logcheckoutstarted",
             "checkout_id": "checkout-1",
             "cart_id": "cart-1",
-            "ecommerce_total_value": 59.99,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "total_value": 59.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -658,14 +674,12 @@ class BrazeProcessCommandTests: XCTestCase {
 
     func testLogCheckoutStartedNotCalled_checkoutIdMissing() {
         let payload: [String: Any] = ["command_name": "logcheckoutstarted",
-            "ecommerce_total_value": 59.99,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "total_value": 59.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -675,16 +689,15 @@ class BrazeProcessCommandTests: XCTestCase {
         let payload: [String: Any] = ["command_name": "logorderplaced",
             "order_id": "order-1",
             "cart_id": "cart-1",
-            "ecommerce_total_value": 79.98,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "ecommerce_tax": 5.00,
-            "ecommerce_shipping": 4.99,
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes", "Socks"],
-            "variant_id": ["red-42", "black-M"],
-            "product_qty": [1, 1],
-            "product_unit_price": [59.99, 19.99]
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "tax": 5.00,
+            "shipping": 4.99,
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1],
+                ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logEcommerceEventCallCount)
@@ -702,14 +715,12 @@ class BrazeProcessCommandTests: XCTestCase {
 
     func testLogOrderPlacedNotCalled_orderIdMissing() {
         let payload: [String: Any] = ["command_name": "logorderplaced",
-            "ecommerce_total_value": 79.98,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -718,59 +729,61 @@ class BrazeProcessCommandTests: XCTestCase {
     func testLogOrderPlacedNotCalled_totalValueMissing() {
         let payload: [String: Any] = ["command_name": "logorderplaced",
             "order_id": "order-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
     func testLogProductViewedNotCalled_orderCurrencyNotAFallback() {
-        // Unlike logPurchase, ecommerce events do NOT accept the legacy `order_currency` key --
-        // only `product_currency`.
+        // Ecommerce events do NOT accept the legacy `order_currency` key used by logpurchase --
+        // only the plain `currency` key from the Braze schema.
         let payload: [String: Any] = ["command_name": "logproductviewed",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_unit_price": [59.99],
+            "product_id": "sku123",
+            "product_name": "Running Shoes",
+            "variant_id": "red-42",
+            "price": 59.99,
             "order_currency": "USD",
-            "ecommerce_source": "iOS App"
+            "source": "iOS App"
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
     func testLogCartUpdatedReplaceNotCalled_totalValueMissing() {
-        let payload: [String: Any] = ["command_name": "logcartupdatedreplace",
+        let payload: [String: Any] = ["command_name": "logcartupdated",
             "cart_id": "cart-1",
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes", "Socks"],
-            "variant_id": ["red-42", "black-M"],
-            "product_qty": [1, 3],
-            "product_unit_price": [59.99, 19.99]
+            "currency": "USD",
+            "source": "iOS App",
+            "action": "replace",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1],
+                ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 3]
+            ])
+            // total_value intentionally omitted; replace requires it.
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
     }
 
     func testLogOrderPlacedNotCalled_mismatchedProductArrayLengths() {
+        let products: [String: Any] = [
+            "product_id": ["sku123", "sku456"],
+            "product_name": ["Running Shoes"], // mismatched length vs the other arrays
+            "variant_id": ["red-42", "black-M"],
+            "price": [59.99, 19.99],
+            "quantity": [1, 1]
+        ]
         let payload: [String: Any] = ["command_name": "logorderplaced",
             "order_id": "order-1",
-            "ecommerce_total_value": 79.98,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42", "black-M"],
-            "product_qty": [1, 1],
-            "product_unit_price": [59.99, 19.99]
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": products
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logEcommerceEventCallCount)
@@ -781,15 +794,13 @@ class BrazeProcessCommandTests: XCTestCase {
     func testLogOrderCancelledSuccess() {
         let payload: [String: Any] = ["command_name": "logordercancelled",
             "order_id": "order-1",
-            "ecommerce_total_value": 79.98,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
             "cancel_reason": "customer_request",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logCustomEventWithPropertiesCallCount)
@@ -805,14 +816,12 @@ class BrazeProcessCommandTests: XCTestCase {
     func testLogOrderCancelledNotCalled_cancelReasonMissing() {
         let payload: [String: Any] = ["command_name": "logordercancelled",
             "order_id": "order-1",
-            "ecommerce_total_value": 79.98,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku123"],
-            "product_name": ["Running Shoes"],
-            "variant_id": ["red-42"],
-            "product_qty": [1],
-            "product_unit_price": [59.99]
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logCustomEventWithPropertiesCallCount)
@@ -821,14 +830,12 @@ class BrazeProcessCommandTests: XCTestCase {
     func testLogOrderRefundedSuccess() {
         let payload: [String: Any] = ["command_name": "logorderrefunded",
             "order_id": "order-2",
-            "ecommerce_total_value": 39.99,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku456"],
-            "product_name": ["Socks"],
-            "variant_id": ["black-M"],
-            "product_qty": [1],
-            "product_unit_price": [19.99]
+            "total_value": 39.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logCustomEventWithPropertiesCallCount)
@@ -840,14 +847,12 @@ class BrazeProcessCommandTests: XCTestCase {
 
     func testLogOrderRefundedNotCalled_orderIdMissing() {
         let payload: [String: Any] = ["command_name": "logorderrefunded",
-            "ecommerce_total_value": 39.99,
-            "ecommerce_currency": "USD",
-            "ecommerce_source": "iOS App",
-            "product_id": ["sku456"],
-            "product_name": ["Socks"],
-            "variant_id": ["black-M"],
-            "product_qty": [1],
-            "product_unit_price": [19.99]
+            "total_value": 39.99,
+            "currency": "USD",
+            "source": "iOS App",
+            "products": productsDictionary([
+                ["product_id": "sku456", "product_name": "Socks", "variant_id": "black-M", "price": 19.99, "quantity": 1]
+            ])
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(0, brazeInstance.logCustomEventWithPropertiesCallCount)

@@ -76,7 +76,7 @@ class EventViewController: UIViewController {
             "product_id": "sku123",
             "product_name": "Running Shoes",
             "product_variant_id": "red-42",
-            "product_unit_price": 59.99,
+            "product_viewed_price": 59.99,
             "ecommerce_currency": "USD",
             "ecommerce_source": "iOS App"
         ]
@@ -84,18 +84,23 @@ class EventViewController: UIViewController {
     }
 
     @IBAction func logCartUpdatedAdd(_ sender: Any) {
-        TealiumHelper.trackEvent(title: "log_cart_updated_add", data: cartData())
+        var data = cartData()
+        data["cart_action"] = "add"
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
     }
 
     @IBAction func logCartUpdatedRemove(_ sender: Any) {
-        TealiumHelper.trackEvent(title: "log_cart_updated_remove", data: cartData())
+        var data = cartData()
+        data["cart_action"] = "remove"
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
     }
 
     @IBAction func logCartUpdatedReplace(_ sender: Any) {
         var data = cartData()
+        data["cart_action"] = "replace"
         // Replace is a full snapshot and requires total_value.
         data["order_total_value"] = 119.98
-        TealiumHelper.trackEvent(title: "log_cart_updated_replace", data: data)
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
     }
 
     @IBAction func logCheckoutStarted(_ sender: Any) {
@@ -112,7 +117,9 @@ class EventViewController: UIViewController {
         data["order_tax"] = 5.00
         data["order_shipping"] = 4.99
         data["event_metadata"] = ["gift_wrapped": true]
-        data["discounts"] = [["code": "SUMMER10", "amount": "10.0", "type": "percentage"]]
+        data["discount_code"] = ["SUMMER10"]
+        data["discount_amount"] = [10.0]
+        data["discount_type"] = ["percentage"]
         TealiumHelper.trackEvent(title: "log_order_placed", data: data)
     }
 
@@ -132,16 +139,18 @@ class EventViewController: UIViewController {
     }
 
     /// Sample multi-product cart payload shared by the cart / checkout / order demo events.
+    /// `cart_product_*` data layer variables map (via braze.json) into the nested `products`
+    /// object's parallel arrays, zipped by index -- not a literal array of product objects.
     private func cartData() -> [String: Any] {
         return [
             "cart_id": "cart-1",
             "ecommerce_currency": "USD",
             "ecommerce_source": "iOS App",
-            "product_id": ["sku123", "sku456"],
-            "product_name": ["Running Shoes", "Socks"],
-            "product_variant_id": ["red-42", "black-M"],
-            "product_quantity": [1, 3],
-            "product_unit_price": [59.99, 19.99]
+            "cart_product_id": ["sku123", "sku456"],
+            "cart_product_name": ["Running Shoes", "Socks"],
+            "cart_variant_id": ["red-42", "black-M"],
+            "cart_quantity": [1, 3],
+            "cart_price": [59.99, 19.99]
         ]
     }
 
