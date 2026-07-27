@@ -134,6 +134,12 @@ public enum BrazeConstants {
 
         static let cancelReason = "cancel_reason"
 
+        // Custom-event names for order_cancelled/order_refunded, which have no typed Braze SDK
+        // event class and are dispatched via logCustomEvent. Must stay in sync with the Android
+        // remote command's BrazeConstants.Ecommerce event names.
+        static let eventOrderCancelled = "ecommerce.order_cancelled"
+        static let eventOrderRefunded = "ecommerce.order_refunded"
+
         /// The cart action for logcartupdated, read from the payload's `action` key. Values match
         /// the Braze cart_updated schema; an unrecognized or absent value defaults to `.replace`,
         /// matching a full-cart snapshot.

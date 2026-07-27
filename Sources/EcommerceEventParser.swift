@@ -330,7 +330,7 @@ final class EcommerceEventParser {
                 Keys.discounts: buildDiscountDictionaries(from: payload),
                 Keys.metadata: payload.ecommerceMetadata
             ])
-        return CustomEvent(eventName: "ecommerce.order_cancelled", properties: properties)
+        return CustomEvent(eventName: Keys.eventOrderCancelled, properties: properties)
     }
 
     static func parseOrderRefundedEvent(payload: [String: Any]) throws -> CustomEvent {
@@ -353,7 +353,7 @@ final class EcommerceEventParser {
                 Keys.discounts: buildDiscountDictionaries(from: payload),
                 Keys.metadata: payload.ecommerceMetadata
             ])
-        return CustomEvent(eventName: "ecommerce.order_refunded", properties: properties)
+        return CustomEvent(eventName: Keys.eventOrderRefunded, properties: properties)
     }
 
     // MARK: Shared products/discounts parsing (nested-parallel-arrays convention)
