@@ -70,6 +70,90 @@ class EventViewController: UIViewController {
         TealiumHelper.trackEvent(title: "log_purchase", data: purchaseInfo)
     }
     
+    @IBAction func logProductViewed(_ sender: Any) {
+        // logProductViewed describes a single product, so its fields are plain scalars (no arrays).
+        let data: [String: Any] = [
+            "product_id": "sku123",
+            "product_name": "Running Shoes",
+            "product_variant_id": "red-42",
+            "product_viewed_price": 59.99,
+            "ecommerce_currency": "USD",
+            "ecommerce_source": "iOS App"
+        ]
+        TealiumHelper.trackEvent(title: "log_product_viewed", data: data)
+    }
+
+    @IBAction func logCartUpdatedAdd(_ sender: Any) {
+        var data = cartData()
+        data["cart_action"] = "add"
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
+    }
+
+    @IBAction func logCartUpdatedRemove(_ sender: Any) {
+        var data = cartData()
+        data["cart_action"] = "remove"
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
+    }
+
+    @IBAction func logCartUpdatedReplace(_ sender: Any) {
+        var data = cartData()
+        data["cart_action"] = "replace"
+        // Replace is a full snapshot and requires total_value.
+        data["order_total_value"] = 119.98
+        TealiumHelper.trackEvent(title: "log_cart_updated", data: data)
+    }
+
+    @IBAction func logCheckoutStarted(_ sender: Any) {
+        var data = cartData()
+        data["checkout_id"] = "checkout-1"
+        data["order_total_value"] = 119.98
+        TealiumHelper.trackEvent(title: "log_checkout_started", data: data)
+    }
+
+    @IBAction func logOrderPlaced(_ sender: Any) {
+        var data = cartData()
+        data["order_id"] = "order-1"
+        data["order_total_value"] = 124.97
+        data["order_tax"] = 5.00
+        data["order_shipping"] = 4.99
+        data["event_metadata"] = ["gift_wrapped": true]
+        data["discount_code"] = ["SUMMER10"]
+        data["discount_amount"] = [10.0]
+        data["discount_type"] = ["percentage"]
+        TealiumHelper.trackEvent(title: "log_order_placed", data: data)
+    }
+
+    @IBAction func logOrderCancelled(_ sender: Any) {
+        var data = cartData()
+        data["order_id"] = "order-1"
+        data["order_total_value"] = 124.97
+        data["cancel_reason"] = "customer_request"
+        TealiumHelper.trackEvent(title: "log_order_cancelled", data: data)
+    }
+
+    @IBAction func logOrderRefunded(_ sender: Any) {
+        var data = cartData()
+        data["order_id"] = "order-1"
+        data["order_total_value"] = 124.97
+        TealiumHelper.trackEvent(title: "log_order_refunded", data: data)
+    }
+
+    /// Sample multi-product cart payload shared by the cart / checkout / order demo events.
+    /// `cart_product_*` data layer variables map (via braze.json) into the nested `products`
+    /// object's parallel arrays, zipped by index -- not a literal array of product objects.
+    private func cartData() -> [String: Any] {
+        return [
+            "cart_id": "cart-1",
+            "ecommerce_currency": "USD",
+            "ecommerce_source": "iOS App",
+            "cart_product_id": ["sku123", "sku456"],
+            "cart_product_name": ["Running Shoes", "Socks"],
+            "cart_variant_id": ["red-42", "black-M"],
+            "cart_quantity": [1, 3],
+            "cart_price": [59.99, 19.99]
+        ]
+    }
+
     @IBAction func setLastKnownLocation(sender: UIButton) {
         var locationInfo = [String: Any]()
         locationInfo["latitude"] = 32.715736

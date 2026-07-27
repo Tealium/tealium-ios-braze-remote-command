@@ -24,6 +24,8 @@ class MockBrazeInstance: BrazeCommand {
     var setUserAttributeCallCount = 0
     var logCustomEventCallCount = 0
     var logCustomEventWithPropertiesCallCount = 0
+    var lastCustomEventName: String?
+    var lastCustomEventProperties: [String: Any]?
     var addAliasCallCount = 0
     var setCustomAttributeWithKeyCallCount = 0
     var addToCustomAttributeArrayWithKeyCallCount = 0
@@ -36,6 +38,9 @@ class MockBrazeInstance: BrazeCommand {
     var logPurchaseWithQuantityCallCount = 0
     var logPurchaseWithPropertiesCallCount = 0
     var logPurchaseWithQuantityWithPropertiesCallCount = 0
+    var logEcommerceEventCallCount = 0
+    var loggedEcommerceEventNames = [String]()
+    var loggedEcommerceEventProperties = [[String: Any]]()
     var setLastKnownLocationNoAltitudeVerticalAccuracyCallCount = 0
     var setLastKnownLocationWithAltitudeVerticalAccuracyCallCount = 0
     var registerPushTokenCallCount = 0
@@ -84,6 +89,8 @@ class MockBrazeInstance: BrazeCommand {
     
     func logCustomEvent(_ eventName: String, properties: [String: Any]) {
         logCustomEventWithPropertiesCallCount += 1
+        lastCustomEventName = eventName
+        lastCustomEventProperties = properties
     }
     
     func addAlias(_ aliasName: String, label: String) {
@@ -151,6 +158,12 @@ class MockBrazeInstance: BrazeCommand {
     
     func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int, properties: [String : Any]?) {
         logPurchaseWithQuantityWithPropertiesCallCount += 1
+    }
+
+    func logEcommerceEvent<E: Braze.Ecommerce.Event>(_ event: E) {
+        logEcommerceEventCallCount += 1
+        loggedEcommerceEventNames.append(event.eventName)
+        loggedEcommerceEventProperties.append(event.serializedCustomEventProperties())
     }
     
     func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double) {

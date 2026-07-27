@@ -9,13 +9,13 @@
 import Foundation
 
 public enum BrazeConstants {
-    
+
     static let commandName = "command_name"
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
     static let version = "3.7.0"
-    
+
     enum Commands: String {
         case initialize = "initialize"
         case userIdentifier = "useridentifier"
@@ -42,8 +42,14 @@ public enum BrazeConstants {
         case flush = "flush"
         case addToSubsriptionGroup = "addtosubscriptiongroup"
         case removeFromSubscriptionGroup = "removefromsubscriptiongroup"
+        case logProductViewed = "logproductviewed"
+        case logCartUpdated = "logcartupdated"
+        case logCheckoutStarted = "logcheckoutstarted"
+        case logOrderPlaced = "logorderplaced"
+        case logOrderCancelled = "logordercancelled"
+        case logOrderRefunded = "logorderrefunded"
     }
-    
+
     enum Keys {
         static let apiKey = "api_key"
         static let isSdkAuthEnabled = "is_sdk_authentication_enabled"
@@ -92,6 +98,65 @@ public enum BrazeConstants {
         static let forwardUniversalLinks = "forward_universal_links"
         static let optInWhenPushAuthorized = "opt_in_when_push_authorized"
         static let useUUIDAsDeviceId = "use_uuid_as_device_id"
+    }
+
+    enum Ecommerce {
+        static let productId = "product_id"
+        static let productName = "product_name"
+        static let variantId = "variant_id"
+        static let price = "price"
+        static let imageUrl = "image_url"
+        static let productUrl = "product_url"
+        static let currency = "currency"
+        static let source = "source"
+        static let type = "type"
+        static let metadata = "metadata"
+
+        static let cartId = "cart_id"
+        static let action = "action"
+        static let totalValue = "total_value"
+        static let subtotalValue = "subtotal_value"
+        static let tax = "tax"
+        static let shipping = "shipping"
+
+        static let products = "products"
+        static let quantity = "quantity"
+
+        static let checkoutId = "checkout_id"
+
+        static let orderId = "order_id"
+        static let totalDiscounts = "total_discounts"
+
+        static let discounts = "discounts"
+        static let discountCode = "code"
+        static let discountAmount = "amount"
+        static let discountType = "type"
+
+        static let cancelReason = "cancel_reason"
+
+        // Custom-event names for order_cancelled/order_refunded, which have no typed Braze SDK
+        // event class and are dispatched via logCustomEvent. Must stay in sync with the Android
+        // remote command's BrazeConstants.Ecommerce event names.
+        static let eventOrderCancelled = "ecommerce.order_cancelled"
+        static let eventOrderRefunded = "ecommerce.order_refunded"
+
+        /// The cart action for logcartupdated, read from the payload's `action` key. Values match
+        /// the Braze cart_updated schema; an unrecognized or absent value defaults to `.replace`,
+        /// matching a full-cart snapshot.
+        enum Action: String {
+            case add
+            case remove
+            case replace
+
+            /// Maps a payload action string to an Action, defaulting to `.replace` for an
+            /// unrecognized or nil value.
+            static func from(_ value: String?) -> Action {
+                guard let value, let action = Action(rawValue: value.lowercased()) else {
+                    return .replace
+                }
+                return action
+            }
+        }
     }
 }
 

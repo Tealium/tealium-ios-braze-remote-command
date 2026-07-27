@@ -87,7 +87,10 @@ public protocol BrazeCommand {
                      price: Double,
                      quantity: Int,
                      properties: [String: Any]?)
-    
+
+    // MARK: Ecommerce
+    func logEcommerceEvent<E: Braze.Ecommerce.Event>(_ event: E)
+
     // MARK: Location
     func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double)
 
@@ -322,6 +325,12 @@ public class BrazeInstance: BrazeCommand {
         }
     }
     
+    public func logEcommerceEvent<E: Braze.Ecommerce.Event>(_ event: E) {
+        onReady { braze in
+            braze.logEcommerceEvent(event)
+        }
+    }
+
     public func setLastKnownLocationWithLatitude(latitude: Double,
                                                  longitude: Double,
                                                  horizontalAccuracy: Double) {

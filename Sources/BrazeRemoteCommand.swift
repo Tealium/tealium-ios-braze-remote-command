@@ -27,7 +27,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         brazeInstance.braze
     }
     private let location: AnyObject?
-    
+
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview, brazeLocation: AnyObject? = nil) {
         self.brazeInstance = brazeInstance
         self.location = brazeLocation
@@ -43,7 +43,7 @@ public class BrazeRemoteCommand: RemoteCommand {
             })
         weakSelf = self
     }
-    
+
     public func onReady(_ onReady: @escaping (Braze) -> Void) {
         TealiumQueues.backgroundSerialQueue.async {
             self.brazeInstance.onReady(onReady)
@@ -149,7 +149,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let purchaseKeyFromJSON = payload[BrazeConstants.Keys.purchaseKey] as? [String: Any] {
                     payload[BrazeConstants.Keys.purchaseProperties] = purchaseKeyFromJSON
                 }
-                
+
                 guard let productIdentifier = payload[BrazeConstants.Keys.productIdentifier] as? [String],
                     let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
                     let prices = payload[BrazeConstants.Keys.price] as? [Double] else {
@@ -175,6 +175,41 @@ public class BrazeRemoteCommand: RemoteCommand {
                     for (index, element) in products.productId.enumerated() {
                         brazeInstance.logPurchase(element, currency: currency, price: products.price[index])
                     }
+                }
+            case .logProductViewed:
+                logEcommerceEvent(commandName: "logProductViewed") {
+                    try EcommerceEventParser.parseProductViewedEvent(payload: payload)
+                }
+            case .logCartUpdated:
+                switch BrazeConstants.Ecommerce.Action.from(payload[BrazeConstants.Ecommerce.action] as? String) {
+                case .add:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
+                    }
+                case .remove:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedRemoveEvent(payload: payload)
+                    }
+                case .replace:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedReplaceEvent(payload: payload)
+                    }
+                }
+            case .logCheckoutStarted:
+                logEcommerceEvent(commandName: "logCheckoutStarted") {
+                    try EcommerceEventParser.parseCheckoutStartedEvent(payload: payload)
+                }
+            case .logOrderPlaced:
+                logEcommerceEvent(commandName: "logOrderPlaced") {
+                    try EcommerceEventParser.parseOrderPlacedEvent(payload: payload)
+                }
+            case .logOrderCancelled:
+                logCustomEcommerceEvent(commandName: "logOrderCancelled") {
+                    try EcommerceEventParser.parseOrderCancelledEvent(payload: payload)
+                }
+            case .logOrderRefunded:
+                logCustomEcommerceEvent(commandName: "logOrderRefunded") {
+                    try EcommerceEventParser.parseOrderRefundedEvent(payload: payload)
                 }
             case .setAdTrackingEnabled:
                 guard let enabled = convertToBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
@@ -229,7 +264,30 @@ public class BrazeRemoteCommand: RemoteCommand {
             }
         }
     }
-    
+
+    /// Builds an ecommerce event via the throwing `build` closure and forwards it to Braze.
+    /// Parsing failures (`ParsingError`) and SDK validation failures on construction are both
+    /// logged (tagged with `commandName`) and the event is skipped.
+    private func logEcommerceEvent<E: Braze.Ecommerce.Event>(commandName: String, _ build: () throws -> E) {
+        do {
+            let event = try build()
+            brazeInstance.logEcommerceEvent(event)
+        } catch {
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
+        }
+    }
+
+    /// Builds an order_cancelled / order_refunded custom event (no typed Braze SDK class exists)
+    /// via the throwing `build` closure and forwards it through `logCustomEvent`.
+    private func logCustomEcommerceEvent(commandName: String, _ build: () throws -> CustomEvent) {
+        do {
+            let event = try build()
+            brazeInstance.logCustomEvent(event.eventName, properties: event.properties)
+        } catch {
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
+        }
+    }
+
     func convertToBool<T>(_ value: T) -> Bool? {
         if let string = value as? String,
             let bool = Bool(string) {
@@ -249,7 +307,7 @@ public class BrazeRemoteCommand: RemoteCommand {
             return nil
         }
         let brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
-        
+
         // API Config
         if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
@@ -261,9 +319,9 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
             brazeConfig.api.flushInterval = flushInterval
         }
-        
+
         brazeConfig.api.sdkFlavor = .tealium
-        
+
         // Location Config
         brazeConfig.location.brazeLocationProvider = self.location
         if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
@@ -275,12 +333,12 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let enableAutomaticGeofences = convertToBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
             brazeConfig.location.automaticGeofenceRequests = enableAutomaticGeofences
         }
-        
+
         // Push Config
         if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
-        
+
         // BrazeConfig properties
         if let useUUIDAsDeviceId = payload[BrazeConstants.Keys.useUUIDAsDeviceId] as? NSNumber {
             brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId.boolValue
@@ -300,7 +358,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let optInWhenPushAuthorized = payload[BrazeConstants.Keys.optInWhenPushAuthorized] as? Bool {
             brazeConfig.optInWhenPushAuthorized = optInWhenPushAuthorized
         }
-        
+
         return brazeConfig
     }
 }
