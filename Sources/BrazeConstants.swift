@@ -101,7 +101,7 @@ public enum BrazeConstants {
     }
 
     enum Ecommerce {
-        static let productId = "product_id" // Same value as Keys.productIdentifier; could reuse it instead.
+        static let productId = "product_id"
         static let productName = "product_name"
         static let variantId = "variant_id"
         static let price = "price"

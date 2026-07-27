@@ -42,20 +42,33 @@ extension [String: Any] {
 
     /// Casts `raw` to `T`, falling back to NSNumber-bridging for `Double`/`Int`/`[Double]`/`[Int]`
     /// when a direct cast fails (native `Int` payloads from the JS bridge fail a direct `as? Double`
-    /// cast; routing through `NSNumber` recovers them). Returns `nil` when no cast applies.
+    /// cast; routing through `NSNumber` recovers them), then to String→number parsing for the same
+    /// target types. Tealium data layers routinely send numbers as strings (e.g. `total_value:"99.99"`
+    /// or `price:["10","20"]`); without the String fallbacks these would throw `typeMismatch` and drop
+    /// the whole event, whereas Android coerces them. Returns `nil` when no cast applies.
     private func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
-        if T.self == Double.self, let number = raw as? NSNumber {
-            return number.doubleValue as? T
+        if T.self == Double.self {
+            if let number = raw as? NSNumber { return number.doubleValue as? T }
+            if let string = raw as? String, let value = Double(string) { return value as? T }
         }
-        if T.self == Int.self, let number = raw as? NSNumber {
-            return number.intValue as? T
+        if T.self == Int.self {
+            if let number = raw as? NSNumber { return number.intValue as? T }
+            if let string = raw as? String, let value = Int(string) { return value as? T }
         }
-        if T.self == [Double].self, let array = raw as? [NSNumber] {
-            return array.map { $0.doubleValue } as? T
+        if T.self == [Double].self {
+            if let array = raw as? [NSNumber] { return array.map { $0.doubleValue } as? T }
+            if let array = raw as? [String] {
+                let doubles = array.compactMap { Double($0) }
+                if doubles.count == array.count { return doubles as? T }
+            }
         }
-        if T.self == [Int].self, let array = raw as? [NSNumber] {
-            return array.map { $0.intValue } as? T
+        if T.self == [Int].self {
+            if let array = raw as? [NSNumber] { return array.map { $0.intValue } as? T }
+            if let array = raw as? [String] {
+                let ints = array.compactMap { Int($0) }
+                if ints.count == array.count { return ints as? T }
+            }
         }
         return nil
     }
@@ -98,6 +111,15 @@ extension [String: Any] {
         self[BrazeConstants.Ecommerce.metadata] as? [String: Any]
     }
 
+    /// Reads the optional `type` (typeIdentifiers) field, accepting either a `[String]` or a single
+    /// scalar `String`. Braze's `typeIdentifiers` is an array, so a scalar value (e.g.
+    /// `type:"price_drop"`) is wrapped into a single-element array rather than silently dropped.
+    func typeIdentifiers(_ key: String) -> [String]? {
+        if let array = self[key] as? [String] { return array }
+        if let scalar = self[key] as? String { return [scalar] }
+        return nil
+    }
+
     /// Merges `required` with whichever `optional` entries are non-`nil`, omitting the rest.
     static func merging(_ required: [String: Any], ifPresent optional: [String: Any?]) -> [String: Any] {
         var result = required
@@ -115,6 +137,14 @@ extension [String: Any] {
 final class EcommerceEventParser {
     typealias Keys = BrazeConstants.Ecommerce
 
+    /// Reads the required `currency` field and normalizes it to uppercase. Braze validates currency
+    /// against ISO-4217 canonical uppercase, so a common lowercase input like `"usd"` would throw on
+    /// event construction and silently drop the whole event. Uppercasing here accepts that input.
+    private static func requireCurrency(from payload: [String: Any]) throws -> String {
+        let currency: String = try payload.require(Keys.currency)
+        return currency.uppercased()
+    }
+
     // MARK: Product Viewed (single product detail view)
 
     /// `logProductViewed` targets a single product detail view, so every product field is a plain
@@ -125,7 +155,7 @@ final class EcommerceEventParser {
         let productName: String = try payload.require(Keys.productName)
         let variantId: String = try payload.require(Keys.variantId)
         let price: Double = try payload.require(Keys.price)
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
 
         return try Braze.Ecommerce.ProductViewedEvent(
@@ -138,7 +168,7 @@ final class EcommerceEventParser {
             currency: currency,
             source: source,
             metadata: payload.ecommerceMetadata,
-            typeIdentifiers: payload.optionalValue(Keys.type))
+            typeIdentifiers: payload.typeIdentifiers(Keys.type))
     }
 
     // MARK: Cart Updated (single command, action read from payload)
@@ -203,7 +233,7 @@ final class EcommerceEventParser {
         build: (_ cartId: String, _ currency: String, _ source: String, _ products: [Braze.Ecommerce.ProductLineItem]) throws -> E
     ) throws -> E {
         let cartId: String = try payload.require(Keys.cartId)
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
         let products = try parseProductLineItems(from: payload)
         return try build(cartId, currency, source, products)
@@ -212,7 +242,7 @@ final class EcommerceEventParser {
     // MARK: Checkout Started / Order Placed
 
     static func parseCheckoutStartedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.CheckoutStartedEvent {
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
         let checkoutId: String = try payload.require(Keys.checkoutId)
         let totalValue: Double = try payload.require(Keys.totalValue)
@@ -231,7 +261,7 @@ final class EcommerceEventParser {
     }
 
     static func parseOrderPlacedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.OrderPlacedEvent {
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
@@ -256,7 +286,7 @@ final class EcommerceEventParser {
     static func parseOrderCancelledEvent(payload: [String: Any]) throws -> CustomEvent {
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
         let cancelReason: String = try payload.require(Keys.cancelReason)
         let products = try buildProductDictionaries(from: payload)
@@ -284,7 +314,7 @@ final class EcommerceEventParser {
     static func parseOrderRefundedEvent(payload: [String: Any]) throws -> CustomEvent {
         let orderId: String = try payload.require(Keys.orderId)
         let totalValue: Double = try payload.require(Keys.totalValue)
-        let currency: String = try payload.require(Keys.currency)
+        let currency = try requireCurrency(from: payload)
         let source: String = try payload.require(Keys.source)
         let products = try buildProductDictionaries(from: payload)
 
@@ -377,10 +407,29 @@ final class EcommerceEventParser {
         return items
     }
 
+    /// Builds the plain product dictionaries for the order_cancelled/order_refunded custom-event
+    /// wire payload. Each product is first validated by constructing a `ProductLineItem` (the same
+    /// SDK validation the typed cart/checkout/order path uses); a product the SDK rejects (negative
+    /// price, blank/over-length string, negative quantity) is logged and skipped rather than emitting
+    /// a malformed line item on the wire.
     private static func buildProductDictionaries(from payload: [String: Any]) throws -> [[String: Any]] {
         let arrays = try parseProductArrays(from: payload)
         var products = [[String: Any]]()
         for index in 0..<arrays.count {
+            do {
+                _ = try Braze.Ecommerce.ProductLineItem(
+                    productId: arrays.productIds[index],
+                    productName: arrays.productNames[index],
+                    variantId: arrays.variantIds[index],
+                    imageUrl: arrays.imageUrls?[index],
+                    productUrl: arrays.productUrls?[index],
+                    quantity: arrays.quantities[index],
+                    price: arrays.prices[index],
+                    metadata: arrays.metadatas?[index])
+            } catch {
+                print("*** Tealium Remote Command Error - Braze: skipping invalid product at index \(index): \(error)")
+                continue
+            }
             let product: [String: Any] = .merging(
                 [
                     Keys.productId: arrays.productIds[index],
@@ -404,7 +453,18 @@ final class EcommerceEventParser {
     private static func parseDiscounts(from payload: [String: Any]) -> [[String: Any]] {
         guard let discounts = payload[Keys.discounts] as? [String: Any] else { return [] }
         let codes = discounts[Keys.discountCode] as? [String] ?? []
-        let amounts = discounts[Keys.discountAmount] as? [Double] ?? (discounts[Keys.discountAmount] as? [NSNumber])?.map { $0.doubleValue } ?? []
+        // Braze's `EcommerceStructuredDiscount.amount` is a String, so emit the discount amount as a
+        // String (not Double) to match that wire schema. Accepts already-string input verbatim, else
+        // formats numeric input via String(Double) for a stable decimal form (e.g. "10.0").
+        let amounts: [String]
+        if let strings = discounts[Keys.discountAmount] as? [String] {
+            amounts = strings
+        } else {
+            let doubles = discounts[Keys.discountAmount] as? [Double]
+                ?? (discounts[Keys.discountAmount] as? [NSNumber])?.map { $0.doubleValue }
+                ?? []
+            amounts = doubles.map { String($0) }
+        }
         let types = discounts[Keys.discountType] as? [String] ?? []
         let count = max(codes.count, amounts.count, types.count)
 
