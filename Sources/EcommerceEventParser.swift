@@ -57,17 +57,39 @@ extension [String: Any] {
             if let string = raw as? String, let value = Int(string) { return value as? T }
         }
         if T.self == [Double].self {
-            if let array = raw as? [NSNumber] { return array.map { $0.doubleValue } as? T }
-            if let array = raw as? [String] {
-                let doubles = array.compactMap { Double($0) }
-                if doubles.count == array.count { return doubles as? T }
+            // Coerce element-by-element (not all-or-nothing) so a mixed array like `[59.99, "19.99"]`
+            // -- which matches neither `[NSNumber]` nor `[String]` as a whole -- is still recovered,
+            // matching Android's per-element coercion. Return nil if ANY element is unparseable,
+            // preserving the "reject on any unparseable" contract.
+            if let array = raw as? [Any] {
+                var doubles = [Double]()
+                for element in array {
+                    if let number = element as? NSNumber {
+                        doubles.append(number.doubleValue)
+                    } else if let string = element as? String, let value = Double(string) {
+                        doubles.append(value)
+                    } else {
+                        return nil
+                    }
+                }
+                return doubles as? T
             }
         }
         if T.self == [Int].self {
-            if let array = raw as? [NSNumber] { return array.map { $0.intValue } as? T }
-            if let array = raw as? [String] {
-                let ints = array.compactMap { Int($0) }
-                if ints.count == array.count { return ints as? T }
+            // Same per-element coercion as `[Double]` above (e.g. `[1, "2"]`), rejecting the whole
+            // array if any element is unparseable.
+            if let array = raw as? [Any] {
+                var ints = [Int]()
+                for element in array {
+                    if let number = element as? NSNumber {
+                        ints.append(number.intValue)
+                    } else if let string = element as? String, let value = Int(string) {
+                        ints.append(value)
+                    } else {
+                        return nil
+                    }
+                }
+                return ints as? T
             }
         }
         return nil
@@ -453,17 +475,19 @@ final class EcommerceEventParser {
     private static func parseDiscounts(from payload: [String: Any]) -> [[String: Any]] {
         guard let discounts = payload[Keys.discounts] as? [String: Any] else { return [] }
         let codes = discounts[Keys.discountCode] as? [String] ?? []
-        // Braze's `EcommerceStructuredDiscount.amount` is a String, so emit the discount amount as a
-        // String (not Double) to match that wire schema. Accepts already-string input verbatim, else
-        // formats numeric input via String(Double) for a stable decimal form (e.g. "10.0").
-        let amounts: [String]
+        // The Braze "Log eCommerce events" doc types the discount `amount` as a Float (JSON number),
+        // so emit each amount as a `Double` (number), not a String. These entries are passed as plain
+        // dictionaries to both the typed OrderPlacedEvent (`discounts: [Any]?` pass-through) and the
+        // raw order_cancelled/order_refunded custom-event JSON, so a numeric value matches the wire
+        // schema. Accepts stringy input (`["10.0","5"]`), native `[Double]`, and `[NSNumber]`, parsing
+        // each element to Double.
+        let amounts: [Double]
         if let strings = discounts[Keys.discountAmount] as? [String] {
-            amounts = strings
+            amounts = strings.compactMap { Double($0) }
         } else {
-            let doubles = discounts[Keys.discountAmount] as? [Double]
+            amounts = discounts[Keys.discountAmount] as? [Double]
                 ?? (discounts[Keys.discountAmount] as? [NSNumber])?.map { $0.doubleValue }
                 ?? []
-            amounts = doubles.map { String($0) }
         }
         let types = discounts[Keys.discountType] as? [String] ?? []
         let count = max(codes.count, amounts.count, types.count)
