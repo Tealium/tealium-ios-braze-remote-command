@@ -51,12 +51,21 @@ extension [String: Any] {
     /// the whole event, whereas Android coerces them. Returns `nil` when no cast applies.
     private func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
+        // `Bool` bridges to `NSNumber`, so without this a payload like `price: true` would
+        // otherwise coerce to `1.0`/`0.0` below instead of being rejected as a type mismatch.
+        if raw is Bool { return nil }
         if T.self == Double.self {
             if let number = raw as? NSNumber { return number.doubleValue as? T }
-            if let string = raw as? String, let value = Double(string) { return value as? T }
+            if let string = raw as? String, let value = Double(string), value.isFinite { return value as? T }
         }
         if T.self == Int.self {
-            if let number = raw as? NSNumber { return number.intValue as? T }
+            // `NSNumber.intValue` silently truncates fractional values (`1.5` -> `1`); reject
+            // those instead of changing the caller's quantity.
+            if let number = raw as? NSNumber {
+                let double = number.doubleValue
+                guard double.isFinite, double.truncatingRemainder(dividingBy: 1) == 0 else { return nil }
+                return Int(double) as? T
+            }
             if let string = raw as? String, let value = Int(string) { return value as? T }
         }
         if T.self == [Double].self {
@@ -67,9 +76,11 @@ extension [String: Any] {
             if let array = raw as? [Any] {
                 var doubles = [Double]()
                 for element in array {
-                    if let number = element as? NSNumber {
+                    if element is Bool {
+                        return nil
+                    } else if let number = element as? NSNumber {
                         doubles.append(number.doubleValue)
-                    } else if let string = element as? String, let value = Double(string) {
+                    } else if let string = element as? String, let value = Double(string), value.isFinite {
                         doubles.append(value)
                     } else {
                         return nil
@@ -84,8 +95,12 @@ extension [String: Any] {
             if let array = raw as? [Any] {
                 var ints = [Int]()
                 for element in array {
-                    if let number = element as? NSNumber {
-                        ints.append(number.intValue)
+                    if element is Bool {
+                        return nil
+                    } else if let number = element as? NSNumber {
+                        let double = number.doubleValue
+                        guard double.isFinite, double.truncatingRemainder(dividingBy: 1) == 0 else { return nil }
+                        ints.append(Int(double))
                     } else if let string = element as? String, let value = Int(string) {
                         ints.append(value)
                     } else {
@@ -514,13 +529,17 @@ final class EcommerceEventParser {
         // raw order_cancelled/order_refunded custom-event JSON, so a numeric value matches the wire
         // schema. Accepts stringy input (`["10.0","5"]`), native `[Double]`, and `[NSNumber]`, parsing
         // each element to Double.
-        let amounts: [Double]
+        // Uses `map` (not `compactMap`) to keep a `nil` placeholder at each unparseable index --
+        // dropping entries here would shift every later amount onto the wrong code/type.
+        let amounts: [Double?]
         if let strings = discounts[Keys.discountAmount] as? [String] {
-            amounts = strings.compactMap { Double($0) }
+            amounts = strings.map { Double($0) }
+        } else if let doubles = discounts[Keys.discountAmount] as? [Double] {
+            amounts = doubles
+        } else if let numbers = discounts[Keys.discountAmount] as? [NSNumber] {
+            amounts = numbers.map { $0.doubleValue }
         } else {
-            amounts = discounts[Keys.discountAmount] as? [Double]
-                ?? (discounts[Keys.discountAmount] as? [NSNumber])?.map { $0.doubleValue }
-                ?? []
+            amounts = []
         }
         let types = discounts[Keys.discountType] as? [String] ?? []
         let count = max(codes.count, amounts.count, types.count)
@@ -529,7 +548,7 @@ final class EcommerceEventParser {
         for index in 0..<count {
             var entry = [String: Any]()
             if index < codes.count { entry[Keys.discountCode] = codes[index] }
-            if index < amounts.count { entry[Keys.discountAmount] = amounts[index] }
+            if index < amounts.count, let amount = amounts[index] { entry[Keys.discountAmount] = amount }
             if index < types.count { entry[Keys.discountType] = types[index] }
             result.append(entry)
         }
