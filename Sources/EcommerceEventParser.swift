@@ -10,17 +10,26 @@ import BrazeKit
 
 enum ParsingError: Error, CustomStringConvertible {
     case missingField(String)
+    case emptyField(String)
+    case invalidAmount(field: String)
     case typeMismatch(field: String, expected: String, actual: String)
     case mismatchedArrayLengths(fields: [String])
+    case emptyProducts
 
     var description: String {
         switch self {
         case .missingField(let field):
             return "missing required field '\(field)'"
+        case .emptyField(let field):
+            return "required field '\(field)' is empty"
+        case .invalidAmount(let field):
+            return "field '\(field)' must be a finite amount of 0 or more"
         case .typeMismatch(let field, let expected, let actual):
             return "field '\(field)' expected \(expected) but found \(actual)"
         case .mismatchedArrayLengths(let fields):
             return "mismatched array lengths across fields: \(fields.joined(separator: ", "))"
+        case .emptyProducts:
+            return "no valid products -- Braze requires a non-empty products array"
         }
     }
 }
@@ -34,12 +43,6 @@ struct CustomEvent {
 }
 
 extension [String: Any] {
-    func get(key: String, fallbackKey: String? = nil) -> Any? {
-        if let value = self[key] { return value }
-        if let fallbackKey = fallbackKey { return self[fallbackKey] }
-        return nil
-    }
-
     /// Casts `raw` to `T`, falling back to NSNumber-bridging for `Double`/`Int`/`[Double]`/`[Int]`
     /// when a direct cast fails (native `Int` payloads from the JS bridge fail a direct `as? Double`
     /// cast; routing through `NSNumber` recovers them), then to String→number parsing for the same
@@ -95,11 +98,11 @@ extension [String: Any] {
         return nil
     }
 
-    /// Reads a required field as `T`, using `lenientCast`'s NSNumber-bridging. Throws
-    /// `missingField` when absent, `typeMismatch` when present but not coercible to `T`.
-    func require<T>(_ key: String, fallbackKey: String? = nil) throws -> T {
-        guard let raw = get(key: key, fallbackKey: fallbackKey) else {
-            throw ParsingError.missingField(fallbackKey.map { "\(key) or \($0)" } ?? key)
+    /// Reads a required field as `T`, with `lenientCast`'s NSNumber-bridging and `canonicalValue`'s
+    /// spelling handling. Throws `missingField` when absent, `typeMismatch` when not coercible.
+    func require<T>(_ key: String) throws -> T {
+        guard let raw = canonicalValue(key) else {
+            throw ParsingError.missingField(key)
         }
         guard let value: T = lenientCast(raw, as: T.self) else {
             throw ParsingError.typeMismatch(
@@ -108,11 +111,36 @@ extension [String: Any] {
         return value
     }
 
-    /// Same NSNumber-bridging as `require<T>`, but returns `nil` instead of throwing when the key
-    /// is absent or the value can't be coerced to `T`. Use for genuinely optional numeric fields
-    /// (`total_value` on add/remove, `tax`, `shipping`, etc.).
+    /// Reads a required String and rejects a blank one.
+    ///
+    /// order_cancelled/order_refunded need this for orderId/source/cancelReason: they have no typed
+    /// SDK class, and Braze does not validate a manually logged recommended event -- a malformed
+    /// payload is dropped after ingestion rather than throwing, so an unchecked value fails
+    /// invisibly. Currency reuses this too (via `requireCurrency`) for every event, even the typed
+    /// ones that also get an equivalent check from the SDK (`Braze.Ecommerce.ValidationError.empty`).
+    func requireNonEmpty(_ key: String) throws -> String {
+        let value: String = try require(key)
+        guard !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw ParsingError.emptyField(key)
+        }
+        return value
+    }
+
+    /// Reads a required amount, rejecting a negative or non-finite one: Braze wants the cancelled /
+    /// refunded amount as a positive figure and applies the decrement itself. Unvalidated by the SDK
+    /// on this path, same as `requireNonEmpty`.
+    func requireAmount(_ key: String) throws -> Double {
+        let value: Double = try require(key)
+        guard value.isFinite, value >= 0 else {
+            throw ParsingError.invalidAmount(field: key)
+        }
+        return value
+    }
+
+    /// Like `require<T>`, but returns `nil` instead of throwing. Use for genuinely optional numeric
+    /// fields (`total_value` on add/remove, `tax`, `shipping`, etc.).
     func optionalValue<T>(_ key: String) -> T? {
-        guard let raw = self[key] else { return nil }
+        guard let raw = canonicalValue(key) else { return nil }
         return lenientCast(raw, as: T.self)
     }
 
@@ -130,7 +158,7 @@ extension [String: Any] {
     /// Optional event-level custom metadata, shared by every ecommerce event under the same key.
     /// Distinct from the nested `products`/`discounts` per-item metadata array.
     var ecommerceMetadata: [String: Any]? {
-        self[BrazeConstants.Ecommerce.metadata] as? [String: Any]
+        self[BrazeConstants.Keys.metadata] as? [String: Any]
     }
 
     /// Reads the optional `type` (typeIdentifiers) field, accepting either a `[String]` or a single
@@ -157,14 +185,13 @@ extension [String: Any] {
 // MARK: - EcommerceEventParser
 
 final class EcommerceEventParser {
-    typealias Keys = BrazeConstants.Ecommerce
+    typealias Keys = BrazeConstants.Keys
 
     /// Reads the required `currency` field and normalizes it to uppercase. Braze validates currency
     /// against ISO-4217 canonical uppercase, so a common lowercase input like `"usd"` would throw on
     /// event construction and silently drop the whole event. Uppercasing here accepts that input.
     private static func requireCurrency(from payload: [String: Any]) throws -> String {
-        let currency: String = try payload.require(Keys.currency)
-        return currency.uppercased()
+        try payload.requireNonEmpty(Keys.currency).uppercased()
     }
 
     // MARK: Product Viewed (single product detail view)
@@ -306,11 +333,11 @@ final class EcommerceEventParser {
     // MARK: Order Cancelled / Refunded (custom events, no typed SDK class)
 
     static func parseOrderCancelledEvent(payload: [String: Any]) throws -> CustomEvent {
-        let orderId: String = try payload.require(Keys.orderId)
-        let totalValue: Double = try payload.require(Keys.totalValue)
+        let orderId = try payload.requireNonEmpty(Keys.orderId)
+        let totalValue = try payload.requireAmount(Keys.totalValue)
         let currency = try requireCurrency(from: payload)
-        let source: String = try payload.require(Keys.source)
-        let cancelReason: String = try payload.require(Keys.cancelReason)
+        let source = try payload.requireNonEmpty(Keys.source)
+        let cancelReason = try payload.requireNonEmpty(Keys.cancelReason)
         let products = try buildProductDictionaries(from: payload)
 
         let properties = [String: Any].merging(
@@ -330,14 +357,15 @@ final class EcommerceEventParser {
                 Keys.discounts: buildDiscountDictionaries(from: payload),
                 Keys.metadata: payload.ecommerceMetadata
             ])
-        return CustomEvent(eventName: Keys.eventOrderCancelled, properties: properties)
+        return CustomEvent(eventName: BrazeConstants.Ecommerce.eventOrderCancelled, properties: properties)
     }
 
     static func parseOrderRefundedEvent(payload: [String: Any]) throws -> CustomEvent {
-        let orderId: String = try payload.require(Keys.orderId)
-        let totalValue: Double = try payload.require(Keys.totalValue)
+        let orderId = try payload.requireNonEmpty(Keys.orderId)
+        // For a partial refund this is the refunded amount, not the original order total.
+        let totalValue = try payload.requireAmount(Keys.totalValue)
         let currency = try requireCurrency(from: payload)
-        let source: String = try payload.require(Keys.source)
+        let source = try payload.requireNonEmpty(Keys.source)
         let products = try buildProductDictionaries(from: payload)
 
         let properties = [String: Any].merging(
@@ -353,7 +381,7 @@ final class EcommerceEventParser {
                 Keys.discounts: buildDiscountDictionaries(from: payload),
                 Keys.metadata: payload.ecommerceMetadata
             ])
-        return CustomEvent(eventName: Keys.eventOrderRefunded, properties: properties)
+        return CustomEvent(eventName: BrazeConstants.Ecommerce.eventOrderRefunded, properties: properties)
     }
 
     // MARK: Shared products/discounts parsing (nested-parallel-arrays convention)
@@ -466,6 +494,11 @@ final class EcommerceEventParser {
                     Keys.metadata: arrays.metadatas?[index]
                 ])
             products.append(product)
+        }
+        // Braze requires a non-empty products array (typed events raise `emptyProductsArray`). With
+        // every product rejected the event would ship empty and be dropped after ingestion.
+        guard !products.isEmpty else {
+            throw ParsingError.emptyProducts
         }
         return products
     }

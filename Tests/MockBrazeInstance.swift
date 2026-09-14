@@ -12,9 +12,9 @@ import BrazeKit
 
 class MockBrazeInstance: BrazeCommand {
     var braze: Braze?
-    
+
     var config: Braze.Configuration?
-    
+
     func onReady(_ onReady: @escaping (Braze) -> Void) {
     }
 
@@ -38,6 +38,8 @@ class MockBrazeInstance: BrazeCommand {
     var logPurchaseWithQuantityCallCount = 0
     var logPurchaseWithPropertiesCallCount = 0
     var logPurchaseWithQuantityWithPropertiesCallCount = 0
+    var loggedPurchaseCurrencies = [String]()
+    var loggedPurchaseQuantities = [Int]()
     var logEcommerceEventCallCount = 0
     var loggedEcommerceEventNames = [String]()
     var loggedEcommerceEventProperties = [[String: Any]]()
@@ -49,31 +51,31 @@ class MockBrazeInstance: BrazeCommand {
     var reEnableCallCount = 0
     var wipeDataCallCount = 0
     var flushCallCount = 0
-    
+
     var setIdentifierForAdvertiserCallCount = 0
     var setIdentifierForVendorCallCount = 0
-    
-    
+
+
     // Appboy Options
-    
+
     func initializeBraze(brazeConfig: Braze.Configuration) {
         initializeBrazeCallCount += 1
         config = brazeConfig
     }
-    
-    
+
+
     func changeUser(_ userIdentifier: String, sdkAuthSignature: String?) {
         changeUserCallCount += 1
     }
-    
+
     func setSdkAuthenticationSignature(_ signature: String) {
         setAuthSignatureCallCount += 1
     }
-    
+
     func setUserAttribute(key: AppboyUserAttribute, value: String) {
         setUserAttributeCallCount += 1
     }
-    
+
     func setUserAttributes(_ attributes: [String : Any]) {
         _ = attributes.map { key, value in
             guard let key = AppboyUserAttribute(rawValue: key), let value = value as? String else {
@@ -82,21 +84,21 @@ class MockBrazeInstance: BrazeCommand {
             setUserAttribute(key: key, value: value)
         }
     }
-    
+
     func logCustomEvent(eventName: String) {
         logCustomEventCallCount += 1
     }
-    
+
     func logCustomEvent(_ eventName: String, properties: [String: Any]) {
         logCustomEventWithPropertiesCallCount += 1
         lastCustomEventName = eventName
         lastCustomEventProperties = properties
     }
-    
+
     func addAlias(_ aliasName: String, label: String) {
         addAliasCallCount += 1
     }
-    
+
     func setCustomAttributes(_ attributes: [String : Any]) {
         _ = attributes.map { attribute in
             guard let value = attribute.value as? AnyHashable else {
@@ -105,59 +107,65 @@ class MockBrazeInstance: BrazeCommand {
             setCustomAttributeWithKey(attribute.key, value: value)
         }
     }
-    
+
     func setCustomAttributeWithKey(_ key: String, value: AnyHashable) {
         setCustomAttributeWithKeyCallCount += 1
     }
-    
+
     func unsetCustomAttributeWithKey(_ key: String) {
         unsetCustomAttributeWithKeyCallCount += 1
     }
-    
+
     func incrementCustomUserAttributes(_ attributes: [String: Int]) {
         attributes.forEach { attribute in
             incrementCustomUserAttribute(attribute.key, by: attribute.value)
         }
     }
-    
+
     func incrementCustomUserAttribute(_ key: String, by: Int) {
         incrementCustomUserAttributeCallCount += 1
     }
-    
+
     func setCustomAttributeArrayWithKey(_ key: String, array: [String]?) {
         setCustomAttributeWithKeyCallCount += 1
     }
-    
+
     func addToCustomAttributeArrayWithKey(_ key: String, value: String) {
         addToCustomAttributeArrayWithKeyCallCount += 1
     }
-    
+
     func removeFromCustomAttributeArrayWithKey(_ key: String, value: String) {
         removeFromCustomAttributeArrayWithKeyCallCount += 1
     }
-    
+
     func setEmailNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
         setEmailNotificationSubscriptionTypeCallCount += 1
     }
-    
+
     func setPushNotificationSubscriptionType(value: Braze.User.SubscriptionState) {
         setPushNotificationSubscriptionTypeCallCount += 1
     }
-    
+
     func logPurchase(_ productIdentifier: String, currency: String, price: Double) {
         logPurchaseCallCount += 1
+        loggedPurchaseCurrencies.append(currency)
     }
-    
+
     func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int) {
         logPurchaseWithQuantityCallCount += 1
+        loggedPurchaseCurrencies.append(currency)
+        loggedPurchaseQuantities.append(quantity)
     }
-    
+
     func logPurchase(_ productIdentifier: String, currency: String, price: Double, properties: [String : Any]?) {
         logPurchaseWithPropertiesCallCount += 1
+        loggedPurchaseCurrencies.append(currency)
     }
-    
+
     func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int, properties: [String : Any]?) {
         logPurchaseWithQuantityWithPropertiesCallCount += 1
+        loggedPurchaseCurrencies.append(currency)
+        loggedPurchaseQuantities.append(quantity)
     }
 
     func logEcommerceEvent<E: Braze.Ecommerce.Event>(_ event: E) {
@@ -165,7 +173,7 @@ class MockBrazeInstance: BrazeCommand {
         loggedEcommerceEventNames.append(event.eventName)
         loggedEcommerceEventProperties.append(event.serializedCustomEventProperties())
     }
-    
+
     func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double) {
         setLastKnownLocationNoAltitudeVerticalAccuracyCallCount += 1
     }
@@ -173,15 +181,15 @@ class MockBrazeInstance: BrazeCommand {
     func setLastKnownLocationWithLatitude(latitude: Double, longitude: Double, horizontalAccuracy: Double, altitude: Double, verticalAccuracy: Double) {
         setLastKnownLocationWithAltitudeVerticalAccuracyCallCount += 1
     }
-    
+
     func registerPushToken(_ pushToken: String) {
         registerPushTokenCallCount += 1
     }
-    
+
     func pushAuthorization(fromUserNotificationCenter: Bool) {
         pushAuthorizationCallCount += 1
     }
-    
+
     func enableSDK(_ enabled: Bool) {
         if enabled {
             reEnableCallCount += 1
@@ -197,29 +205,29 @@ class MockBrazeInstance: BrazeCommand {
     func wipeData() {
         wipeDataCallCount += 1
     }
-    
+
     func flush() {
         flushCallCount += 1
     }
-    
+
     var adTrackingEnabled = false
     func setAdTrackingEnabled(_ enabled: Bool) {
         adTrackingEnabled = enabled
     }
-    
+
     func setIdentifierForAdvertiser(_ identifier: String) {
         setIdentifierForAdvertiserCallCount += 1
     }
-    
+
     func setIdentifierForVendor(_ identifier: String) {
         setIdentifierForVendorCallCount += 1
     }
-    
+
     var subscriptionGroups = Set<String>()
     func addToSubscriptionGroup(_ group: String) {
         subscriptionGroups.insert(group)
     }
-    
+
     func removeFromSubscriptionGroup(_ group: String) {
         subscriptionGroups.remove(group)
     }

@@ -150,30 +150,31 @@ public class BrazeRemoteCommand: RemoteCommand {
                     payload[BrazeConstants.Keys.purchaseProperties] = purchaseKeyFromJSON
                 }
 
-                guard let productIdentifier = payload[BrazeConstants.Keys.productIdentifier] as? [String],
-                    let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                    let prices = payload[BrazeConstants.Keys.price] as? [Double] else {
+                // Accepts both the logpurchase and the ecommerce spellings; see BrazeConstants.keyAliases.
+                // Braze logs one product per call, so the parallel payload arrays are fanned out by
+                // index -- hence the plural names.
+                guard let productIds = payload[BrazeConstants.Keys.productId] as? [String],
+                    let currency = payload.canonicalValue(BrazeConstants.Keys.currency) as? String,
+                    let prices = payload.canonicalValue(BrazeConstants.Keys.price) as? [Double] else {
                         return
                 }
-                let products = (productId: productIdentifier, price: prices)
 
-                if let quantity = (payload[BrazeConstants.Keys.productQuantity] ?? payload[BrazeConstants.Keys.quantity]) as? [Int] {
-                    let products = (productId: productIdentifier, price: prices, quantity: quantity)
+                if let quantities = payload.canonicalValue(BrazeConstants.Keys.quantity) as? [Int] {
                     if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                        for (index, element) in products.productId.enumerated() {
-                            return brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
+                        for (index, productId) in productIds.enumerated() {
+                            return brazeInstance.logPurchase(productId, currency: currency, price: prices[index], quantity: quantities[index], properties: properties)
                         }
                     }
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
+                    for (index, productId) in productIds.enumerated() {
+                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index], quantity: quantities[index])
                     }
                 } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
+                    for (index, productId) in productIds.enumerated() {
+                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index], properties: properties)
                     }
                 } else {
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index])
+                    for (index, productId) in productIds.enumerated() {
+                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index])
                     }
                 }
             case .logProductViewed:
@@ -181,7 +182,12 @@ public class BrazeRemoteCommand: RemoteCommand {
                     try EcommerceEventParser.parseProductViewedEvent(payload: payload)
                 }
             case .logCartUpdated:
-                switch BrazeConstants.Ecommerce.Action.from(payload[BrazeConstants.Ecommerce.action] as? String) {
+                guard let action = BrazeConstants.Ecommerce.Action.from(payload[BrazeConstants.Keys.action]) else {
+                    let rawAction = payload[BrazeConstants.Keys.action] ?? ""
+                    print("*** Tealium Remote Command Error - Braze: logCartUpdated unrecognized action '\(rawAction)' -- expected add, remove or replace, or omit the key for a full-cart snapshot")
+                    return
+                }
+                switch action {
                 case .add:
                     logEcommerceEvent(commandName: "logCartUpdated") {
                         try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
@@ -316,8 +322,10 @@ public class BrazeRemoteCommand: RemoteCommand {
            let processingPolicy = Braze.Configuration.Api.RequestPolicy.from(requestProcessingPolicy) {
             brazeConfig.api.requestPolicy = processingPolicy
         }
-        if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
-            brazeConfig.api.flushInterval = flushInterval
+        // NSNumber, not Double: AnyDecodable decodes a JSON `10` as Int first, so `as? Double`
+        // would silently drop a whole-second value.
+        if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? NSNumber {
+            brazeConfig.api.flushInterval = flushInterval.doubleValue
         }
 
         brazeConfig.api.sdkFlavor = .tealium

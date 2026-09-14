@@ -349,6 +349,55 @@
                                                     <action selector="logUnknownEvent:" destination="1to-9j-H1z" eventType="touchUpInside" id="h4o-WN-Y2f"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cs1-gr-fcn">
+                                                <rect key="frame" x="141" y="896" width="132" height="30"/>
+                                                <state key="normal" title="Grant Full Consent"/>
+                                                <connections>
+                                                    <action selector="grantFullConsent:" destination="1to-9j-H1z" eventType="touchUpInside" id="cs1-ac-fcn"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cs2-dc-lne">
+                                                <rect key="frame" x="153" y="952" width="108" height="30"/>
+                                                <state key="normal" title="Decline Consent"/>
+                                                <connections>
+                                                    <action selector="declineConsent:" destination="1to-9j-H1z" eventType="touchUpInside" id="cs2-ac-lne"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fl1-fl-ush">
+                                                <rect key="frame" x="164" y="1008" width="86" height="30"/>
+                                                <state key="normal" title="Flush Events"/>
+                                                <connections>
+                                                    <action selector="flushEvents:" destination="1to-9j-H1z" eventType="touchUpInside" id="fl1-ac-ush"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sg1-su-bsc">
+                                                <rect key="frame" x="128" y="1064" width="158" height="30"/>
+                                                <state key="normal" title="Subscribe To Group"/>
+                                                <connections>
+                                                    <action selector="subscribeToGroup:" destination="1to-9j-H1z" eventType="touchUpInside" id="sg1-ac-bsc"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sg2-un-sbc">
+                                                <rect key="frame" x="113" y="1120" width="188" height="30"/>
+                                                <state key="normal" title="Unsubscribe From Group"/>
+                                                <connections>
+                                                    <action selector="unsubscribeFromGroup:" destination="1to-9j-H1z" eventType="touchUpInside" id="sg2-ac-sbc"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="di1-de-vid">
+                                                <rect key="frame" x="122" y="1176" width="170" height="30"/>
+                                                <state key="normal" title="Set Device Identifiers"/>
+                                                <connections>
+                                                    <action selector="setDeviceIdentifiers:" destination="1to-9j-H1z" eventType="touchUpInside" id="di1-ac-vid"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sa1-sd-kau">
+                                                <rect key="frame" x="118" y="1232" width="178" height="30"/>
+                                                <state key="normal" title="Set SDK Auth Signature"/>
+                                                <connections>
+                                                    <action selector="setSdkAuthSignature:" destination="1to-9j-H1z" eventType="touchUpInside" id="sa1-ac-kau"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                     </stackView>
                                 </subviews>
