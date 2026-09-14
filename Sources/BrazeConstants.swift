@@ -137,13 +137,12 @@ public enum BrazeConstants {
     /// backwards compatibility: customers mapped the logpurchase spellings before the ecommerce
     /// commands introduced the Braze ones, and one value in their app must not need two mappings.
     ///
-    /// Each list is ordered and the first spelling present wins, which preserves the precedence
-    /// logpurchase had before (`product_currency` before `order_currency`, `product_qty` before the
-    /// older `quantity` it replaced).
+    /// Each list is ordered and the first spelling present wins. The canonical Braze spelling is
+    /// always listed first, ahead of the older logpurchase spellings it replaced.
     static let keyAliases: [String: [String]] = [
         Keys.currency: [Keys.currency, Keys.productCurrency, Keys.orderCurrency],
         Keys.price: [Keys.price, Keys.productUnitPrice],
-        Keys.quantity: [Keys.productQuantity, Keys.quantity]
+        Keys.quantity: [Keys.quantity, Keys.productQuantity]
     ]
 
     /// Ecommerce values that are not payload keys; the keys themselves all live in `Keys`.
