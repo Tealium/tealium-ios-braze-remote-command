@@ -59,12 +59,11 @@ extension [String: Any] {
             if let string = raw as? String, let value = Double(string), value.isFinite { return value as? T }
         }
         if T.self == Int.self {
-            // `NSNumber.intValue` silently truncates fractional values (`1.5` -> `1`); reject
-            // those instead of changing the caller's quantity.
-            if let number = raw as? NSNumber {
-                let double = number.doubleValue
-                guard double.isFinite, double.truncatingRemainder(dividingBy: 1) == 0 else { return nil }
-                return Int(double) as? T
+            // `NSNumber.intValue` silently truncates fractional values (`1.5` -> `1`) and traps on
+            // out-of-range ones (e.g. `1e100`); `Int(exactly:)` rejects both instead of crashing or
+            // changing the caller's quantity.
+            if let number = raw as? NSNumber, let value = Int(exactly: number.doubleValue) {
+                return value as? T
             }
             if let string = raw as? String, let value = Int(string) { return value as? T }
         }
@@ -98,9 +97,8 @@ extension [String: Any] {
                     if element is Bool {
                         return nil
                     } else if let number = element as? NSNumber {
-                        let double = number.doubleValue
-                        guard double.isFinite, double.truncatingRemainder(dividingBy: 1) == 0 else { return nil }
-                        ints.append(Int(double))
+                        guard let value = Int(exactly: number.doubleValue) else { return nil }
+                        ints.append(value)
                     } else if let string = element as? String, let value = Int(string) {
                         ints.append(value)
                     } else {
