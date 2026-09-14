@@ -159,7 +159,18 @@ public class BrazeRemoteCommand: RemoteCommand {
                         return
                 }
 
+                // productIds and prices/quantities are parallel arrays; a length mismatch would
+                // trap on out-of-bounds access in the loop below, so reject it up front.
+                guard prices.count == productIds.count else {
+                    print("*** Tealium Remote Command Error - Braze: logPurchase productId and price arrays must be the same length")
+                    return
+                }
+
                 let quantities = payload.canonicalValue(BrazeConstants.Keys.quantity) as? [Int]
+                if let quantities = quantities, quantities.count != productIds.count {
+                    print("*** Tealium Remote Command Error - Braze: logPurchase quantity array must match productId array length")
+                    return
+                }
                 let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any]
                 for (index, productId) in productIds.enumerated() {
                     brazeInstance.logPurchase(
