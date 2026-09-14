@@ -73,15 +73,6 @@ public protocol BrazeCommand {
     func removeFromSubscriptionGroup(_ group: String)
     
     // MARK: Purchases
-    func logPurchase(_ productIdentifier: String, currency: String, price: Double)
-    
-    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int)
-    
-    func logPurchase(_ productIdentifier: String,
-                     currency: String,
-                     price: Double,
-                     properties: [String: Any]?)
-    
     func logPurchase(_ productIdentifier: String,
                      currency: String,
                      price: Double,
@@ -281,33 +272,6 @@ public class BrazeInstance: BrazeCommand {
             attributes.forEach { attribute in
                 braze.user.incrementCustomUserAttribute(key: attribute.key, by: attribute.value)
             }
-        }
-    }
-    
-    public func logPurchase(_ productIdentifier: String, currency: String, price: Double) {
-        onReady { braze in
-            braze.logPurchase(productId: productIdentifier, currency: currency, price: price)
-        }
-    }
-    
-    public func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int) {
-        onReady { braze in
-            braze.logPurchase(productId: productIdentifier,
-                              currency: currency,
-                              price: price,
-                              quantity: quantity)
-        }
-    }
-    
-    public func logPurchase(_ productIdentifier: String,
-                            currency: String,
-                            price: Double,
-                            properties: [String: Any]?) {
-        onReady { braze in
-            braze.logPurchase(productId: productIdentifier,
-                              currency: currency,
-                              price: price,
-                              properties: properties)
         }
     }
     

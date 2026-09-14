@@ -159,23 +159,17 @@ public class BrazeRemoteCommand: RemoteCommand {
                         return
                 }
 
-                if let quantities = payload.canonicalValue(BrazeConstants.Keys.quantity) as? [Int] {
-                    if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                        for (index, productId) in productIds.enumerated() {
-                            return brazeInstance.logPurchase(productId, currency: currency, price: prices[index], quantity: quantities[index], properties: properties)
-                        }
-                    }
-                    for (index, productId) in productIds.enumerated() {
-                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index], quantity: quantities[index])
-                    }
-                } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                    for (index, productId) in productIds.enumerated() {
-                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index], properties: properties)
-                    }
-                } else {
-                    for (index, productId) in productIds.enumerated() {
-                        brazeInstance.logPurchase(productId, currency: currency, price: prices[index])
-                    }
+                let quantities = payload.canonicalValue(BrazeConstants.Keys.quantity) as? [Int]
+                let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any]
+                for (index, productId) in productIds.enumerated() {
+                    brazeInstance.logPurchase(
+                        productId,
+                        currency: currency,
+                        price: prices[index],
+                        // Defaults to 1 when omitted, matching Braze's own default: https://www.braze.com/docs/developer_guide/analytics/logging_purchases#adding-quantity
+                        quantity: quantities?[index] ?? 1,
+                        properties: properties
+                    )
                 }
             case .logProductViewed:
                 logEcommerceEvent(commandName: "logProductViewed") {
