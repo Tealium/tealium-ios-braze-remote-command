@@ -34,50 +34,42 @@ enum ParsingError: Error, CustomStringConvertible {
     }
 }
 
-/// Represents `ecommerce.order_cancelled` / `ecommerce.order_refunded`, for which Braze has no
-/// typed SDK event class. Deliberately does NOT conform to `Braze.Ecommerce.Event` — these are
-/// dispatched via `logCustomEvent(_:properties:)`, a distinct SDK path from `logEcommerceEvent(_:)`.
+/// Represents order_cancelled/order_refunded — Braze has no typed SDK class for these, so they're
+/// dispatched via `logCustomEvent`, not `logEcommerceEvent`.
 struct CustomEvent {
     let eventName: String
     let properties: [String: Any]
 }
 
 extension [String: Any] {
-    /// Casts `raw` to `T`, falling back to NSNumber-bridging for `Double`/`Int`/`[Double]`/`[Int]`
-    /// when a direct cast fails (native `Int` payloads from the JS bridge fail a direct `as? Double`
-    /// cast; routing through `NSNumber` recovers them), then to String→number parsing for the same
-    /// target types. Tealium data layers routinely send numbers as strings (e.g. `total_value:"99.99"`
-    /// or `price:["10","20"]`); without the String fallbacks these would throw `typeMismatch` and drop
-    /// the whole event, whereas Android coerces them. Returns `nil` when no cast applies.
+    /// Casts `raw` to `T`. Falls back to NSNumber-bridging (JS bridge sends native `Int` where a
+    /// `Double` is expected) and String→number parsing (data layers often send numbers as strings,
+    /// e.g. `price:"19.99"`), per-element for array types. Returns `nil` if no path applies.
     private func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
-        // `Bool` bridges to `NSNumber`, so without this a payload like `price: true` would
-        // otherwise coerce to `1.0`/`0.0` below instead of being rejected as a type mismatch.
+        // Bool bridges to NSNumber; reject explicitly so `price: true` isn't coerced to 1.0/0.0.
         if raw is Bool { return nil }
         if T.self == Double.self {
-            if let number = raw as? NSNumber { return number.doubleValue as? T }
+            if let number = raw as? NSNumber, number.doubleValue.isFinite { return number.doubleValue as? T }
             if let string = raw as? String, let value = Double(string), value.isFinite { return value as? T }
         }
         if T.self == Int.self {
-            // `NSNumber.intValue` silently truncates fractional values (`1.5` -> `1`) and traps on
-            // out-of-range ones (e.g. `1e100`); `Int(exactly:)` rejects both instead of crashing or
-            // changing the caller's quantity.
+            // Int(exactly:) rejects fractional (1.5) and out-of-range (1e100) values instead of
+            // truncating or trapping, unlike NSNumber.intValue.
             if let number = raw as? NSNumber, let value = Int(exactly: number.doubleValue) {
                 return value as? T
             }
             if let string = raw as? String, let value = Int(string) { return value as? T }
         }
         if T.self == [Double].self {
-            // Coerce element-by-element (not all-or-nothing) so a mixed array like `[59.99, "19.99"]`
-            // -- which matches neither `[NSNumber]` nor `[String]` as a whole -- is still recovered,
-            // matching Android's per-element coercion. Return nil if ANY element is unparseable,
-            // preserving the "reject on any unparseable" contract.
+            // Per-element coercion so a mixed array like [59.99, "19.99"] recovers instead of
+            // failing a whole-array cast. Any unparseable element rejects the whole array.
             if let array = raw as? [Any] {
                 var doubles = [Double]()
                 for element in array {
                     if element is Bool {
                         return nil
-                    } else if let number = element as? NSNumber {
+                    } else if let number = element as? NSNumber, number.doubleValue.isFinite {
                         doubles.append(number.doubleValue)
                     } else if let string = element as? String, let value = Double(string), value.isFinite {
                         doubles.append(value)
@@ -89,8 +81,7 @@ extension [String: Any] {
             }
         }
         if T.self == [Int].self {
-            // Same per-element coercion as `[Double]` above (e.g. `[1, "2"]`), rejecting the whole
-            // array if any element is unparseable.
+            // Same per-element coercion as [Double] above.
             if let array = raw as? [Any] {
                 var ints = [Int]()
                 for element in array {
@@ -111,9 +102,8 @@ extension [String: Any] {
         return nil
     }
 
-    /// Reads a required field as `T`, with `lenientCast`'s NSNumber-bridging and `canonicalValue`'s
-    /// spelling handling. Throws `missingField` when absent, `typeMismatch` when not coercible.
-    func require<T>(_ key: String) throws -> T {
+    /// Required field as `T`. Throws `missingField` when absent, `typeMismatch` when not coercible.
+    fileprivate func require<T>(_ key: String) throws -> T {
         guard let raw = canonicalValue(key) else {
             throw ParsingError.missingField(key)
         }
@@ -124,14 +114,10 @@ extension [String: Any] {
         return value
     }
 
-    /// Reads a required String and rejects a blank one.
-    ///
-    /// order_cancelled/order_refunded need this for orderId/source/cancelReason: they have no typed
-    /// SDK class, and Braze does not validate a manually logged recommended event -- a malformed
-    /// payload is dropped after ingestion rather than throwing, so an unchecked value fails
-    /// invisibly. Currency reuses this too (via `requireCurrency`) for every event, even the typed
-    /// ones that also get an equivalent check from the SDK (`Braze.Ecommerce.ValidationError.empty`).
-    func requireNonEmpty(_ key: String) throws -> String {
+    /// Required non-blank String. Needed for order_cancelled/order_refunded (orderId, source,
+    /// cancelReason, currency) since those have no typed SDK class and Braze doesn't validate a
+    /// manually logged custom event -- a blank value would otherwise fail invisibly after ingestion.
+    fileprivate func requireNonEmpty(_ key: String) throws -> String {
         let value: String = try require(key)
         guard !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw ParsingError.emptyField(key)
@@ -139,10 +125,9 @@ extension [String: Any] {
         return value
     }
 
-    /// Reads a required amount, rejecting a negative or non-finite one: Braze wants the cancelled /
-    /// refunded amount as a positive figure and applies the decrement itself. Unvalidated by the SDK
-    /// on this path, same as `requireNonEmpty`.
-    func requireAmount(_ key: String) throws -> Double {
+    /// Required non-negative finite amount. Same rationale as `requireNonEmpty` -- unvalidated
+    /// custom-event path (order_cancelled/order_refunded totalValue).
+    fileprivate func requireAmount(_ key: String) throws -> Double {
         let value: Double = try require(key)
         guard value.isFinite, value >= 0 else {
             throw ParsingError.invalidAmount(field: key)
@@ -150,41 +135,36 @@ extension [String: Any] {
         return value
     }
 
-    /// Like `require<T>`, but returns `nil` instead of throwing. Use for genuinely optional numeric
-    /// fields (`total_value` on add/remove, `tax`, `shipping`, etc.).
-    func optionalValue<T>(_ key: String) -> T? {
+    /// Like `require`, but returns `nil` instead of throwing -- for optional numeric fields
+    /// (`tax`, `shipping`, `total_value` on add/remove, etc.).
+    fileprivate func optionalValue<T>(_ key: String) -> T? {
         guard let raw = canonicalValue(key) else { return nil }
         return lenientCast(raw, as: T.self)
     }
 
-    /// Reads an optional per-product array field (e.g. `image_url`), tolerating individual `nil`/
-    /// mismatched-type elements as `nil` rather than discarding every element in the array. Casting
-    /// the whole array to `[String]` would turn one product's missing `image_url` into ALL products
-    /// losing their `image_url`, since `NSNull`/non-`String` elements make the whole-array cast fail.
-    /// Also drops the field entirely if its length doesn't match the other parallel arrays, since a
-    /// misaligned array can't be safely indexed by product.
-    func optionalArray<T>(_ key: String, count: Int) -> [T?]? {
+    /// Optional per-product array field (e.g. `image_url`): a mismatched-type element becomes `nil`
+    /// instead of failing the whole array, and the field is dropped entirely if its length doesn't
+    /// match the other parallel arrays (can't be safely indexed by product otherwise).
+    fileprivate func optionalArray<T>(_ key: String, count: Int) -> [T?]? {
         guard let raw = self[key] as? [Any], raw.count == count else { return nil }
         return raw.map { $0 as? T }
     }
 
-    /// Optional event-level custom metadata, shared by every ecommerce event under the same key.
-    /// Distinct from the nested `products`/`discounts` per-item metadata array.
-    var ecommerceMetadata: [String: Any]? {
+    /// Event-level metadata, distinct from the per-product metadata array nested in products/discounts.
+    fileprivate var ecommerceMetadata: [String: Any]? {
         self[BrazeConstants.Keys.metadata] as? [String: Any]
     }
 
-    /// Reads the optional `type` (typeIdentifiers) field, accepting either a `[String]` or a single
-    /// scalar `String`. Braze's `typeIdentifiers` is an array, so a scalar value (e.g.
-    /// `type:"price_drop"`) is wrapped into a single-element array rather than silently dropped.
-    func typeIdentifiers(_ key: String) -> [String]? {
+    /// Optional `type` field. Braze's `typeIdentifiers` is an array, so a scalar (`type:"price_drop"`)
+    /// is wrapped into a single-element array rather than dropped.
+    fileprivate func typeIdentifiers(_ key: String) -> [String]? {
         if let array = self[key] as? [String] { return array }
         if let scalar = self[key] as? String { return [scalar] }
         return nil
     }
 
     /// Merges `required` with whichever `optional` entries are non-`nil`, omitting the rest.
-    static func merging(_ required: [String: Any], ifPresent optional: [String: Any?]) -> [String: Any] {
+    fileprivate static func merging(_ required: [String: Any], ifPresent optional: [String: Any?]) -> [String: Any] {
         var result = required
         for (key, value) in optional {
             if let value {
@@ -200,18 +180,15 @@ extension [String: Any] {
 final class EcommerceEventParser {
     typealias Keys = BrazeConstants.Keys
 
-    /// Reads the required `currency` field and normalizes it to uppercase. Braze validates currency
-    /// against ISO-4217 canonical uppercase, so a common lowercase input like `"usd"` would throw on
-    /// event construction and silently drop the whole event. Uppercasing here accepts that input.
+    /// Required currency, uppercased -- Braze validates against ISO-4217 uppercase and would
+    /// otherwise reject a common lowercase input like "usd".
     private static func requireCurrency(from payload: [String: Any]) throws -> String {
         try payload.requireNonEmpty(Keys.currency).uppercased()
     }
 
     // MARK: Product Viewed (single product detail view)
 
-    /// `logProductViewed` targets a single product detail view, so every product field is a plain
-    /// scalar. Unlike cart/checkout/order, this event carries no `products` object -- an array
-    /// value is a caller mistake and fails validation (`require` throws) rather than being coerced.
+    /// Single product detail view -- scalar fields only, no `products` array.
     static func parseProductViewedEvent(payload: [String: Any]) throws -> Braze.Ecommerce.ProductViewedEvent {
         let productId: String = try payload.require(Keys.productId)
         let productName: String = try payload.require(Keys.productName)
@@ -233,13 +210,11 @@ final class EcommerceEventParser {
             typeIdentifiers: payload.typeIdentifiers(Keys.type))
     }
 
-    // MARK: Cart Updated (single command, action read from payload)
+    // MARK: Cart Updated
     //
-    // `logcartupdated` is a single command; the cart action ("add"/"remove"/"replace") is read
-    // from the payload's `action` key rather than being implied by the command name (unlike the
-    // old 3-command design). Each typed variant is parsed by its own function so the caller
-    // (BrazeRemoteCommand) can dispatch to `logEcommerceEvent` with a concrete type -- an
-    // existential `any Braze.Ecommerce.Event` return here wouldn't satisfy that generic call.
+    // The caller reads the cart action ("add"/"remove"/"replace") from the payload and picks the
+    // matching function below, each returning a concrete type so `logEcommerceEvent`'s generic
+    // call is satisfied (an existential `any Braze.Ecommerce.Event` return wouldn't work here).
 
     static func parseCartUpdatedAddEvent(payload: [String: Any]) throws -> Braze.Ecommerce.CartUpdated.Add {
         try parseCartUpdatedEvent(payload: payload) { cartId, currency, source, products in
@@ -272,7 +247,7 @@ final class EcommerceEventParser {
     }
 
     static func parseCartUpdatedReplaceEvent(payload: [String: Any]) throws -> Braze.Ecommerce.CartUpdated.Replace {
-        // Unlike Add/Remove, the full-snapshot Replace requires a non-optional `total_value`.
+        // Replace is a full snapshot, so totalValue is required (unlike Add/Remove).
         let totalValue: Double = try payload.require(Keys.totalValue)
         return try parseCartUpdatedEvent(payload: payload) { cartId, currency, source, products in
             try Braze.Ecommerce.CartUpdated.Replace(
@@ -288,8 +263,8 @@ final class EcommerceEventParser {
         }
     }
 
-    /// Shared guard for the three `CartUpdated` variants: cartId, currency, source, and a valid
-    /// product list. Delegates SDK construction to `build`.
+    /// Shared cartId/currency/source/products parsing for the three CartUpdated variants; delegates
+    /// SDK construction to `build`.
     private static func parseCartUpdatedEvent<E: Braze.Ecommerce.Event>(
         payload: [String: Any],
         build: (_ cartId: String, _ currency: String, _ source: String, _ products: [Braze.Ecommerce.ProductLineItem]) throws -> E
@@ -397,10 +372,9 @@ final class EcommerceEventParser {
         return CustomEvent(eventName: BrazeConstants.Ecommerce.eventOrderRefunded, properties: properties)
     }
 
-    // MARK: Shared products/discounts parsing (nested-parallel-arrays convention)
+    // MARK: Shared products/discounts parsing
     //
-    // `products` and `discounts` are nested objects holding PARALLEL ARRAYS, zipped by index --
-    // unifying the shape with tealium-android-firebase-remote-command's items_params convention.
+    // `products` and `discounts` are nested objects holding parallel arrays, zipped by index.
     // Distinct from the top-level event-level `metadata`.
 
     private struct ProductArrays {
@@ -445,9 +419,8 @@ final class EcommerceEventParser {
             count: count)
     }
 
-    /// Individual `ProductLineItem` construction failures are logged and that product is
-    /// skipped -- a recoverable, per-item condition (not a whole-parse failure), so it is
-    /// caught locally rather than propagated as a `ParsingError`.
+    /// A failed `ProductLineItem` build is logged and that product skipped, not propagated --
+    /// a per-item failure shouldn't fail the whole parse.
     private static func parseProductLineItems(from payload: [String: Any]) throws -> [Braze.Ecommerce.ProductLineItem] {
         let arrays = try parseProductArrays(from: payload)
         var items = [Braze.Ecommerce.ProductLineItem]()
@@ -470,11 +443,9 @@ final class EcommerceEventParser {
         return items
     }
 
-    /// Builds the plain product dictionaries for the order_cancelled/order_refunded custom-event
-    /// wire payload. Each product is first validated by constructing a `ProductLineItem` (the same
-    /// SDK validation the typed cart/checkout/order path uses); a product the SDK rejects (negative
-    /// price, blank/over-length string, negative quantity) is logged and skipped rather than emitting
-    /// a malformed line item on the wire.
+    /// Product dicts for the order_cancelled/order_refunded custom-event payload. Each is validated
+    /// via `ProductLineItem` (same SDK checks as the typed path); a rejected product is logged and
+    /// skipped rather than shipped malformed.
     private static func buildProductDictionaries(from payload: [String: Any]) throws -> [[String: Any]] {
         let arrays = try parseProductArrays(from: payload)
         var products = [[String: Any]]()
@@ -508,34 +479,29 @@ final class EcommerceEventParser {
                 ])
             products.append(product)
         }
-        // Braze requires a non-empty products array (typed events raise `emptyProductsArray`). With
-        // every product rejected the event would ship empty and be dropped after ingestion.
+        // Braze requires a non-empty products array; all-rejected would ship empty and get dropped.
         guard !products.isEmpty else {
             throw ParsingError.emptyProducts
         }
         return products
     }
 
-    /// Discounts are entirely optional (unlike products); a missing/absent nested object yields
-    /// an empty list rather than throwing.
+    /// Discounts are optional -- a missing nested object yields an empty list, not a throw.
     private static func parseDiscounts(from payload: [String: Any]) -> [[String: Any]] {
         guard let discounts = payload[Keys.discounts] as? [String: Any] else { return [] }
         let codes = discounts[Keys.discountCode] as? [String] ?? []
-        // The Braze "Log eCommerce events" doc types the discount `amount` as a Float (JSON number),
-        // so emit each amount as a `Double` (number), not a String. These entries are passed as plain
-        // dictionaries to both the typed OrderPlacedEvent (`discounts: [Any]?` pass-through) and the
-        // raw order_cancelled/order_refunded custom-event JSON, so a numeric value matches the wire
-        // schema. Accepts stringy input (`["10.0","5"]`), native `[Double]`, and `[NSNumber]`, parsing
-        // each element to Double.
-        // Uses `map` (not `compactMap`) to keep a `nil` placeholder at each unparseable index --
-        // dropping entries here would shift every later amount onto the wrong code/type.
+        // Braze types discount `amount` as a number (Float), so parse to Double, not String.
+        // Per-element (not whole-array) so a mixed array like [10.0, "5"] still recovers both.
+        // Uses `map`, not `compactMap`: a dropped entry would shift every later amount onto the
+        // wrong code/type, so an unparseable element keeps a nil placeholder instead.
         let amounts: [Double?]
-        if let strings = discounts[Keys.discountAmount] as? [String] {
-            amounts = strings.map { Double($0) }
-        } else if let doubles = discounts[Keys.discountAmount] as? [Double] {
-            amounts = doubles
-        } else if let numbers = discounts[Keys.discountAmount] as? [NSNumber] {
-            amounts = numbers.map { $0.doubleValue }
+        if let rawAmounts = discounts[Keys.discountAmount] as? [Any] {
+            amounts = rawAmounts.map { element -> Double? in
+                if element is Bool { return nil }
+                if let number = element as? NSNumber, number.doubleValue.isFinite { return number.doubleValue }
+                if let string = element as? String, let value = Double(string), value.isFinite { return value }
+                return nil
+            }
         } else {
             amounts = []
         }
@@ -553,8 +519,7 @@ final class EcommerceEventParser {
         return result
     }
 
-    /// Same as `parseDiscounts`, but returns `nil` (rather than an empty array) when there are no
-    /// discounts, so callers can omit the key entirely from the wire payload.
+    /// Same as `parseDiscounts`, but `nil` instead of an empty array so callers can omit the key.
     private static func buildDiscountDictionaries(from payload: [String: Any]) -> [[String: Any]]? {
         let discounts = parseDiscounts(from: payload)
         return discounts.isEmpty ? nil : discounts
