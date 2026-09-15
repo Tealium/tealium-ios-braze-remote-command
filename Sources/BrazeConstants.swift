@@ -9,13 +9,13 @@
 import Foundation
 
 public enum BrazeConstants {
-    
+
     static let commandName = "command_name"
     static let separator: Character = ","
     static let commandId = "braze"
     static let description = "Braze Remote Command"
     static let version = "3.7.0"
-    
+
     enum Commands: String {
         case initialize = "initialize"
         case userIdentifier = "useridentifier"
@@ -42,8 +42,14 @@ public enum BrazeConstants {
         case flush = "flush"
         case addToSubsriptionGroup = "addtosubscriptiongroup"
         case removeFromSubscriptionGroup = "removefromsubscriptiongroup"
+        case logProductViewed = "logproductviewed"
+        case logCartUpdated = "logcartupdated"
+        case logCheckoutStarted = "logcheckoutstarted"
+        case logOrderPlaced = "logorderplaced"
+        case logOrderCancelled = "logordercancelled"
+        case logOrderRefunded = "logorderrefunded"
     }
-    
+
     enum Keys {
         static let apiKey = "api_key"
         static let isSdkAuthEnabled = "is_sdk_authentication_enabled"
@@ -62,12 +68,45 @@ public enum BrazeConstants {
         static let eventKey = "event"
         static let eventProperties = "event_properties"
         static let eventName = "event_name"
-        static let productIdentifier = "product_id"
-        static let currency = "order_currency" // The constant is being changed to product_currency to unify it on all platforms.
+
+        // Product / money keys: one constant per data point, whichever command consumes it.
+        static let productId = "product_id"
+        static let productName = "product_name"
+        static let variantId = "variant_id"
+        static let currency = "currency"
+        static let price = "price"
+        static let quantity = "quantity"
+        static let imageUrl = "image_url"
+        static let productUrl = "product_url"
+        static let source = "source"
+        static let type = "type"
+        static let metadata = "metadata"
+
+        // Alternate spellings for the keys above.
         static let productCurrency = "product_currency"
-        static let price = "product_unit_price"
-        static let quantity = "quantity" // The constant is being changed to product_qty to unify it on all platforms
+        static let orderCurrency = "order_currency"
+        static let productUnitPrice = "product_unit_price"
         static let productQuantity = "product_qty"
+
+        // Ecommerce event keys.
+        static let cartId = "cart_id"
+        static let action = "action"
+        static let totalValue = "total_value"
+        static let subtotalValue = "subtotal_value"
+        static let tax = "tax"
+        static let shipping = "shipping"
+        static let products = "products"
+        static let checkoutId = "checkout_id"
+        static let orderId = "order_id"
+        static let totalDiscounts = "total_discounts"
+        static let cancelReason = "cancel_reason"
+
+        // `discountType` is scoped to a discounts entry, unlike the top-level `type` above.
+        static let discounts = "discounts"
+        static let discountCode = "code"
+        static let discountAmount = "amount"
+        static let discountType = "type"
+
         static let purchaseKey = "purchase"
         static let purchaseProperties = "purchase_properties"
         static let sessionTimeout = "session_timeout"
@@ -92,6 +131,48 @@ public enum BrazeConstants {
         static let forwardUniversalLinks = "forward_universal_links"
         static let optInWhenPushAuthorized = "opt_in_when_push_authorized"
         static let useUUIDAsDeviceId = "use_uuid_as_device_id"
+    }
+
+    /// Every payload spelling accepted for a data point, keyed by its canonical Braze key. Exists for
+    /// backwards compatibility: customers mapped the logpurchase spellings before the ecommerce
+    /// commands introduced the Braze ones, and one value in their app must not need two mappings.
+    ///
+    /// Each list is ordered and the first spelling present wins. The canonical Braze spelling is
+    /// always listed first, ahead of the older logpurchase spellings it replaced.
+    static let keyAliases: [String: [String]] = [
+        Keys.currency: [Keys.currency, Keys.productCurrency, Keys.orderCurrency],
+        Keys.price: [Keys.price, Keys.productUnitPrice],
+        Keys.quantity: [Keys.quantity, Keys.productQuantity]
+    ]
+
+    /// Ecommerce values that are not payload keys; the keys themselves all live in `Keys`.
+    enum Ecommerce {
+        // Custom-event names for order_cancelled/order_refunded, which have no typed Braze SDK
+        // event class and are dispatched via logCustomEvent. Must stay in sync with the Android
+        // remote command's BrazeConstants.Ecommerce event names.
+        static let eventOrderCancelled = "ecommerce.order_cancelled"
+        static let eventOrderRefunded = "ecommerce.order_refunded"
+
+        /// The cart action for logcartupdated, read from the payload's `action` key. Values match
+        /// the Braze cart_updated schema.
+        enum Action: String {
+            case add
+            case remove
+            case replace
+
+            /// Maps the payload's `action` value to an Action. An absent value means `.replace`: the
+            /// schema treats an omitted action as a full-cart snapshot, hence `total_value` being
+            /// required "when `action` is omitted or `replace`".
+            ///
+            /// Returns `nil` for a value outside the schema so the caller can reject the event. A typo
+            /// used to fall back to `.replace` and then fail on Replace's required `total_value`,
+            /// reporting a missing field the customer never touched.
+            static func from(_ value: Any?) -> Action? {
+                guard let value else { return .replace }
+                guard let value = value as? String else { return nil }
+                return Action(rawValue: value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
+            }
+        }
     }
 }
 

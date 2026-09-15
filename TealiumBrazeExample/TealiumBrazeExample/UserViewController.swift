@@ -45,6 +45,7 @@ class UserViewController: UIViewController {
         data["customer_gender"] = gender()
         data["customer_language"] = "en"
         data["customer_home_city"] = homeCityTextField.text
+        data["customer_country"] = countryTextField.text
         
         if let birthday = dobDateFormatter.date(from: birthdayTextField.text!) {
             let isoBirthday = DateConverter.shared.iso8601DateFormatter.string(from: birthday)

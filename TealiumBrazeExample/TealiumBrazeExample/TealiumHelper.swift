@@ -26,9 +26,7 @@ class TealiumHelper {
                                environment: TealiumConfiguration.environment)
 
     var tealium: Tealium?
-    
-    static var universalData = [String: Any]()
-    
+
     // JSON Remote Command
     let brazeRemoteCommand = BrazeRemoteCommand(type: .local(file:"braze"), brazeLocation: BrazeLocationProvider())
 //    let brazeRemoteCommand = BrazeRemoteCommand(type: .remote(url: "https://tags.tiqcdn.com/dle/tealiummobile/demo/braze.json"))
@@ -57,10 +55,7 @@ class TealiumHelper {
     }
 
     class func trackEvent(title: String, data: [String: Any]?) {
-        if let data = data {
-            universalData = universalData.merging(data) { _, new in new }
-        }
-        let tealiumEvent = TealiumEvent(title, dataLayer: universalData)
+        let tealiumEvent = TealiumEvent(title, dataLayer: data)
         TealiumHelper.shared.tealium?.track(tealiumEvent)
     }
 

@@ -7,6 +7,17 @@
 
 import BrazeKit
 
+extension [String: Any] {
+    /// Reads `key`, resolving any alias in `BrazeConstants.keyAliases` (first present wins), or
+    /// reads directly if none are registered. Resolved on read rather than by rewriting the
+    /// payload, so nested dictionaries (e.g. the ecommerce `products` arrays) get the same
+    /// alias handling for free.
+    func canonicalValue(_ key: String) -> Any? {
+        guard let acceptedKeys = BrazeConstants.keyAliases[key] else { return self[key] }
+        return acceptedKeys.lazy.compactMap { self[$0] }.first
+    }
+}
+
 extension Braze.User.SubscriptionState {
     static func from(_ value: String) -> Self? {
         let lowercasedSubscription = value.lowercased()
