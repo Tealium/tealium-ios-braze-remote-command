@@ -985,9 +985,10 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual("USD", brazeInstance.loggedPurchaseCurrencies.last)
     }
 
-    func testLogPurchase_productQtyWinsOverQuantity() {
-        // Precedence guard: the pre-alias implementation read `product_qty ?? quantity`, preferring
-        // `product_qty` as the newer spelling. A payload carrying both must keep logging its value.
+    func testLogPurchase_quantityWinsOverProductQty() {
+        // Precedence guard: `quantity` is the canonical Braze spelling and listed first in
+        // `keyAliases`, so it wins over the older logpurchase spelling `product_qty` when a
+        // payload carries both.
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
             "product_id": ["123"],
             "order_currency": "USD",
@@ -997,7 +998,7 @@ class BrazeProcessCommandTests: XCTestCase {
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
-        XCTAssertEqual(5, brazeInstance.loggedPurchaseQuantities.last)
+        XCTAssertEqual(99, brazeInstance.loggedPurchaseQuantities.last)
     }
 
     func testLogPurchase_productCurrencyWinsOverOrderCurrency() {
