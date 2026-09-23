@@ -45,61 +45,45 @@ extension [String: Any] {
     /// Casts `raw` to `T`. Falls back to NSNumber-bridging (JS bridge sends native `Int` where a
     /// `Double` is expected) and String→number parsing (data layers often send numbers as strings,
     /// e.g. `price:"19.99"`), per-element for array types. Returns `nil` if no path applies.
+    /// Fractional values for Int targets truncate toward zero.
     fileprivate func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
-        // Bool bridges to NSNumber; reject explicitly so `price: true` isn't coerced to 1.0/0.0.
-        if raw is Bool { return nil }
-        if T.self == Double.self {
-            if let number = raw as? NSNumber, number.doubleValue.isFinite { return number.doubleValue as? T }
-            if let string = raw as? String, let value = Double(string), value.isFinite { return value as? T }
+        if T.self == Double.self { return lenientDouble(raw) as? T }
+        if T.self == Int.self { return lenientInt(raw) as? T }
+        // Per-element coercion so a mixed array like [59.99, "19.99"] recovers instead of
+        // failing a whole-array cast. Any unparseable element rejects the whole array.
+        if T.self == [Double].self, let array = raw as? [Any] {
+            let doubles = array.compactMap(lenientDouble)
+            return doubles.count == array.count ? doubles as? T : nil
         }
-        if T.self == Int.self {
-            // Int(exactly:) rejects fractional (1.5) and out-of-range (1e100) values instead of
-            // truncating or trapping, unlike NSNumber.intValue.
-            if let number = raw as? NSNumber, let value = Int(exactly: number.doubleValue) {
-                return value as? T
-            }
-            if let string = raw as? String, let value = Int(string) { return value as? T }
-        }
-        if T.self == [Double].self {
-            // Per-element coercion so a mixed array like [59.99, "19.99"] recovers instead of
-            // failing a whole-array cast. Any unparseable element rejects the whole array.
-            if let array = raw as? [Any] {
-                var doubles = [Double]()
-                for element in array {
-                    if element is Bool {
-                        return nil
-                    } else if let number = element as? NSNumber, number.doubleValue.isFinite {
-                        doubles.append(number.doubleValue)
-                    } else if let string = element as? String, let value = Double(string), value.isFinite {
-                        doubles.append(value)
-                    } else {
-                        return nil
-                    }
-                }
-                return doubles as? T
-            }
-        }
-        if T.self == [Int].self {
-            // Same per-element coercion as [Double] above.
-            if let array = raw as? [Any] {
-                var ints = [Int]()
-                for element in array {
-                    if element is Bool {
-                        return nil
-                    } else if let number = element as? NSNumber {
-                        guard let value = Int(exactly: number.doubleValue) else { return nil }
-                        ints.append(value)
-                    } else if let string = element as? String, let value = Int(string) {
-                        ints.append(value)
-                    } else {
-                        return nil
-                    }
-                }
-                return ints as? T
-            }
+        if T.self == [Int].self, let array = raw as? [Any] {
+            let ints = array.compactMap(lenientInt)
+            return ints.count == array.count ? ints as? T : nil
         }
         return nil
+    }
+
+    /// Finite Double from an NSNumber or a numeric String. Bool bridges to NSNumber, so it is
+    /// rejected explicitly to keep `price: true` from coercing to 1.0/0.0.
+    private func lenientDouble(_ raw: Any) -> Double? {
+        if raw is Bool { return nil }
+        let value: Double?
+        if let number = raw as? NSNumber {
+            value = number.doubleValue
+        } else if let string = raw as? String {
+            value = Double(string)
+        } else {
+            value = nil
+        }
+        return value.flatMap { $0.isFinite ? $0 : nil }
+    }
+
+    /// Int from an NSNumber or a numeric String. Fractional values truncate toward zero (1.9 -> 1),
+    /// matching NSNumber.intValue; NaN, infinite and out-of-Int-range values are rejected instead of
+    /// trapping or producing garbage.
+    private func lenientInt(_ raw: Any) -> Int? {
+        guard let double = lenientDouble(raw) else { return nil }
+        return Int(exactly: double.rounded(.towardZero))
     }
 
     /// Required field as `T`. Throws `missingField` when absent, `typeMismatch` when not coercible.

@@ -460,6 +460,20 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual([12.34, 5.0], brazeInstance.loggedPurchasePrices)
     }
 
+    func testLogPurchase_fractionalQuantitiesTruncate() {
+        // A lenient cast truncates fractional quantities toward zero rather than rejecting them;
+        // out-of-range values still become nil so nothing traps.
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123", "456", "789"],
+            "order_currency": "USD",
+            "product_unit_price": [1.0, 2.0, 3.0],
+            "quantity": [1.9, "2.5", 1e100]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(3, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual([1, 2, nil], brazeInstance.loggedPurchaseQuantities)
+    }
+
     func testLogPurchaseWithPropertiesSuccess() {
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
             "product_id": ["123"],
