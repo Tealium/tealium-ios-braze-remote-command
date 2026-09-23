@@ -36,7 +36,7 @@ class MockBrazeInstance: BrazeCommand {
     var setPushNotificationSubscriptionTypeCallCount = 0
     var logPurchaseCallCount = 0
     var loggedPurchaseCurrencies = [String]()
-    var loggedPurchaseQuantities = [Int]()
+    var loggedPurchaseQuantities = [Int?]()
     var loggedPurchaseProperties = [[String: Any]?]()
     var logEcommerceEventCallCount = 0
     var loggedEcommerceEventNames = [String]()
@@ -144,7 +144,7 @@ class MockBrazeInstance: BrazeCommand {
         setPushNotificationSubscriptionTypeCallCount += 1
     }
 
-    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int, properties: [String : Any]?) {
+    func logPurchase(_ productIdentifier: String, currency: String, price: Double, quantity: Int?, properties: [String : Any]?) {
         logPurchaseCallCount += 1
         loggedPurchaseCurrencies.append(currency)
         loggedPurchaseQuantities.append(quantity)

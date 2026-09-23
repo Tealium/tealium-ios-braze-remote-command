@@ -378,7 +378,7 @@ class BrazeProcessCommandTests: XCTestCase {
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
-        XCTAssertEqual([1], brazeInstance.loggedPurchaseQuantities)
+        XCTAssertEqual([nil], brazeInstance.loggedPurchaseQuantities)
         XCTAssertEqual([nil], brazeInstance.loggedPurchaseProperties as? [NSDictionary?])
     }
 
@@ -390,7 +390,7 @@ class BrazeProcessCommandTests: XCTestCase {
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
-        XCTAssertEqual([1], brazeInstance.loggedPurchaseQuantities)
+        XCTAssertEqual([nil], brazeInstance.loggedPurchaseQuantities)
         XCTAssertEqual([nil], brazeInstance.loggedPurchaseProperties as? [NSDictionary?])
     }
 
@@ -429,7 +429,7 @@ class BrazeProcessCommandTests: XCTestCase {
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.logPurchaseCallCount)
-        XCTAssertEqual([1], brazeInstance.loggedPurchaseQuantities)
+        XCTAssertEqual([nil], brazeInstance.loggedPurchaseQuantities)
         XCTAssertEqual([["item1": 123]], brazeInstance.loggedPurchaseProperties as? [NSDictionary?])
     }
 

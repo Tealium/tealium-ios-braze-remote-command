@@ -177,8 +177,8 @@ public class BrazeRemoteCommand: RemoteCommand {
                         productId,
                         currency: currency,
                         price: prices[index],
-                        // Defaults to 1 when omitted, matching Braze's own default: https://www.braze.com/docs/developer_guide/analytics/logging_purchases#adding-quantity
-                        quantity: quantities?[index] ?? 1,
+                        // nil when omitted; the Braze SDK then applies its own default quantity.
+                        quantity: quantities?[index],
                         properties: properties
                     )
                 }

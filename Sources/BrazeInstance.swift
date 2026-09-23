@@ -76,7 +76,7 @@ public protocol BrazeCommand {
     func logPurchase(_ productIdentifier: String,
                      currency: String,
                      price: Double,
-                     quantity: Int,
+                     quantity: Int?,
                      properties: [String: Any]?)
 
     // MARK: Ecommerce
@@ -278,14 +278,23 @@ public class BrazeInstance: BrazeCommand {
     public func logPurchase(_ productIdentifier: String,
                             currency: String,
                             price: Double,
-                            quantity: Int = 1,
+                            quantity: Int?,
                             properties: [String: Any]? = nil) {
         onReady { braze in
-            braze.logPurchase(productId: productIdentifier,
-                              currency: currency,
-                              price: price,
-                              quantity: quantity,
-                              properties: properties)
+            // When quantity is absent we call the SDK overload without it so Braze applies its own
+            // default instead of us hardcoding one.
+            if let quantity = quantity {
+                braze.logPurchase(productId: productIdentifier,
+                                  currency: currency,
+                                  price: price,
+                                  quantity: quantity,
+                                  properties: properties)
+            } else {
+                braze.logPurchase(productId: productIdentifier,
+                                  currency: currency,
+                                  price: price,
+                                  properties: properties)
+            }
         }
     }
 
