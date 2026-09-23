@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/braze-inc/braze-swift-sdk",
         "state": {
           "branch": null,
-          "revision": "ff893d560eab7b5e5657c3617daf07e2e0e7c74b",
-          "version": "17.0.0"
+          "revision": "ae609ecc00d7d12e0ce970b8b05d7422b0a1b486",
+          "version": "18.2.1"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/tealium/tealium-swift",
         "state": {
           "branch": null,
-          "revision": "a2ae13c20667d1d34bc0150cbfa79805e928eb15",
-          "version": "2.18.2"
+          "revision": "f6a2f0fc12eb6d9fac584bb88e7623b7d2d1d164",
+          "version": "2.19.0"
         }
       }
     ]

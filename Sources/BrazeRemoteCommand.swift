@@ -27,7 +27,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         brazeInstance.braze
     }
     private let location: AnyObject?
-    
+
     public init(brazeInstance: BrazeCommand = BrazeInstance(), type: RemoteCommandType = .webview, brazeLocation: AnyObject? = nil) {
         self.brazeInstance = brazeInstance
         self.location = brazeLocation
@@ -43,7 +43,7 @@ public class BrazeRemoteCommand: RemoteCommand {
             })
         weakSelf = self
     }
-    
+
     public func onReady(_ onReady: @escaping (Braze) -> Void) {
         TealiumQueues.backgroundSerialQueue.async {
             self.brazeInstance.onReady(onReady)
@@ -149,32 +149,77 @@ public class BrazeRemoteCommand: RemoteCommand {
                 if let purchaseKeyFromJSON = payload[BrazeConstants.Keys.purchaseKey] as? [String: Any] {
                     payload[BrazeConstants.Keys.purchaseProperties] = purchaseKeyFromJSON
                 }
-                
-                guard let productIdentifier = payload[BrazeConstants.Keys.productIdentifier] as? [String],
-                    let currency = (payload[BrazeConstants.Keys.productCurrency] ?? payload[BrazeConstants.Keys.currency]) as? String,
-                    let prices = payload[BrazeConstants.Keys.price] as? [Double] else {
+
+                // Accepts both the logpurchase and the ecommerce spellings; see BrazeConstants.keyAliases.
+                // Braze logs one product per call, so the parallel payload arrays are fanned out by
+                // index -- hence the plural names. Prices go through `optionalValue` so numeric
+                // strings coerce the same way they do for the ecommerce commands.
+                guard let productIds = payload[BrazeConstants.Keys.productId] as? [String],
+                    let currency = payload.canonicalValue(BrazeConstants.Keys.currency) as? String,
+                    let prices: [Double] = payload.optionalValue(BrazeConstants.Keys.price) else {
                         return
                 }
-                let products = (productId: productIdentifier, price: prices)
 
-                if let quantity = (payload[BrazeConstants.Keys.productQuantity] ?? payload[BrazeConstants.Keys.quantity]) as? [Int] {
-                    let products = (productId: productIdentifier, price: prices, quantity: quantity)
-                    if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                        for (index, element) in products.productId.enumerated() {
-                            return brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index], properties: properties)
-                        }
+                // productIds and prices are parallel arrays; a length mismatch would
+                // trap on out-of-bounds access in the loop below, so reject it up front.
+                guard prices.count == productIds.count else {
+                    print("*** Tealium Remote Command Error - Braze: logPurchase productId and price arrays must be the same length")
+                    return
+                }
+
+                // Quantity is optional per product: missing, wrong-length or non-Int entries become
+                // nil and the Braze SDK applies its own default, rather than dropping the purchase.
+                let quantities: [Int?] = payload.optionalArray(BrazeConstants.Keys.quantity, count: productIds.count)
+                    ?? Array(repeating: nil, count: productIds.count)
+                let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any]
+                for (index, productId) in productIds.enumerated() {
+                    brazeInstance.logPurchase(
+                        productId,
+                        currency: currency,
+                        price: prices[index],
+                        quantity: quantities[index],
+                        properties: properties
+                    )
+                }
+            case .logProductViewed:
+                logEcommerceEvent(commandName: "logProductViewed") {
+                    try EcommerceEventParser.parseProductViewedEvent(payload: payload)
+                }
+            case .logCartUpdated:
+                guard let action = BrazeConstants.Ecommerce.Action.from(payload[BrazeConstants.Keys.action]) else {
+                    let rawAction = payload[BrazeConstants.Keys.action] ?? ""
+                    print("*** Tealium Remote Command Error - Braze: logCartUpdated unrecognized action '\(rawAction)' -- expected add, remove or replace, or omit the key for a full-cart snapshot")
+                    return
+                }
+                switch action {
+                case .add:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedAddEvent(payload: payload)
                     }
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], quantity: products.quantity[index])
+                case .remove:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedRemoveEvent(payload: payload)
                     }
-                } else if let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any] {
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index], properties: properties)
+                case .replace:
+                    logEcommerceEvent(commandName: "logCartUpdated") {
+                        try EcommerceEventParser.parseCartUpdatedReplaceEvent(payload: payload)
                     }
-                } else {
-                    for (index, element) in products.productId.enumerated() {
-                        brazeInstance.logPurchase(element, currency: currency, price: products.price[index])
-                    }
+                }
+            case .logCheckoutStarted:
+                logEcommerceEvent(commandName: "logCheckoutStarted") {
+                    try EcommerceEventParser.parseCheckoutStartedEvent(payload: payload)
+                }
+            case .logOrderPlaced:
+                logEcommerceEvent(commandName: "logOrderPlaced") {
+                    try EcommerceEventParser.parseOrderPlacedEvent(payload: payload)
+                }
+            case .logOrderCancelled:
+                logCustomEcommerceEvent(commandName: "logOrderCancelled") {
+                    try EcommerceEventParser.parseOrderCancelledEvent(payload: payload)
+                }
+            case .logOrderRefunded:
+                logCustomEcommerceEvent(commandName: "logOrderRefunded") {
+                    try EcommerceEventParser.parseOrderRefundedEvent(payload: payload)
                 }
             case .setAdTrackingEnabled:
                 guard let enabled = convertToBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
@@ -192,17 +237,18 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
                 self.brazeInstance.setIdentifierForVendor(identifier)
             case .setLastKnownLocation:
-                guard let latitude = payload[BrazeConstants.Keys.latitude] as? Double,
-                    let longitude = payload[BrazeConstants.Keys.longitude] as? Double,
-                    let horizontalAccuracy = payload[BrazeConstants.Keys.horizontalAccuracy] as? Double else {
+                // optionalValue, not `as? Double`: AnyDecodable decodes a JSON `10` as Int, which a direct Double cast silently drops.
+                guard let latitude: Double = payload.optionalValue(BrazeConstants.Keys.latitude),
+                    let longitude: Double = payload.optionalValue(BrazeConstants.Keys.longitude),
+                    let horizontalAccuracy: Double = payload.optionalValue(BrazeConstants.Keys.horizontalAccuracy) else {
                         print("""
                                 *** Tealium Remote Command Error - Braze: In order to set the user's last known location,
                                 you must provide latitude, longitude, and horizontal accuracy.
                               """)
                         return
                 }
-                guard let altitude = payload[BrazeConstants.Keys.altitude] as? Double,
-                    let verticalAccuracy = payload[BrazeConstants.Keys.verticalAccuracy] as? Double else {
+                guard let altitude: Double = payload.optionalValue(BrazeConstants.Keys.altitude),
+                    let verticalAccuracy: Double = payload.optionalValue(BrazeConstants.Keys.verticalAccuracy) else {
                         return brazeInstance.setLastKnownLocationWithLatitude(latitude: latitude,
                                                                                   longitude: longitude,
                                                                                   horizontalAccuracy: horizontalAccuracy)
@@ -218,6 +264,8 @@ public class BrazeRemoteCommand: RemoteCommand {
                 brazeInstance.enableSDK(false)
             case .wipeData:
                 brazeInstance.wipeData()
+            case .logout:
+                brazeInstance.logout()
             case .flush:
                 brazeInstance.flush()
             case .addToSubsriptionGroup:
@@ -229,7 +277,30 @@ public class BrazeRemoteCommand: RemoteCommand {
             }
         }
     }
-    
+
+    /// Builds an ecommerce event via the throwing `build` closure and forwards it to Braze.
+    /// Parsing failures (`ParsingError`) and SDK validation failures on construction are both
+    /// logged (tagged with `commandName`) and the event is skipped.
+    private func logEcommerceEvent<E: Braze.Ecommerce.Event>(commandName: String, _ build: () throws -> E) {
+        do {
+            let event = try build()
+            brazeInstance.logEcommerceEvent(event)
+        } catch {
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
+        }
+    }
+
+    /// Builds an order_cancelled / order_refunded custom event (no typed Braze SDK class exists)
+    /// via the throwing `build` closure and forwards it through `logCustomEvent`.
+    private func logCustomEcommerceEvent(commandName: String, _ build: () throws -> CustomEvent) {
+        do {
+            let event = try build()
+            brazeInstance.logCustomEvent(event.eventName, properties: event.properties)
+        } catch {
+            print("*** Tealium Remote Command Error - Braze: \(commandName) failed to build ecommerce event: \(error)")
+        }
+    }
+
     func convertToBool<T>(_ value: T) -> Bool? {
         if let string = value as? String,
             let bool = Bool(string) {
@@ -249,7 +320,7 @@ public class BrazeRemoteCommand: RemoteCommand {
             return nil
         }
         let brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
-        
+
         // API Config
         if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
@@ -258,12 +329,13 @@ public class BrazeRemoteCommand: RemoteCommand {
            let processingPolicy = Braze.Configuration.Api.RequestPolicy.from(requestProcessingPolicy) {
             brazeConfig.api.requestPolicy = processingPolicy
         }
-        if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? Double {
+        // optionalValue, not `as? Double`: AnyDecodable decodes a JSON `10` as Int, which a direct Double cast silently drops.
+        if let flushInterval: Double = payload.optionalValue(BrazeConstants.Keys.flushInterval) {
             brazeConfig.api.flushInterval = flushInterval
         }
-        
+
         brazeConfig.api.sdkFlavor = .tealium
-        
+
         // Location Config
         brazeConfig.location.brazeLocationProvider = self.location
         if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
@@ -275,32 +347,32 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let enableAutomaticGeofences = convertToBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
             brazeConfig.location.automaticGeofenceRequests = enableAutomaticGeofences
         }
-        
+
         // Push Config
         if let pushStoryIdentifier = payload[BrazeConstants.Keys.pushStoryIdentifier] as? String {
             brazeConfig.push.appGroup = pushStoryIdentifier
         }
-        
+
         // BrazeConfig properties
-        if let useUUIDAsDeviceId = payload[BrazeConstants.Keys.useUUIDAsDeviceId] as? NSNumber {
-            brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId.boolValue
+        if let useUUIDAsDeviceId = convertToBool(payload[BrazeConstants.Keys.useUUIDAsDeviceId]) {
+            brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId
         }
         if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
             brazeConfig.devicePropertyAllowList = Set(deviceOptions.compactMap{Braze.Configuration.DeviceProperty.from($0)})
         }
-        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
-            brazeConfig.sessionTimeout = sessionTimeout.doubleValue
+        if let sessionTimeout: Double = payload.optionalValue(BrazeConstants.Keys.sessionTimeout) {
+            brazeConfig.sessionTimeout = sessionTimeout
         }
-        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
-            brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
+        if let triggerInterval: Double = payload.optionalValue(BrazeConstants.Keys.triggerIntervalSeconds) {
+            brazeConfig.triggerMinimumTimeInterval = triggerInterval
         }
-        if let forwardUniversalLinks = payload[BrazeConstants.Keys.forwardUniversalLinks] as? NSNumber {
-            brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
+        if let forwardUniversalLinks = convertToBool(payload[BrazeConstants.Keys.forwardUniversalLinks]) {
+            brazeConfig.forwardUniversalLinks = forwardUniversalLinks
         }
-        if let optInWhenPushAuthorized = payload[BrazeConstants.Keys.optInWhenPushAuthorized] as? Bool {
+        if let optInWhenPushAuthorized = convertToBool(payload[BrazeConstants.Keys.optInWhenPushAuthorized]) {
             brazeConfig.optInWhenPushAuthorized = optInWhenPushAuthorized
         }
-        
+
         return brazeConfig
     }
 }
