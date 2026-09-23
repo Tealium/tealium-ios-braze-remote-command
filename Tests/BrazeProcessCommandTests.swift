@@ -577,7 +577,7 @@ class BrazeProcessCommandTests: XCTestCase {
 
     func testLogProductViewedWithTypeIdentifiers() {
         // `type` carries Braze catalog-trigger identifiers (price_drop / back_in_stock). It maps to
-        // the SDK's `typeIdentifiers` init parameter, which is iOS-only. A successful log proves the
+        // the SDK's `type` init parameter, which is iOS-only. A successful log proves the
         // throwing initializer accepted the identifiers.
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": "sku123",
@@ -1318,7 +1318,7 @@ class BrazeProcessCommandTests: XCTestCase {
     }
 
     func testLogProductViewed_scalarTypeAccepted() {
-        // A scalar `type` string (not an array) must be wrapped into a single-element typeIdentifiers
+        // A scalar `type` string (not an array) must be wrapped into a single-element type
         // array rather than silently dropped.
         let payload: [String: Any] = ["command_name": "logproductviewed",
             "product_id": "sku123",

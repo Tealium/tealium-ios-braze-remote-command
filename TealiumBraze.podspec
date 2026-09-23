@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
     # ――― Dependencies ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
     s.ios.dependency 'tealium-swift/Core', '~> 2.18'
     s.ios.dependency 'tealium-swift/RemoteCommands', '~> 2.18'
-    s.ios.dependency 'BrazeKit', '~> 17.0'
+    s.ios.dependency 'BrazeKit', '~> 18.2'
     s.static_framework = true
 
 end

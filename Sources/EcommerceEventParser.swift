@@ -80,9 +80,9 @@ extension [String: Any] {
         self[BrazeConstants.Keys.metadata] as? [String: Any]
     }
 
-    /// Optional `type` field. Braze's `typeIdentifiers` is an array, so a scalar (`type:"price_drop"`)
+    /// Optional `type` field. Braze's `type` is an array, so a scalar (`type:"price_drop"`)
     /// is wrapped into a single-element array rather than dropped.
-    fileprivate func typeIdentifiers(_ key: String) -> [String]? {
+    fileprivate func type(_ key: String) -> [String]? {
         if let array = self[key] as? [String] { return array }
         if let scalar = self[key] as? String { return [scalar] }
         return nil
@@ -132,7 +132,7 @@ final class EcommerceEventParser {
             currency: currency,
             source: source,
             metadata: payload.ecommerceMetadata,
-            typeIdentifiers: payload.typeIdentifiers(Keys.type))
+            type: payload.type(Keys.type))
     }
 
     // MARK: Cart Updated
