@@ -237,17 +237,18 @@ public class BrazeRemoteCommand: RemoteCommand {
                 }
                 self.brazeInstance.setIdentifierForVendor(identifier)
             case .setLastKnownLocation:
-                guard let latitude = payload[BrazeConstants.Keys.latitude] as? Double,
-                    let longitude = payload[BrazeConstants.Keys.longitude] as? Double,
-                    let horizontalAccuracy = payload[BrazeConstants.Keys.horizontalAccuracy] as? Double else {
+                // optionalValue, not `as? Double`: AnyDecodable decodes a JSON `10` as Int, which a direct Double cast silently drops.
+                guard let latitude: Double = payload.optionalValue(BrazeConstants.Keys.latitude),
+                    let longitude: Double = payload.optionalValue(BrazeConstants.Keys.longitude),
+                    let horizontalAccuracy: Double = payload.optionalValue(BrazeConstants.Keys.horizontalAccuracy) else {
                         print("""
                                 *** Tealium Remote Command Error - Braze: In order to set the user's last known location,
                                 you must provide latitude, longitude, and horizontal accuracy.
                               """)
                         return
                 }
-                guard let altitude = payload[BrazeConstants.Keys.altitude] as? Double,
-                    let verticalAccuracy = payload[BrazeConstants.Keys.verticalAccuracy] as? Double else {
+                guard let altitude: Double = payload.optionalValue(BrazeConstants.Keys.altitude),
+                    let verticalAccuracy: Double = payload.optionalValue(BrazeConstants.Keys.verticalAccuracy) else {
                         return brazeInstance.setLastKnownLocationWithLatitude(latitude: latitude,
                                                                                   longitude: longitude,
                                                                                   horizontalAccuracy: horizontalAccuracy)
@@ -326,10 +327,9 @@ public class BrazeRemoteCommand: RemoteCommand {
            let processingPolicy = Braze.Configuration.Api.RequestPolicy.from(requestProcessingPolicy) {
             brazeConfig.api.requestPolicy = processingPolicy
         }
-        // NSNumber, not Double: AnyDecodable decodes a JSON `10` as Int first, so `as? Double`
-        // would silently drop a whole-second value.
-        if let flushInterval = payload[BrazeConstants.Keys.flushInterval] as? NSNumber {
-            brazeConfig.api.flushInterval = flushInterval.doubleValue
+        // optionalValue, not `as? Double`: AnyDecodable decodes a JSON `10` as Int, which a direct Double cast silently drops.
+        if let flushInterval: Double = payload.optionalValue(BrazeConstants.Keys.flushInterval) {
+            brazeConfig.api.flushInterval = flushInterval
         }
 
         brazeConfig.api.sdkFlavor = .tealium
@@ -352,22 +352,22 @@ public class BrazeRemoteCommand: RemoteCommand {
         }
 
         // BrazeConfig properties
-        if let useUUIDAsDeviceId = payload[BrazeConstants.Keys.useUUIDAsDeviceId] as? NSNumber {
-            brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId.boolValue
+        if let useUUIDAsDeviceId = convertToBool(payload[BrazeConstants.Keys.useUUIDAsDeviceId]) {
+            brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId
         }
         if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
             brazeConfig.devicePropertyAllowList = Set(deviceOptions.compactMap{Braze.Configuration.DeviceProperty.from($0)})
         }
-        if let sessionTimeout = payload[BrazeConstants.Keys.sessionTimeout] as? NSNumber {
-            brazeConfig.sessionTimeout = sessionTimeout.doubleValue
+        if let sessionTimeout: Double = payload.optionalValue(BrazeConstants.Keys.sessionTimeout) {
+            brazeConfig.sessionTimeout = sessionTimeout
         }
-        if let triggerInterval = payload[BrazeConstants.Keys.triggerIntervalSeconds] as? NSNumber {
-            brazeConfig.triggerMinimumTimeInterval = triggerInterval.doubleValue
+        if let triggerInterval: Double = payload.optionalValue(BrazeConstants.Keys.triggerIntervalSeconds) {
+            brazeConfig.triggerMinimumTimeInterval = triggerInterval
         }
-        if let forwardUniversalLinks = payload[BrazeConstants.Keys.forwardUniversalLinks] as? NSNumber {
-            brazeConfig.forwardUniversalLinks = forwardUniversalLinks.boolValue
+        if let forwardUniversalLinks = convertToBool(payload[BrazeConstants.Keys.forwardUniversalLinks]) {
+            brazeConfig.forwardUniversalLinks = forwardUniversalLinks
         }
-        if let optInWhenPushAuthorized = payload[BrazeConstants.Keys.optInWhenPushAuthorized] as? Bool {
+        if let optInWhenPushAuthorized = convertToBool(payload[BrazeConstants.Keys.optInWhenPushAuthorized]) {
             brazeConfig.optInWhenPushAuthorized = optInWhenPushAuthorized
         }
 

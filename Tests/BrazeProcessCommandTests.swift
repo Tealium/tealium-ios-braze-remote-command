@@ -71,7 +71,7 @@ class BrazeProcessCommandTests: XCTestCase {
 
     /// A JSON config written as whole seconds (`"flush_interval": 25`) decodes to `Int`, not
     /// `Double` -- AnyDecodable tries `Int` first -- so reading it as `Double` used to drop the
-    /// value silently. Same for the other numeric options, which is why they all read NSNumber.
+    /// value silently. Same for the other numeric options, which is why they all go through `optionalValue`.
     ///
     /// Every value here is deliberately off Braze's default (flush 10s, session 30s, trigger 30s),
     /// otherwise a dropped value would still satisfy the assertion.
@@ -90,6 +90,31 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual(config!.api.flushInterval, 25)
         XCTAssertEqual(config!.sessionTimeout, 45)
         XCTAssertEqual(config!.triggerMinimumTimeInterval, 77)
+    }
+
+    /// String numbers and bools coerce through `optionalValue`/`convertToBool` the same way the
+    /// ecommerce commands do, instead of the direct NSNumber/Bool casts silently dropping them.
+    func testCreateConfig_stringNumbersAndBoolsCoerce() {
+        let payload: [String: Any] = [
+            "command_name": "initialize",
+            "api_key": "abc123",
+            "custom_endpoint": "test_endpoint",
+            "flush_interval": "25",
+            "session_timeout": "45",
+            "trigger_interval_seconds": "30",
+            "use_uuid_as_device_id": "true",
+            "forward_universal_links": "true",
+            "opt_in_when_push_authorized": "true"
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        let config = brazeInstance.config
+        XCTAssertNotNil(config)
+        XCTAssertEqual(config!.api.flushInterval, 25)
+        XCTAssertEqual(config!.sessionTimeout, 45)
+        XCTAssertEqual(config!.triggerMinimumTimeInterval, 30)
+        XCTAssertTrue(config!.useUUIDAsDeviceId)
+        XCTAssertTrue(config!.forwardUniversalLinks)
+        XCTAssertTrue(config!.optInWhenPushAuthorized)
     }
 
     func testChangeUserIdentifierCalledSuccess() {
@@ -117,6 +142,18 @@ class BrazeProcessCommandTests: XCTestCase {
         ]
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.setLastKnownLocationNoAltitudeVerticalAccuracyCallCount)
+    }
+
+    /// JSON whole numbers decode as Int; a direct Double cast used to drop the whole location.
+    func testSetLastKnownLocation_intCoordinatesCoerce() {
+        let payload: [String: Any] = [
+            "command_name": "setlastknownlocation",
+            "location_latitude": 12, "location_longitude": 123, "location_horizontal_accuracy": 10,
+            "location_altitude": 100,
+            "location_vertical_accuracy": 5
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.setLastKnownLocationWithAltitudeVerticalAccuracyCallCount)
     }
 
     func testChangeUserIdentifierNotCalled_userIdentifierKeyMissing() {
