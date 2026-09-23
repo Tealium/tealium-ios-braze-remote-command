@@ -45,7 +45,7 @@ extension [String: Any] {
     /// Casts `raw` to `T`. Falls back to NSNumber-bridging (JS bridge sends native `Int` where a
     /// `Double` is expected) and String→number parsing (data layers often send numbers as strings,
     /// e.g. `price:"19.99"`), per-element for array types. Returns `nil` if no path applies.
-    /// Fractional values for Int targets truncate toward zero.
+    /// Fractional values for Int targets round to nearest.
     fileprivate func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
         if T.self == Double.self { return lenientDouble(raw) as? T }
@@ -78,12 +78,12 @@ extension [String: Any] {
         return value.flatMap { $0.isFinite ? $0 : nil }
     }
 
-    /// Int from an NSNumber or a numeric String. Fractional values truncate toward zero (1.9 -> 1),
-    /// matching NSNumber.intValue; NaN, infinite and out-of-Int-range values are rejected instead of
+    /// Int from an NSNumber or a numeric String. Fractional values round to nearest, halves away
+    /// from zero (2.4 -> 2, 2.5 -> 3); NaN, infinite and out-of-Int-range values are rejected instead of
     /// trapping or producing garbage.
     private func lenientInt(_ raw: Any) -> Int? {
         guard let double = lenientDouble(raw) else { return nil }
-        return Int(exactly: double.rounded(.towardZero))
+        return Int(exactly: double.rounded())
     }
 
     /// Required field as `T`. Throws `missingField` when absent, `typeMismatch` when not coercible.
