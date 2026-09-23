@@ -152,33 +152,32 @@ public class BrazeRemoteCommand: RemoteCommand {
 
                 // Accepts both the logpurchase and the ecommerce spellings; see BrazeConstants.keyAliases.
                 // Braze logs one product per call, so the parallel payload arrays are fanned out by
-                // index -- hence the plural names.
+                // index -- hence the plural names. Prices go through `optionalValue` so numeric
+                // strings coerce the same way they do for the ecommerce commands.
                 guard let productIds = payload[BrazeConstants.Keys.productId] as? [String],
                     let currency = payload.canonicalValue(BrazeConstants.Keys.currency) as? String,
-                    let prices = payload.canonicalValue(BrazeConstants.Keys.price) as? [Double] else {
+                    let prices: [Double] = payload.optionalValue(BrazeConstants.Keys.price) else {
                         return
                 }
 
-                // productIds and prices/quantities are parallel arrays; a length mismatch would
+                // productIds and prices are parallel arrays; a length mismatch would
                 // trap on out-of-bounds access in the loop below, so reject it up front.
                 guard prices.count == productIds.count else {
                     print("*** Tealium Remote Command Error - Braze: logPurchase productId and price arrays must be the same length")
                     return
                 }
 
-                let quantities = payload.canonicalValue(BrazeConstants.Keys.quantity) as? [Int]
-                if let quantities = quantities, quantities.count != productIds.count {
-                    print("*** Tealium Remote Command Error - Braze: logPurchase quantity array must match productId array length")
-                    return
-                }
+                // Quantity is optional per product: missing, wrong-length or non-Int entries become
+                // nil and the Braze SDK applies its own default, rather than dropping the purchase.
+                let quantities: [Int?] = payload.optionalArray(BrazeConstants.Keys.quantity, count: productIds.count)
+                    ?? Array(repeating: nil, count: productIds.count)
                 let properties = payload[BrazeConstants.Keys.purchaseProperties] as? [String: Any]
                 for (index, productId) in productIds.enumerated() {
                     brazeInstance.logPurchase(
                         productId,
                         currency: currency,
                         price: prices[index],
-                        // nil when omitted; the Braze SDK then applies its own default quantity.
-                        quantity: quantities?[index],
+                        quantity: quantities[index],
                         properties: properties
                     )
                 }

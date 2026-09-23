@@ -45,7 +45,7 @@ extension [String: Any] {
     /// Casts `raw` to `T`. Falls back to NSNumber-bridging (JS bridge sends native `Int` where a
     /// `Double` is expected) and String→number parsing (data layers often send numbers as strings,
     /// e.g. `price:"19.99"`), per-element for array types. Returns `nil` if no path applies.
-    private func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
+    fileprivate func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
         // Bool bridges to NSNumber; reject explicitly so `price: true` isn't coerced to 1.0/0.0.
         if raw is Bool { return nil }
@@ -137,17 +137,18 @@ extension [String: Any] {
 
     /// Like `require`, but returns `nil` instead of throwing -- for optional numeric fields
     /// (`tax`, `shipping`, `total_value` on add/remove, etc.).
-    fileprivate func optionalValue<T>(_ key: String) -> T? {
+    func optionalValue<T>(_ key: String) -> T? {
         guard let raw = canonicalValue(key) else { return nil }
         return lenientCast(raw, as: T.self)
     }
 
-    /// Optional per-product array field (e.g. `image_url`): a mismatched-type element becomes `nil`
-    /// instead of failing the whole array, and the field is dropped entirely if its length doesn't
-    /// match the other parallel arrays (can't be safely indexed by product otherwise).
-    fileprivate func optionalArray<T>(_ key: String, count: Int) -> [T?]? {
-        guard let raw = self[key] as? [Any], raw.count == count else { return nil }
-        return raw.map { $0 as? T }
+    /// Optional per-product array field (e.g. `image_url`, `quantity`): an element that `lenientCast`
+    /// can't coerce becomes `nil` instead of failing the whole array, and the field is dropped entirely
+    /// if its length doesn't match the other parallel arrays (can't be safely indexed by product otherwise).
+    /// Resolves key aliases like `require`/`optionalValue`.
+    func optionalArray<T>(_ key: String, count: Int) -> [T?]? {
+        guard let raw = canonicalValue(key) as? [Any], raw.count == count else { return nil }
+        return raw.map { lenientCast($0, as: T.self) }
     }
 
     /// Event-level metadata, distinct from the per-product metadata array nested in products/discounts.
@@ -491,20 +492,10 @@ final class EcommerceEventParser {
         guard let discounts = payload[Keys.discounts] as? [String: Any] else { return [] }
         let codes = discounts[Keys.discountCode] as? [String] ?? []
         // Braze types discount `amount` as a number (Float), so parse to Double, not String.
-        // Per-element (not whole-array) so a mixed array like [10.0, "5"] still recovers both.
         // Uses `map`, not `compactMap`: a dropped entry would shift every later amount onto the
         // wrong code/type, so an unparseable element keeps a nil placeholder instead.
-        let amounts: [Double?]
-        if let rawAmounts = discounts[Keys.discountAmount] as? [Any] {
-            amounts = rawAmounts.map { element -> Double? in
-                if element is Bool { return nil }
-                if let number = element as? NSNumber, number.doubleValue.isFinite { return number.doubleValue }
-                if let string = element as? String, let value = Double(string), value.isFinite { return value }
-                return nil
-            }
-        } else {
-            amounts = []
-        }
+        let rawAmounts = discounts[Keys.discountAmount] as? [Any] ?? []
+        let amounts = rawAmounts.map { discounts.lenientCast($0, as: Double.self) }
         let types = discounts[Keys.discountType] as? [String] ?? []
         let count = max(codes.count, amounts.count, types.count)
 

@@ -420,6 +420,46 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual([nil], brazeInstance.loggedPurchaseProperties as? [NSDictionary?])
     }
 
+    func testLogPurchase_quantityLengthMismatchStillLogs() {
+        // A quantity array that doesn't match productIds must not drop the whole purchase.
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123", "456"],
+            "order_currency": "USD",
+            "product_unit_price": [12.34, 5.0],
+            "quantity": [5]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(2, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual([nil, nil], brazeInstance.loggedPurchaseQuantities)
+    }
+
+    func testLogPurchase_quantityElementsLenientlyCoerced() {
+        // Numeric strings coerce like the other numeric fields; an unparseable element becomes nil
+        // for that product only instead of dropping the whole purchase.
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123", "456"],
+            "order_currency": "USD",
+            "product_unit_price": [12.34, 5.0],
+            "quantity": ["5", "abc"]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(2, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual([5, nil], brazeInstance.loggedPurchaseQuantities)
+    }
+
+    func testLogPurchase_stringPricesCoerce() {
+        // Data layers often send numbers as strings; logpurchase must coerce them like the
+        // ecommerce commands do instead of dropping the purchase.
+        let payload: [String: Any] = ["command_name": "initialize,logpurchase",
+            "product_id": ["123", "456"],
+            "order_currency": "USD",
+            "product_unit_price": ["12.34", 5]
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(2, brazeInstance.logPurchaseCallCount)
+        XCTAssertEqual([12.34, 5.0], brazeInstance.loggedPurchasePrices)
+    }
+
     func testLogPurchaseWithPropertiesSuccess() {
         let payload: [String: Any] = ["command_name": "initialize,logpurchase",
             "product_id": ["123"],
@@ -843,6 +883,30 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertNil(discounts?.first?["amount"] as? String)
         XCTAssertEqual(10.0, discounts?.first?["amount"] as? Double)
         XCTAssertEqual("percentage", discounts?.first?["type"] as? String)
+    }
+
+    func testLogOrderPlacedWithDiscountAmountCoercion() {
+        // discount `amount` coerces numeric strings like other numeric fields, and per-element
+        // (not whole-array) rejects Bool -- a mixed array still recovers the valid entries.
+        let payload: [String: Any] = ["command_name": "logorderplaced",
+            "order_id": "order-1",
+            "total_value": 79.98,
+            "currency": "USD",
+            "source": "iOS App",
+            "discounts": [
+                "code": ["SUMMER10", "VIP5", "BADAMT"],
+                "amount": [10.0, "5", true],
+                "type": ["percentage", "fixed", "fixed"]
+            ],
+            "products": productsDictionary([
+                ["product_id": "sku123", "product_name": "Running Shoes", "variant_id": "red-42", "price": 59.99, "quantity": 1]
+            ])
+        ]
+        brazeCommand.processRemoteCommand(with: payload)
+        let discounts = brazeInstance.loggedEcommerceEventProperties.last?["discounts"] as? [[String: Any]]
+        XCTAssertEqual(10.0, discounts?[0]["amount"] as? Double)
+        XCTAssertEqual(5.0, discounts?[1]["amount"] as? Double)
+        XCTAssertNil(discounts?[2]["amount"])
     }
 
     func testLogOrderPlacedNotCalled_orderIdMissing() {
