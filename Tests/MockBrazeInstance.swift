@@ -49,6 +49,7 @@ class MockBrazeInstance: BrazeCommand {
     var disableCallCount = 0
     var reEnableCallCount = 0
     var wipeDataCallCount = 0
+    var logoutCallCount = 0
     var flushCallCount = 0
 
     var setIdentifierForAdvertiserCallCount = 0
@@ -189,6 +190,10 @@ class MockBrazeInstance: BrazeCommand {
 
     func wipeData() {
         wipeDataCallCount += 1
+    }
+
+    func logout() {
+        logoutCallCount += 1
     }
 
     func flush() {

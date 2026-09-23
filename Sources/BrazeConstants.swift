@@ -39,6 +39,7 @@ public enum BrazeConstants {
         case enableSDK = "enablesdk"
         case disableSDK = "disablesdk"
         case wipeData = "wipedata"
+        case logout = "logout"
         case flush = "flush"
         case addToSubsriptionGroup = "addtosubscriptiongroup"
         case removeFromSubscriptionGroup = "removefromsubscriptiongroup"

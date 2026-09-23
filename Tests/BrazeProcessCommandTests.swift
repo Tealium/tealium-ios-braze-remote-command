@@ -1592,4 +1592,10 @@ class BrazeProcessCommandTests: XCTestCase {
         brazeCommand.processRemoteCommand(with: payload)
         XCTAssertEqual(1, brazeInstance.wipeDataCallCount)
     }
+
+    func testLogout() {
+        let payload: [String: Any] = ["command_name": "logout"]
+        brazeCommand.processRemoteCommand(with: payload)
+        XCTAssertEqual(1, brazeInstance.logoutCallCount)
+    }
 }

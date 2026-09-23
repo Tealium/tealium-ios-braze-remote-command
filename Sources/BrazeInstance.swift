@@ -95,6 +95,8 @@ public protocol BrazeCommand {
     func enableSDK(_ enable: Bool)
 
     func wipeData()
+
+    func logout()
 }
 
 public class BrazeInstance: BrazeCommand {
@@ -355,6 +357,15 @@ public class BrazeInstance: BrazeCommand {
     public func wipeData() {
         onReady { braze in
             braze.wipeData()
+        }
+    }
+
+    public func logout() {
+        onReady { braze in
+            braze.logout { result in
+                guard case .failure(let error) = result else { return }
+                print("*** Tealium Remote Command Error - Braze: logout failed (\(error))")
+            }
         }
     }
 }

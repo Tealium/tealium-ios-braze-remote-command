@@ -264,6 +264,8 @@ public class BrazeRemoteCommand: RemoteCommand {
                 brazeInstance.enableSDK(false)
             case .wipeData:
                 brazeInstance.wipeData()
+            case .logout:
+                brazeInstance.logout()
             case .flush:
                 brazeInstance.flush()
             case .addToSubsriptionGroup:

@@ -123,6 +123,7 @@
         "log_custom_event": "logcustomevent",
         "grant_full_consent": "enablesdk",
         "decline_consent": "disablesdk,wipedata",
+        "user_logout": "logout",
         "flush_events": "flush",
         "subscribe": "addtosubscriptiongroup",
         "unsubscribe": "removefromsubscriptiongroup",
