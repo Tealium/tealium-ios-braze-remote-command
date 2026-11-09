@@ -8,21 +8,13 @@
 import Foundation
 import BrazeKit
 
-extension [String: Any] {
-    /// Reads `key`, resolving any alias in `BrazeConstants.keyAliases` (first present wins), or
-    /// reads directly if none are registered. Resolved on read rather than by rewriting the
-    /// payload, so nested dictionaries (e.g. the ecommerce `products` arrays) get the same
-    /// alias handling for free.
-    func canonicalValue(_ key: String) -> Any? {
-        guard let acceptedKeys = BrazeConstants.keyAliases[key] else { return self[key] }
-        return acceptedKeys.lazy.compactMap { self[$0] }.first
-    }
-
+/// Lenient conversions for loosely typed payload values.
+enum Conversion {
     /// Casts `raw` to `T`. Falls back to NSNumber-bridging (JS bridge sends native `Int` where a
     /// `Double` is expected) and String→number parsing (data layers often send numbers as strings,
     /// e.g. `price:"19.99"`), per-element for array types. Returns `nil` if no path applies.
     /// Fractional values for Int targets round to nearest.
-    func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
+    static func lenientCast<T>(_ raw: Any, as type: T.Type) -> T? {
         if let value = raw as? T { return value }
         if T.self == Double.self { return lenientDouble(raw) as? T }
         if T.self == Int.self { return lenientInt(raw) as? T }
@@ -41,7 +33,7 @@ extension [String: Any] {
 
     /// Finite Double from an NSNumber or a numeric String. Bool bridges to NSNumber, so it is
     /// rejected explicitly to keep `price: true` from coercing to 1.0/0.0.
-    private func lenientDouble(_ raw: Any) -> Double? {
+    private static func lenientDouble(_ raw: Any) -> Double? {
         if raw is Bool { return nil }
         let value: Double?
         if let number = raw as? NSNumber {
@@ -57,16 +49,34 @@ extension [String: Any] {
     /// Int from an NSNumber or a numeric String. Fractional values round to nearest, halves away
     /// from zero (2.4 -> 2, 2.5 -> 3); NaN, infinite and out-of-Int-range values are rejected instead of
     /// trapping or producing garbage.
-    private func lenientInt(_ raw: Any) -> Int? {
+    private static func lenientInt(_ raw: Any) -> Int? {
         guard let double = lenientDouble(raw) else { return nil }
         return Int(exactly: double.rounded())
+    }
+
+    /// Bool from a Bool, a "true"/"false" String, or any other NSNumber (via `boolValue`).
+    static func lenientBool(_ raw: Any?) -> Bool? {
+        if let bool = raw as? Bool { return bool }
+        if let string = raw as? String { return Bool(string) }
+        return (raw as? NSNumber)?.boolValue
+    }
+}
+
+extension [String: Any] {
+    /// Reads `key`, resolving any alias in `BrazeConstants.keyAliases` (first present wins), or
+    /// reads directly if none are registered. Resolved on read rather than by rewriting the
+    /// payload, so nested dictionaries (e.g. the ecommerce `products` arrays) get the same
+    /// alias handling for free.
+    func canonicalValue(_ key: String) -> Any? {
+        guard let acceptedKeys = BrazeConstants.keyAliases[key] else { return self[key] }
+        return acceptedKeys.lazy.compactMap { self[$0] }.first
     }
 
     /// Like `require`, but returns `nil` instead of throwing -- for optional numeric fields
     /// (`tax`, `shipping`, `total_value` on add/remove, etc.).
     func optionalValue<T>(_ key: String) -> T? {
         guard let raw = canonicalValue(key) else { return nil }
-        return lenientCast(raw, as: T.self)
+        return Conversion.lenientCast(raw, as: T.self)
     }
 
     /// Optional per-product array field (e.g. `image_url`, `quantity`): an element that `lenientCast`
@@ -75,7 +85,7 @@ extension [String: Any] {
     /// Resolves key aliases like `require`/`optionalValue`.
     func optionalArray<T>(_ key: String, count: Int) -> [T?]? {
         guard let raw = canonicalValue(key) as? [Any], raw.count == count else { return nil }
-        return raw.map { lenientCast($0, as: T.self) }
+        return raw.map { Conversion.lenientCast($0, as: T.self) }
     }
 }
 

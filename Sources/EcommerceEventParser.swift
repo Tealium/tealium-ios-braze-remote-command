@@ -47,7 +47,7 @@ extension [String: Any] {
         guard let raw = canonicalValue(key) else {
             throw ParsingError.missingField(key)
         }
-        guard let value: T = lenientCast(raw, as: T.self) else {
+        guard let value: T = Conversion.lenientCast(raw, as: T.self) else {
             throw ParsingError.typeMismatch(
                 field: key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: raw)))
         }
@@ -419,7 +419,7 @@ final class EcommerceEventParser {
         // Uses `map`, not `compactMap`: a dropped entry would shift every later amount onto the
         // wrong code/type, so an unparseable element keeps a nil placeholder instead.
         let rawAmounts = discounts[Keys.discountAmount] as? [Any] ?? []
-        let amounts = rawAmounts.map { discounts.lenientCast($0, as: Double.self) }
+        let amounts = rawAmounts.map { Conversion.lenientCast($0, as: Double.self) }
         let types = discounts[Keys.discountType] as? [String] ?? []
         let count = max(codes.count, amounts.count, types.count)
 

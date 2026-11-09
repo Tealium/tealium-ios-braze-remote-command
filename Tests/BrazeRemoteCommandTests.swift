@@ -12,15 +12,16 @@ import TealiumCore
 
 class BrazeRemoteCommandTests: XCTestCase {
 
-    func testConvertToBool() {
-        let braze = BrazeRemoteCommand()
-        XCTAssertTrue(braze.convertToBool("true")!)
-        XCTAssertTrue(braze.convertToBool(true)!)
-        XCTAssertTrue(braze.convertToBool(1)!)
-        XCTAssertFalse(braze.convertToBool(0)!)
-        XCTAssertFalse(braze.convertToBool("false")!)
-        XCTAssertFalse(braze.convertToBool(false)!)
-        XCTAssertNil(braze.convertToBool("wrong string"))
+    func testLenientBool() {
+        XCTAssertEqual(Conversion.lenientBool(true), true)
+        XCTAssertEqual(Conversion.lenientBool(false), false)
+        XCTAssertEqual(Conversion.lenientBool(NSNumber(value: 2)), true)
+        XCTAssertEqual(Conversion.lenientBool(NSNumber(value: 0)), false)
+        XCTAssertEqual(Conversion.lenientBool("true"), true)
+        XCTAssertEqual(Conversion.lenientBool("false"), false)
+        XCTAssertNil(Conversion.lenientBool("abc"))
+        XCTAssertNil(Conversion.lenientBool(nil))
+        XCTAssertNil(Conversion.lenientBool([1]))
     }
 
     func testCreateConfigWithoutEnvironment() {

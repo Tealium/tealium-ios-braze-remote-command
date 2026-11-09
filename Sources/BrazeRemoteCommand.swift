@@ -222,7 +222,7 @@ public class BrazeRemoteCommand: RemoteCommand {
                     try EcommerceEventParser.parseOrderRefundedEvent(payload: payload)
                 }
             case .setAdTrackingEnabled:
-                guard let enabled = convertToBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
+                guard let enabled = Conversion.lenientBool(payload[BrazeConstants.Keys.adTrackingEnabled]) else {
                     return
                 }
                 self.brazeInstance.setAdTrackingEnabled(enabled)
@@ -301,19 +301,6 @@ public class BrazeRemoteCommand: RemoteCommand {
         }
     }
 
-    func convertToBool<T>(_ value: T) -> Bool? {
-        if let string = value as? String,
-            let bool = Bool(string) {
-            return bool
-        } else if let int = value as? Int {
-            let bool = (int == 1) ? true : false
-            return bool
-        } else if let bool = value as? Bool {
-            return bool
-        }
-        return nil
-    }
-
     func createConfig(payload: [String: Any]) -> Braze.Configuration? {
         guard let apiKey = payload[BrazeConstants.Keys.apiKey] as? String,
               let endpoint = payload[BrazeConstants.Keys.customEndpoint] as? String else {
@@ -322,7 +309,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         let brazeConfig = Braze.Configuration(apiKey: apiKey, endpoint: endpoint)
 
         // API Config
-        if let authenticationEnabled = convertToBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
+        if let authenticationEnabled = Conversion.lenientBool(payload[BrazeConstants.Keys.isSdkAuthEnabled]) {
             brazeConfig.api.sdkAuthentication = authenticationEnabled
         }
         if let requestProcessingPolicy = payload[BrazeConstants.Keys.requestProcessingPolicy] as? String,
@@ -338,13 +325,13 @@ public class BrazeRemoteCommand: RemoteCommand {
 
         // Location Config
         brazeConfig.location.brazeLocationProvider = self.location
-        if let enableAutomaticLocation = convertToBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
+        if let enableAutomaticLocation = Conversion.lenientBool(payload[BrazeConstants.Keys.enableAutomaticLocation]) {
             brazeConfig.location.automaticLocationCollection = enableAutomaticLocation
         }
-        if let enableGeofences = convertToBool(payload[BrazeConstants.Keys.enableGeofences]) {
+        if let enableGeofences = Conversion.lenientBool(payload[BrazeConstants.Keys.enableGeofences]) {
             brazeConfig.location.geofencesEnabled = enableGeofences
         }
-        if let enableAutomaticGeofences = convertToBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
+        if let enableAutomaticGeofences = Conversion.lenientBool(payload[BrazeConstants.Keys.enableAutomaticGeofences]) {
             brazeConfig.location.automaticGeofenceRequests = enableAutomaticGeofences
         }
 
@@ -354,7 +341,7 @@ public class BrazeRemoteCommand: RemoteCommand {
         }
 
         // BrazeConfig properties
-        if let useUUIDAsDeviceId = convertToBool(payload[BrazeConstants.Keys.useUUIDAsDeviceId]) {
+        if let useUUIDAsDeviceId = Conversion.lenientBool(payload[BrazeConstants.Keys.useUUIDAsDeviceId]) {
             brazeConfig.useUUIDAsDeviceId = useUUIDAsDeviceId
         }
         if let deviceOptions = payload[BrazeConstants.Keys.deviceOptions] as? [String] {
@@ -366,10 +353,10 @@ public class BrazeRemoteCommand: RemoteCommand {
         if let triggerInterval: Double = payload.optionalValue(BrazeConstants.Keys.triggerIntervalSeconds) {
             brazeConfig.triggerMinimumTimeInterval = triggerInterval
         }
-        if let forwardUniversalLinks = convertToBool(payload[BrazeConstants.Keys.forwardUniversalLinks]) {
+        if let forwardUniversalLinks = Conversion.lenientBool(payload[BrazeConstants.Keys.forwardUniversalLinks]) {
             brazeConfig.forwardUniversalLinks = forwardUniversalLinks
         }
-        if let optInWhenPushAuthorized = convertToBool(payload[BrazeConstants.Keys.optInWhenPushAuthorized]) {
+        if let optInWhenPushAuthorized = Conversion.lenientBool(payload[BrazeConstants.Keys.optInWhenPushAuthorized]) {
             brazeConfig.optInWhenPushAuthorized = optInWhenPushAuthorized
         }
 

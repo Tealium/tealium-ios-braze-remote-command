@@ -92,7 +92,7 @@ class BrazeProcessCommandTests: XCTestCase {
         XCTAssertEqual(config!.triggerMinimumTimeInterval, 77)
     }
 
-    /// String numbers and bools coerce through `optionalValue`/`convertToBool` the same way the
+    /// String numbers and bools coerce through `optionalValue`/`Conversion.lenientBool` the same way the
     /// ecommerce commands do, instead of the direct NSNumber/Bool casts silently dropping them.
     func testCreateConfig_stringNumbersAndBoolsCoerce() {
         let payload: [String: Any] = [
